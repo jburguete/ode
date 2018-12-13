@@ -1,0 +1,52 @@
+\documentclass[a4paper]{article}
+
+\title{Numerical methods to solve ordinary differential equations}
+\author{Javier Burguete}
+\date{\today}
+
+\newcommand{\C}[1]{\left[#1\right]}
+\newcommand{\COMB}[2]{\left(\begin{array}{c}#1\\#2\end{array}\right)}
+\newcommand{\D}[3]{\frac{d^{#3}#1}{d^{#3}#2}}
+\newcommand{\EQ}[2]{\begin{equation}#1\label{#2}\end{equation}}
+\newcommand{\PA}[1]{\left(#1\right)}
+\newcommand{\PARTIAL}[2]{\frac{\partial #1}{\partial #2}}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+
+We are interested in solving ordinary differential equations (ODE) as:
+\EQ{\D{u}{t}{}=f\PA{t,\,u(t)}.}{EqODE}
+
+The following notation has been used in this work:
+\[f_{n\,t}=\PARTIAL{^nf}{t^n},\]
+\[f_{n\,t,m\,u}=\PARTIAL{^{n+m}f}{t^n\,\partial u^m},\]
+\[F_{0,0}=f_0=f\PA{t_0,\,u\PA{t_0}},\]
+\[F_{1,0}=\PA{f_t+f\,f_u}_0,\]
+\[F_{1,1}=\PA{f_u}_0,\]
+\[F_{2,0}=\PA{f_{2t}+2\,f\,f_{t,u}+f^2\,f_{2u}}_0,\]
+\[F_{2,1}=\PA{f_{t,u}+f\,f_{2u}}_0,\]
+\[F_{2,2}=\PA{f_{2u}}_0,\]
+\[\cdots\]
+\[
+	F_{i,j}=\C{\sum_{k=0}^{i-j}\COMB{i-j}{k}\,f^k\,f_{(i-j-k)\,t,(j+k)\,u}}_0,
+	\quad j\leq i.
+\]
+
+The following recurrence rule is hold:
+\EQ{\D{F_{i,j}}{t}{}=F_{i+1,j}+(i-j)\,F_{i,j+1}\,F_{1,0}.}{EqdF}
+
+Then,
+\[\left.\D{u}{t}{}\right|_0=F_{0,0},\]
+\[\left.\D{u}{t}{2}\right|_0=F_{1,0},\]
+\[\left.\D{u}{t}{3}\right|_0=F_{2,0}+F_{1,1}\,F_{1,0},\]
+\[
+	\left.\D{u}{t}{4}\right|_0=F_{3,0}+3\,F_{2,1}\,F_{1,0}+F_{2,0}\,F_{1,1}
+	+F_{1,1}^2\,F_{1,0},
+\]
+
+\end{document}

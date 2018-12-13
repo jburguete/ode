@@ -1,3 +1,5 @@
+.PHONY: clean
+
 cfiles = optimize.h utils.h config.h Makefile
 
 shfiles = steps.h \
@@ -58,9 +60,9 @@ rkofiles = rk.o \
 
 ofiles = optimize.o $(sofiles) $(rkofiles)
 
-cc = gcc -flto -g
-cflags = -c -O3 -march=native -Wall -Wextra -Wpedantic \
-	`pkg-config --cflags glib-2.0 gthread-2.0 gsl`
+cc = gcc -flto -g -std=gnu11
+cflags = `pkg-config --cflags glib-2.0 gthread-2.0 gsl` -c -O3 -march=native \
+	-Wall -Wextra -D_FORTIFY_SOURCE=2
 libs = -lm `pkg-config --libs glib-2.0 gthread-2.0 gsl`
 
 ode: $(ofiles) ode.o
@@ -218,3 +220,6 @@ ode.o: ode.c $(hfiles) $(cfiles)
 
 clean:
 	rm -rf ode *.o html latex
+
+strip: ode
+	strip ode

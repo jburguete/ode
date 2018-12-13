@@ -213,13 +213,13 @@ optimize_init (Optimize * optimize,     ///< Optimize struct.
 			     optimize->nrandom, optimize->nfree, optimize->size);
 #endif
   optimize->random_data
-    = (long double *) malloc (optimize->nfree * sizeof (long double));
+    = (long double *) g_slice_alloc (optimize->nfree * sizeof (long double));
   optimize->coefficient
-    = (long double *) malloc (optimize->size * sizeof (long double));
+    = (long double *) g_slice_alloc (optimize->size * sizeof (long double));
   optimize->minimum
-    = (long double *) malloc (optimize->nfree * sizeof (long double));
+    = (long double *) g_slice_alloc (optimize->nfree * sizeof (long double));
   optimize->interval
-    = (long double *) malloc (optimize->nfree * sizeof (long double));
+    = (long double *) g_slice_alloc (optimize->nfree * sizeof (long double));
   memcpy (optimize->minimum, optimize->minimum0,
           optimize->nfree * sizeof (long double));
   memcpy (optimize->interval, optimize->interval0,
@@ -236,10 +236,10 @@ optimize_init (Optimize * optimize,     ///< Optimize struct.
 void
 optimize_delete (Optimize * optimize)   ///< Optimize struct.
 {
-  free (optimize->interval);
-  free (optimize->minimum);
-  free (optimize->coefficient);
-  free (optimize->random_data);
+  g_slice_free1 (optimize->nfree * sizeof (long double), optimize->interval);
+  g_slice_free1 (optimize->nfree * sizeof (long double), optimize->minimum);
+  g_slice_free1 (optimize->size * sizeof (long double), optimize->coefficient);
+  g_slice_free1 (optimize->nfree * sizeof (long double), optimize->random_data);
 }
 
 /**
@@ -290,8 +290,10 @@ printf ("Rank=%d NNodes=%d\n", rank, nnodes);
       if (nthreads > 1)
         {
           for (j = 0; j < nthreads; ++j)
-            thread[j] = g_thread_new (NULL, (GThreadFunc) optimize_step,
-                                      (void *) (optimize + j));
+            thread[j] 
+							= g_thread_new (NULL, 
+									            (GThreadFunc) (void (*)(void)) optimize_step,
+                              (void *) (optimize + j));
           for (j = 0; j < nthreads; ++j)
             g_thread_join (thread[j]);
         }

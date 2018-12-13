@@ -62,8 +62,10 @@ const unsigned int random_tb_3_2[4] = {2, 2, 2, 2};
  */
 void
 rk_print_maxima_3_2 (FILE * file,       ///< file.
-		                 unsigned int nsteps, ///< steps number.
-										 unsigned int order) ///< accuracy order.
+		                 unsigned int nsteps __attribute__((unused)),
+										 ///< steps number.
+										 unsigned int order __attribute__((unused)))
+                     ///< accuracy order.
 {
   fprintf (file, "b30+b31+b32-1;\n");
   fprintf (file, "b31*t1+b32*t2-1/2;\n");

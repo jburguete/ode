@@ -64,8 +64,10 @@ const unsigned int random_tb_5_2[13] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
  */
 void
 rk_print_maxima_5_2 (FILE * file,       ///< file.
-		                 unsigned int nsteps, ///< steps number.
-										 unsigned int order) ///< accuracy order.
+		                 unsigned int nsteps __attribute__((unused)),
+										 ///< steps number.
+										 unsigned int order __attribute__((unused)))
+                     ///< accuracy order.
 {
   fprintf (file, "a50+a51+a52+a53+a54-1;\n");
   fprintf (file, "b51*t1+b52*t2+b53*t3+b54*t4-1/2;\n");

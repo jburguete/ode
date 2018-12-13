@@ -320,10 +320,10 @@ main (int argn,                 ///< arguments number.
 
 	// Init a random numbers generator per node and thread
   printf ("Initing random numbers\n");
-  rng = (gsl_rng **) malloc (nnodes * nthreads * sizeof (gsl_rng *));
+  rng = (gsl_rng **) g_slice_alloc (nnodes * nthreads * sizeof (gsl_rng *));
   rng0 = gsl_rng_alloc (gsl_rng_ranlxs2);
   gsl_rng_set (rng0, seed);
-  for (i = k = 0; i < nnodes; ++i)
+  for (i = k = 0; (int) i < nnodes; ++i)
     for (j = 0; j < nthreads; ++j, ++k)
       {
         rng[k] = gsl_rng_alloc (gsl_rng_taus2);
@@ -347,9 +347,11 @@ main (int argn,                 ///< arguments number.
 			tb = rk->tb;
 			ac = rk->ac0;
       nfree = tb->nfree;
-      value_optimal = (long double *) malloc (nfree * sizeof (long double));
+      value_optimal
+				= (long double *) g_slice_alloc (nfree * sizeof (long double));
       nfree2 = ac->nfree;
-      value_optimal2 = (long double *) malloc (nfree2 * sizeof (long double));
+      value_optimal2
+				= (long double *) g_slice_alloc (nfree2 * sizeof (long double));
       rk_create (rk, &optimal, value_optimal, &optimal2, value_optimal2,
 					       convergence_factor, convergence_factor2, search_factor, 
 								 search_factor2, nsimulations, nsimulations2, nsearch, nsearch2,
@@ -381,9 +383,9 @@ main (int argn,                 ///< arguments number.
 #endif
 
       // Free memory
+			g_slice_free1 (nfree2 * sizeof (long double), value_optimal2);
       for (i = 0; i < nthreads; ++i)
 	      rk_delete (rk + i);
-			free (value_optimal2);
 		}
 	else if (type == METHOD_TYPE_STEPS)
 	  {
@@ -392,7 +394,8 @@ main (int argn,                 ///< arguments number.
       if (!steps_select (s, nsteps, order))
         return 2;
       nfree = s->nfree;
-      value_optimal = (long double *) malloc (nfree * sizeof (long double));
+      value_optimal 
+				= (long double *) g_slice_alloc (nfree * sizeof (long double));
       optimize_create (s, &optimal, value_optimal, convergence_factor, 
 			                 search_factor, nsimulations, nsearch, niterations);
       for (i = 1; i < nthreads; ++i)
@@ -433,12 +436,12 @@ main (int argn,                 ///< arguments number.
 #endif
 
   // Free memory
+  g_slice_free1 (nfree * sizeof (long double), value_optimal);
 	j = nnodes * nthreads;
   for (i = 0; i < j; ++i)
     gsl_rng_free (rng[i]);
-  free (rng);
+  g_slice_free1 (j * sizeof (gsl_rng *), rng);
   gsl_rng_free (rng0);
-  free (value_optimal);
 
 #if HAVE_MPI
   // Close MPI

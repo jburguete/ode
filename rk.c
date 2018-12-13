@@ -1173,8 +1173,10 @@ rk_bucle_tb (RK * rk)    ///< RK struct.
       if (nthreads > 1)
         {
           for (j = 0; j < nthreads; ++j)
-            thread[j] = g_thread_new (NULL, (GThreadFunc) rk_step_tb,
-                                      (void *) (rk + j));
+            thread[j] 
+							= g_thread_new (NULL, 
+								              (GThreadFunc) (void (*)(void)) rk_step_tb,
+                              (void *) (rk + j));
           for (j = 0; j < nthreads; ++j)
             g_thread_join (thread[j]);
         }
