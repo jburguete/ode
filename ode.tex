@@ -24,9 +24,11 @@ We are interested in solving ordinary differential equations (ODE) as:
 \EQ{\DD{u}{t}=f\PA{t,\,u(t)}.}{EqODE}
 
 The following notation has been used in this work:
+\[u_0=u\PA{t_0},\]
+\[f_0=f\PA{t_0,\,u\PA{t_0}},\]
 \[f_{n\,t}=\PARTIAL{^nf}{t^n},\]
 \[f_{n\,t,m\,u}=\PARTIAL{^{n+m}f}{t^n\,\partial u^m},\]
-\[F_{0,0}=f_0=f\PA{t_0,\,u\PA{t_0}},\]
+\[F_{0,0}=f_0,\]
 \[F_{1,0}=\PA{f_t+f\,f_u}_0,\]
 \[F_{1,1}=\PA{f_u}_0,\]
 \[F_{2,0}=\PA{f_{2t}+2\,f\,f_{t,u}+f^2\,f_{2u}}_0,\]
@@ -54,5 +56,22 @@ Then,
 	+3\,F_{2,2}\,F_{1,0}^2+4\,F_{2,1}\,F_{2,0}+7\,F_{2,1}\,F_{1,1}\,F_{1,0}
 	+F_{2,0}\,F_{1,1}^2+F_{1,1}^3\,F_{1,0},
 \]
+
+\section{Runge-Kutta methods}
+
+Runge-Kutta methods are methods in the form:
+\[d_i=\sum_{j=0}^{i-1}b_{i,j},\]
+\[f_i=f\PA{t+d_i\,\Delta t,u_i}\]
+\[u_i=u_0+\Delta t\,\sum_{j=0}^{i-1}b_{i,j}\,f_j,\]
+
+\subsection{Runge-Kutta pairs}
+
+\section{Multi-steps methods}
+
+\subsection{Multi-steps pairs}
+
+\section{Tests}
+
+\section{Conclusions}
 
 \end{document}
