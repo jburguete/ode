@@ -236,9 +236,9 @@ Developing the steps in Taylor's series to 5-th order:
 	+O\PA{h^6}
 \]
 
-Using the Einstein's notation, where repeated indeces are summed, and comparing
-with the Taylor's series (\ref{EqTaylor}) a $i$-steps Runge-Kutta method has to
-hold the following conditions to get different approximation orders:
+Comparing with the Taylor's series (\ref{EqTaylor}) a $i$-steps Runge-Kutta
+method has to hold the following conditions to get different approximation
+orders:
 \begin{itemize}
 \item First order:
 	\EQ{d_i=1.}{EqRKI}
@@ -295,13 +295,16 @@ The following relation is hold:
 \EQ{b_{i,j}=(a\,c)_{i,j}+\sum_{k=j+1}^{i-1}a_{i,k}\,b_{k,j}.}{EqRKacb}
 This form introduces new $i-1$ freedom degrees for each $i$-th step.
 
-A Runge-Kutta method preserves the TVD property if:
+In the context of propagation equations it has been demonstrated that a
+Runge-Kutta method preserves monotonicity, and therefore absence of numerical
+spurious oscillations, if:
 \EQ{a_{i,j},\,c_{i,j}\geq0,\quad k_t\leq\frac1{\max\PA{c_{i,j}}}}{EqRKTVD}
 
 \subsection{Simple stability}
 
 On decay ODE a more simple stability condition can be obtained. In these
-equations, assuming positive $u$:
+equations we define a Runge-Kutta method as ''simple stable'' when it preserves
+the variable sign for each time step. Assuming positive $u$:
 \[
 	b_{i,j}\geq0\Rightarrow\;
 	u_i=u_0-h\,b_{i,j}\,\ABS{g_j}\,u_j\leq u_0\Rightarrow\;
@@ -313,7 +316,14 @@ equations, assuming positive $u$:
 	=u_0\,\PA{1-h\,d_i\,\ABS{g_0}}
 }{EqRKSimpleCondition}
 wherefrom preserving sign in $u$ is ensured by:
-\EQ{b_{i,j}\geq0,\quad k_t\leq\frac{1}{\max\PA{d_i}}}{EqRKStable}
+\EQ{b_{i,j}\geq0,\quad k_t\leq\frac{1}{\max\PA{d_i}}}{EqRKSimple}
+These conditions are sufficient but not necessary.
+
+A strong stable method is always simple stable, (\ref{EqRKTVD}) conditions
+ensures:
+\[\frac{u_j+h\,c_{i,j}\,f_j}{u_j}\geq0\Rightarrow\]
+\EQ{\frac{u_i}{u_0}=\sum_ja_{i,j}\,\frac{u_j+h\,c_{i,j}\,f_j}{u_j}\geq0.}
+{EqRKSimpleStrong}
 
 \subsection{Ballistic ODE}
 

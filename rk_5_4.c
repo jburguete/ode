@@ -131,7 +131,7 @@ rk_tb_5_4 (Optimize * optimize)      ///< Optimize struct.
 	A[1] = A[0] * t1 (tb);
 	B[1] = B[0] * t2 (tb);
 	C[1] = C[0] * t3 (tb);
-	D[1] = 1.L / 6.L - b52(tb) * b21 (tb) * sqr (t1 (tb))
+	D[1] = 1.L / 12.L - b52(tb) * b21 (tb) * sqr (t1 (tb))
 	       - b53(tb) * (b31 (tb) * sqr (t1 (tb)) + b32 (tb) * sqr (t2 (tb)));
 	A[2] = 0.L;
 	B[2] = b21 (tb) * t1 (tb);
