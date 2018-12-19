@@ -35,9 +35,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef RK__H
 #define RK__H 1
 
-#define RK_ACCURATE 1
-///< Macro to search more accurate methods in functions depending only in time.
-
 /**
  * \struct RK
  * \brief struct to define Runge-Kutta data and methods.

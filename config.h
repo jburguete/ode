@@ -37,5 +37,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define EPSILON 0
 #define OPTIMIZE_STEPS_11_6 0
 #define PRINT_RANDOM 0
+#define RK_ACCURATE 1
+///< Macro to search more accurate methods in functions depending only in time.
 
 #endif
