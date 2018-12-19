@@ -34,12 +34,12 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef RK_6_2__H
 #define RK_6_2__H 1
 
-long double value_rk_6_2[34];
-long double interval_rk_6_2[34];
-int imax_rk_6_2[34];
+extern const long double minimum_tb_6_2[19];
+extern const long double interval_tb_6_2[19];
+extern const unsigned int random_tb_6_2[19];
 
-void rk_make_random_6_2 (long double *rk, long double *vo);
-void rk_print_maxima_6_2 (long double *rk, FILE * file);
-void rk_6_2 (long double *data);
+void rk_print_maxima_6_2 (FILE * file, unsigned int nsteps, unsigned int order);
+void rk_tb_6_2 (Optimize * optimize);
+long double rk_objective_tb_6_2 (RK * rk);
 
 #endif

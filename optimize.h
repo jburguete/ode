@@ -35,15 +35,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define OPTIMIZE__H 1
 
 /**
- * enum to define the method type.
- */
-enum
-{
-  METHOD_TYPE_RUNGE_KUTTA = 1,  ///< Runge-Kutta method.
-  METHOD_TYPE_STEPS = 2         ///< multi-steps method.
-} MethodType;
-
-/**
  * \struct Optimize
  * \brief struct defining the data to perform a method optimization.
  */

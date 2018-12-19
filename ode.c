@@ -216,6 +216,16 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // c0=c3=c4=6.0694618695213438363e+00
 // c1=c2=c5=0
 
+/**
+ * enum to define the method type.
+ */
+enum
+{
+  METHOD_TYPE_RUNGE_KUTTA = 1,  ///< Runge-Kutta method.
+  METHOD_TYPE_STEPS = 2,        ///< multi-steps method.
+  METHOD_TYPE_RUNGE_KUTTA_SIMPLE = 3,  ///< simple stable Runge-Kutta method.
+} MethodType;
+
 unsigned int nsteps;            ///< steps number.
 unsigned int order;             ///< accuracy order.
 
@@ -278,7 +288,7 @@ main (int argn,                 ///< arguments number.
   if ((argn != 10 && argn != 15)
 			|| sscanf (argc[1], "%u", &type) != 1
 			|| type < 1 
-			|| type > 2
+			|| type > 3
       || sscanf (argc[1], "%u", &type) != 1
       || sscanf (argc[2], "%u", &nsteps) != 1
       || sscanf (argc[3], "%u", &order) != 1
@@ -303,6 +313,11 @@ main (int argn,                 ///< arguments number.
 		printf ("Bad steps parameters\n");
 		return 2;
 	}
+  if (type == 3 && argn != 10)
+	{
+		printf ("Bad RK parameters\n");
+		return 3;
+	}
   if (type == 1 &&
       (argn != 15
 			|| sscanf (argc[10], "%u", &niterations2) != 1
@@ -312,7 +327,7 @@ main (int argn,                 ///< arguments number.
       || sscanf (argc[14], "%Lf", &search_factor2) != 1))
 	{
 		printf ("Bad RK parameters\n");
-		return 3;
+		return 4;
 	}
 
 
@@ -359,7 +374,7 @@ main (int argn,                 ///< arguments number.
       for (i = 1; i < nthreads; ++i)
         memcpy (rk + i, rk, sizeof (RK));
       for (i = 0; i < nthreads; ++i)
-				rk_init (rk + i, rng[j + i]);
+				rk_init (rk + i, rng[j + i], 1);
 
 	    // Method bucle
       printf ("Optimize bucle\n");
@@ -421,6 +436,46 @@ main (int argn,                 ///< arguments number.
       // Free memory
       for (i = 0; i < nthreads; ++i)
 	      optimize_delete (s + i);
+		}
+	else if (type == METHOD_TYPE_RUNGE_KUTTA_SIMPLE)
+	  {
+#if PRINT_RANDOM
+	    file_random2 = fopen ("random2", "w");
+#endif
+	    // Create optimize data
+      rk = (RK *) alloca (nthreads * sizeof (RK));
+      if (!rk_select (rk, nsteps, order))
+				return 4;
+			tb = rk->tb;
+      nfree = tb->nfree;
+      value_optimal
+				= (long double *) g_slice_alloc (nfree * sizeof (long double));
+      rk_create_simple (rk, &optimal, value_optimal, convergence_factor, 
+					              search_factor, nsimulations, nsearch, niterations);
+      for (i = 1; i < nthreads; ++i)
+        memcpy (rk + i, rk, sizeof (RK));
+      for (i = 0; i < nthreads; ++i)
+				rk_init (rk + i, rng[j + i], 0);
+
+	    // Method bucle
+      printf ("Optimize bucle\n");
+      rk_bucle_tb (rk);
+
+      // Print the optimal coefficients
+      printf ("Print the optimal coefficients\n");
+      memcpy (tb->random_data, tb->value_optimal, nfree * sizeof (long double));
+      tb->method (tb);
+      snprintf (buffer, 32, "rk-%u-%u.mc", nsteps, order);
+      file = fopen (buffer, "w");
+      tb->print ((Optimize *)rk, file);
+      fclose (file);
+#if PRINT_RANDOM
+			fclose (file_random2);
+#endif
+
+      // Free memory
+      for (i = 0; i < nthreads; ++i)
+	      rk_delete (rk + i);
 		}
 	else
 	  {

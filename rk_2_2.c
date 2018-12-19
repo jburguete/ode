@@ -85,7 +85,11 @@ rk_tb_2_2 (Optimize * optimize)      ///< Optimize struct.
 #endif
 	tb = optimize->coefficient;
 	r = optimize->random_data;
+#if RK_ACCURATE
+  t1 (tb) = 2.L / 3.L;
+#else
   t1 (tb) = r[0];
+#endif
   t2 (tb) = 1.L;
   b21 (tb) = 0.5L / t1 (tb);
 	rk_b_2 (tb);
@@ -116,8 +120,11 @@ rk_objective_tb_2_2 (RK * rk) ///< RK struct.
 			goto end;
 		}
 	o = 30.L + fmaxl (1.L, t1 (tb));
-	rk_bucle_ac (rk);
-	o = fminl (o, *rk->ac0->optimal);
+	if (rk->strong)
+	  {
+			rk_bucle_ac (rk);
+			o = fminl (o, *rk->ac0->optimal);
+		}
 end:
 #if DEBUG_RK_2_2
 	fprintf (stderr, "rk_objective_tb_2_2: optimal=%Lg\n", o);

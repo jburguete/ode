@@ -53,7 +53,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "rk_5_2.h"
 #include "rk_5_3.h"
 #include "rk_5_4.h"
-//#include "rk_6_2.h"
+#include "rk_6_2.h"
 //#include "rk_6_3.h"
 
 #define DEBUG_RK 0              ///< macro to debug.
@@ -107,6 +107,20 @@ const long double interval_ac_rk_5[10]
 ///> array of freedom degree random function types for the a-c coefficients of
 ///> the 5 steps Runge-Kutta methods.
 const unsigned int random_ac_rk_5[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+///> array of minimum freedom degree values for the a-c coefficients of the 6
+///> steps Runge-Kutta methods.
+const long double minimum_ac_rk_6[15]
+  = { 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L };
+
+///> array of minimum freedom degree intervals for the a-c coefficients of the 6
+///> steps Runge-Kutta methods.
+const long double interval_ac_rk_6[15]
+  = { 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L };
+
+///> array of freedom degree random function types for the a-c coefficients of
+///> the 6 steps Runge-Kutta methods.
+const unsigned int random_ac_rk_6[15] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 /**
  * Function to print the 2nd step t-b Runge-Kutta coefficients.
@@ -171,6 +185,24 @@ rk_print_tb_5 (long double *tb, ///< array of t-b Runge-Kutta coefficients.
 }
 
 /**
+ * Function to print the 6th step t-b Runge-Kutta coefficients.
+ */
+void
+rk_print_tb_6 (long double *tb, ///< array of t-b Runge-Kutta coefficients.
+               char *label,     ///< label.
+               FILE * file)     ///< file.
+{
+  rk_print_tb_5 (tb, label, file);
+  fprintf (file, "%s: t6=%.19Le\n", label, t6 (tb));
+  fprintf (file, "%s: b60=%.19Le\n", label, b60 (tb));
+  fprintf (file, "%s: b61=%.19Le\n", label, b61 (tb));
+  fprintf (file, "%s: b62=%.19Le\n", label, b62 (tb));
+  fprintf (file, "%s: b63=%.19Le\n", label, b63 (tb));
+  fprintf (file, "%s: b64=%.19Le\n", label, b64 (tb));
+  fprintf (file, "%s: b65=%.19Le\n", label, b65 (tb));
+}
+
+/**
  * Function to print in a maxima file the 2nd step Runge-Kutta coefficients.
  */
 void
@@ -179,11 +211,13 @@ rk_print_2 (RK * rk,            ///< RK struct.
 {
   long double *tb, *ac;
   tb = rk->tb->coefficient;
-  ac = rk->ac->coefficient;
   fprintf (file, "t1:%.19Le;\n", t1 (tb));
   fprintf (file, "t2:%.19Le;\n", t2 (tb));
   fprintf (file, "b20:%.19Le;\n", b20 (tb));
   fprintf (file, "b21:%.19Le;\n", b21 (tb));
+	if (!rk->strong)
+		return;
+  ac = rk->ac->coefficient;
   fprintf (file, "a20:%.19Le;\n", a20 (ac));
   fprintf (file, "a21:%.19Le;\n", a21 (ac));
   fprintf (file, "c20:%.19Le;\n", c20 (ac));
@@ -200,11 +234,13 @@ rk_print_3 (RK * rk,            ///< RK struct.
   long double *tb, *ac;
   rk_print_2 (rk, file);
   tb = rk->tb->coefficient;
-  ac = rk->ac->coefficient;
   fprintf (file, "t3:%.19Le;\n", t3 (tb));
   fprintf (file, "b30:%.19Le;\n", b30 (tb));
   fprintf (file, "b31:%.19Le;\n", b31 (tb));
   fprintf (file, "b32:%.19Le;\n", b32 (tb));
+	if (!rk->strong)
+		return;
+  ac = rk->ac->coefficient;
   fprintf (file, "a30:%.19Le;\n", a30 (ac));
   fprintf (file, "a31:%.19Le;\n", a31 (ac));
   fprintf (file, "a32:%.19Le;\n", a32 (ac));
@@ -223,12 +259,14 @@ rk_print_4 (RK * rk,            ///< RK struct.
   long double *tb, *ac;
   rk_print_3 (rk, file);
   tb = rk->tb->coefficient;
-  ac = rk->ac->coefficient;
   fprintf (file, "t4:%.19Le;\n", t4 (tb));
   fprintf (file, "b40:%.19Le;\n", b40 (tb));
   fprintf (file, "b41:%.19Le;\n", b41 (tb));
   fprintf (file, "b42:%.19Le;\n", b42 (tb));
   fprintf (file, "b43:%.19Le;\n", b43 (tb));
+	if (!rk->strong)
+		return;
+  ac = rk->ac->coefficient;
   fprintf (file, "a40:%.19Le;\n", a40 (ac));
   fprintf (file, "a41:%.19Le;\n", a41 (ac));
   fprintf (file, "a42:%.19Le;\n", a42 (ac));
@@ -249,13 +287,15 @@ rk_print_5 (RK * rk,            ///< RK struct.
   long double *tb, *ac;
   rk_print_4 (rk, file);
   tb = rk->tb->coefficient;
-  ac = rk->ac->coefficient;
   fprintf (file, "t5:%.19Le;\n", t5 (tb));
   fprintf (file, "b50:%.19Le;\n", b50 (tb));
   fprintf (file, "b51:%.19Le;\n", b51 (tb));
   fprintf (file, "b52:%.19Le;\n", b52 (tb));
   fprintf (file, "b53:%.19Le;\n", b53 (tb));
   fprintf (file, "b54:%.19Le;\n", b54 (tb));
+	if (!rk->strong)
+		return;
+  ac = rk->ac->coefficient;
   fprintf (file, "a50:%.19Le;\n", a50 (ac));
   fprintf (file, "a51:%.19Le;\n", a51 (ac));
   fprintf (file, "a52:%.19Le;\n", a52 (ac));
@@ -266,6 +306,40 @@ rk_print_5 (RK * rk,            ///< RK struct.
   fprintf (file, "c52:%.19Le;\n", c52 (ac));
   fprintf (file, "c53:%.19Le;\n", c53 (ac));
   fprintf (file, "c54:%.19Le;\n", c54 (ac));
+}
+
+/**
+ * Function to print in a maxima file the 6th step Runge-Kutta coefficients.
+ */
+void
+rk_print_6 (RK * rk,            ///< RK struct.
+            FILE * file)        ///< file.
+{
+  long double *tb, *ac;
+  rk_print_5 (rk, file);
+  tb = rk->tb->coefficient;
+  fprintf (file, "t6:%.19Le;\n", t6 (tb));
+  fprintf (file, "b60:%.19Le;\n", b60 (tb));
+  fprintf (file, "b61:%.19Le;\n", b61 (tb));
+  fprintf (file, "b62:%.19Le;\n", b62 (tb));
+  fprintf (file, "b63:%.19Le;\n", b63 (tb));
+  fprintf (file, "b64:%.19Le;\n", b64 (tb));
+  fprintf (file, "b65:%.19Le;\n", b65 (tb));
+	if (!rk->strong)
+		return;
+  ac = rk->ac->coefficient;
+  fprintf (file, "a60:%.19Le;\n", a60 (ac));
+  fprintf (file, "a61:%.19Le;\n", a61 (ac));
+  fprintf (file, "a62:%.19Le;\n", a62 (ac));
+  fprintf (file, "a63:%.19Le;\n", a63 (ac));
+  fprintf (file, "a64:%.19Le;\n", a64 (ac));
+  fprintf (file, "a65:%.19Le;\n", a65 (ac));
+  fprintf (file, "c60:%.19Le;\n", c60 (ac));
+  fprintf (file, "c61:%.19Le;\n", c61 (ac));
+  fprintf (file, "c62:%.19Le;\n", c62 (ac));
+  fprintf (file, "c63:%.19Le;\n", c63 (ac));
+  fprintf (file, "c64:%.19Le;\n", c64 (ac));
+  fprintf (file, "c65:%.19Le;\n", c65 (ac));
 }
 
 /**
@@ -319,6 +393,22 @@ rk_print_maxima_5 (FILE * file) ///< file.
   fprintf (file, "a52*c52+a53*b32+a54*b42-b52;\n");
   fprintf (file, "a53*c53+a54*b43-b53;\n");
   fprintf (file, "a54*c54-b54;\n");
+}
+
+/**
+ * Function to print in a maxima file the 6th step Runge-Kutta equations.
+ */
+void
+rk_print_maxima_6 (FILE * file) ///< file.
+{
+  rk_print_maxima_5 (file);
+  fprintf (file, "a60+a61+a62+a63+a64+a65-1;\n");
+  fprintf (file, "a60*c60+a61*t1+a62*b20+a63*b30+a64*b40+a65*b50-b60;\n");
+  fprintf (file, "a61*c61+a62*b21+a63*b31+a64*b41+a65*b51-b61;\n");
+  fprintf (file, "a62*c62+a63*b32+a64*b42+a65*b52-b62;\n");
+  fprintf (file, "a63*c63+a64*b43+a65*b53-b63;\n");
+  fprintf (file, "a64*c64+a65*b54-b64;\n");
+  fprintf (file, "a65*c65-b65;\n");
 }
 
 /**
@@ -456,6 +546,53 @@ rk_ac_5 (RK * rk)               ///< RK struct.
   fprintf (stderr, "rk_ac_5: a53=%Lg c53=%Lg\n", a53 (ac), c53 (ac));
   fprintf (stderr, "rk_ac_5: a54=%Lg c54=%Lg\n", a54 (ac), c54 (ac));
   fprintf (stderr, "rk_ac_5: end\n");
+#endif
+}
+
+/**
+ * Function to get \f$a_{ij}\f$ and \f$c_{ij}\f$ coefficients of the Runge-Kutta
+ * 6th step.
+ */
+void
+rk_ac_6 (RK * rk)               ///< RK struct.
+{
+  long double *tb, *ac, *r;
+  register long double ac0;
+#if DEBUG_RK
+  fprintf (stderr, "rk_ac_6: start\n");
+#endif
+  rk_ac_5 (rk);
+  tb = rk->tb->coefficient;
+  ac = rk->ac->coefficient;
+  r = rk->ac->random_data;
+  c61 (ac) = r[10];
+  c62 (ac) = r[11];
+  c63 (ac) = r[12];
+  c64 (ac) = r[13];
+  c65 (ac) = r[14];
+  a65 (ac) = b65 (tb) / c65 (ac);
+  ac0 = b64 (tb) - a65 (ac) * b54 (tb);
+  a64 (ac) = fabsl (ac0) < LDBL_EPSILON ? 0.L : ac0 / c64 (ac);
+  ac0 = b63 (tb) - a64 (ac) * b43 (tb) - a65 (ac) * b53 (tb);
+  a63 (ac) = fabsl (ac0) < LDBL_EPSILON ? 0.L : ac0 / c63 (ac);
+  ac0 = b62 (tb) - a63 (ac) * b32 (tb) - a64 (ac) * b42 (tb)
+    - a65 (ac) * b52 (tb);
+  a62 (ac) = fabsl (ac0) < LDBL_EPSILON ? 0.L : ac0 / c62 (ac);
+  ac0 = b61 (tb) - a62 (ac) * b21 (tb) - a63 (ac) * b31 (tb)
+    - a64 (ac) * b41 (tb) - a65 (ac) * b51 (tb);
+  a61 (ac) = fabsl (ac0) < LDBL_EPSILON ? 0.L : ac0 / c61 (ac);
+  a60 (ac) = 1.L - a61 (ac) - a62 (ac) - a63 (ac) - a64 (ac) - a65 (ac);
+  ac0 = b60 (tb) - a61 (ac) * t1 (tb) - a62 (ac) * b20 (tb)
+    - a63 (ac) * b30 (tb) - a64 (ac) * b40 (tb) - a65 (ac) * b50 (tb);
+  c60 (ac) = fabsl (ac0) < LDBL_EPSILON ? 0.L : ac0 / a60 (ac);
+#if DEBUG_RK
+  fprintf (stderr, "rk_ac_6: a60=%Lg c60=%Lg\n", a60 (ac), c60 (ac));
+  fprintf (stderr, "rk_ac_6: a61=%Lg c61=%Lg\n", a61 (ac), c61 (ac));
+  fprintf (stderr, "rk_ac_6: a62=%Lg c62=%Lg\n", a62 (ac), c62 (ac));
+  fprintf (stderr, "rk_ac_6: a63=%Lg c63=%Lg\n", a63 (ac), c63 (ac));
+  fprintf (stderr, "rk_ac_6: a64=%Lg c64=%Lg\n", a64 (ac), c64 (ac));
+  fprintf (stderr, "rk_ac_6: a65=%Lg c65=%Lg\n", a65 (ac), c65 (ac));
+  fprintf (stderr, "rk_ac_6: end\n");
 #endif
 }
 
@@ -708,14 +845,129 @@ end:
 }
 
 /**
+ * Function to get the objective function of 6 steps Runge-Kutta methods.
+ *
+ * \return objective function value.
+ */
+long double
+rk_objective_ac_6 (RK * rk)     ///< RK struct.
+{
+  long double *tb, *ac;
+  long double k;
+#if DEBUG_RK
+  fprintf (stderr, "rk_objective ac_6: start\n");
+#endif
+  tb = rk->tb->coefficient;
+  ac = rk->ac->coefficient;
+  k = fminl (0.L, a20 (ac));
+  if (a21 (ac) < 0.L)
+    k += a21 (ac);
+  if (a30 (ac) < 0.L)
+    k += a30 (ac);
+  if (a31 (ac) < 0.L)
+    k += a31 (ac);
+  if (a32 (ac) < 0.L)
+    k += a32 (ac);
+  if (a40 (ac) < 0.L)
+    k += a40 (ac);
+  if (a41 (ac) < 0.L)
+    k += a41 (ac);
+  if (a42 (ac) < 0.L)
+    k += a42 (ac);
+  if (a43 (ac) < 0.L)
+    k += a43 (ac);
+  if (a50 (ac) < 0.L)
+    k += a50 (ac);
+  if (a51 (ac) < 0.L)
+    k += a51 (ac);
+  if (a52 (ac) < 0.L)
+    k += a52 (ac);
+  if (a53 (ac) < 0.L)
+    k += a53 (ac);
+  if (a54 (ac) < 0.L)
+    k += a54 (ac);
+  if (a60 (ac) < 0.L)
+    k += a60 (ac);
+  if (a61 (ac) < 0.L)
+    k += a61 (ac);
+  if (a62 (ac) < 0.L)
+    k += a62 (ac);
+  if (a63 (ac) < 0.L)
+    k += a63 (ac);
+  if (a64 (ac) < 0.L)
+    k += a64 (ac);
+  if (a65 (ac) < 0.L)
+    k += a65 (ac);
+  if (k < 0.L)
+    {
+      k = 20.L - k;
+      goto end;
+    }
+  k = fminl (0.L, c20 (ac));
+  if (c21 (ac) < 0.L)
+    k += c21 (ac);
+  if (c30 (ac) < 0.L)
+    k += c30 (ac);
+  if (c31 (ac) < 0.L)
+    k += c31 (ac);
+  if (c32 (ac) < 0.L)
+    k += c32 (ac);
+  if (c40 (ac) < 0.L)
+    k += c40 (ac);
+  if (c41 (ac) < 0.L)
+    k += c41 (ac);
+  if (c42 (ac) < 0.L)
+    k += c42 (ac);
+  if (c43 (ac) < 0.L)
+    k += c43 (ac);
+  if (c50 (ac) < 0.L)
+    k += c50 (ac);
+  if (c51 (ac) < 0.L)
+    k += c51 (ac);
+  if (c52 (ac) < 0.L)
+    k += c52 (ac);
+  if (c53 (ac) < 0.L)
+    k += c53 (ac);
+  if (c54 (ac) < 0.L)
+    k += c54 (ac);
+  if (c60 (ac) < 0.L)
+    k += c60 (ac);
+  if (c61 (ac) < 0.L)
+    k += c61 (ac);
+  if (c62 (ac) < 0.L)
+    k += c62 (ac);
+  if (c63 (ac) < 0.L)
+    k += c63 (ac);
+  if (c64 (ac) < 0.L)
+    k += c64 (ac);
+  if (c65 (ac) < 0.L)
+    k += c65 (ac);
+  if (k < 0.L)
+    {
+      k = 10.L - k;
+      goto end;
+    }
+  k = 1.L / rk_cfl_6 (tb, ac);
+end:
+#if DEBUG_RK
+  fprintf (stderr, "rk_objective ac_6: objective=%Lg\n", k);
+  fprintf (stderr, "rk_objective ac_6: end\n");
+#endif
+  return k;
+}
+
+/**
  * Function to init required variables on a RK struct data.
  */
 void
 rk_init (RK * rk,               ///< RK struct.
-         gsl_rng * rng)         ///< GSL pseudo-random number generator struct.
+         gsl_rng * rng,         ///< GSL pseudo-random number generator struct.
+				 unsigned int strong)   ///< 1 on strong stable, 0 on simple stable.
 {
+	rk->strong = strong;
   optimize_init (rk->tb, rng);
-  optimize_init (rk->ac0, rng);
+	if (strong)
+    optimize_init (rk->ac0, rng);
 }
 
 /**
@@ -724,8 +976,31 @@ rk_init (RK * rk,               ///< RK struct.
 void
 rk_delete (RK * rk)             ///< RK struct.
 {
-  optimize_delete (rk->ac0);
+	if (rk->strong)
+    optimize_delete (rk->ac0);
   optimize_delete (rk->tb);
+}
+
+/**
+ * Function to create a RK struct data on simple stable methods.
+ */
+void
+rk_create_simple (RK * rk,             ///< RK struct.
+           long double *optimal,
+           ///< pointer to the optimal objective function value.
+           long double *value_optimal,
+           ///< array of optimal freedom degree values.
+           long double convergence_factor,      ///< convergence factor.
+           long double search_factor,
+           ///< factor to the coordinates search optimization algorithm.
+           unsigned long long int nsimulations,
+///< number of total simulations on Monte-Carlo optimization algorithm.
+           unsigned int nsearch,
+///< number of steps on coordinates search optimization algorithm.
+           unsigned int niterations)    ///< iterations number.
+{
+  optimize_create (rk->tb, optimal, value_optimal, convergence_factor,
+                   search_factor, nsimulations, nsearch, niterations);
 }
 
 /**
@@ -1136,7 +1411,7 @@ rk_bucle_tb (RK * rk)           ///< RK struct.
   long double *vo;
   MPI_Status status;
 #endif
-  unsigned int i, j, nfree, nfree2;
+  unsigned int i, j, nfree, nfree2, strong;
 
 #if DEBUG_RK
   fprintf (stderr, "rk_bucle_tb: start\n");
@@ -1148,8 +1423,14 @@ rk_bucle_tb (RK * rk)           ///< RK struct.
 #endif
   tb = rk->tb;
   nfree = tb->nfree;
-  ac = rk->ac0;
-  nfree2 = ac->nfree;
+	strong = rk->strong;
+	if (strong)
+	  {
+      ac = rk->ac0;
+      nfree2 = ac->nfree;
+		}
+	else
+		nfree2 = 0;
 #if HAVE_MPI
   vo = (long double *) alloca ((1 + nfree + nfree2) * sizeof (long double));
 #endif
@@ -1162,8 +1443,9 @@ rk_bucle_tb (RK * rk)           ///< RK struct.
   *tb->optimal = INFINITY;
   for (i = 0; i < nfree; ++i)
     tb->value_optimal[i] = tb->minimum[i] + 0.5L * tb->interval[i];
-  for (i = 0; i < nfree2; ++i)
-    ac->value_optimal[i] = ac->minimum[i] + 0.5L * ac->interval[i];
+	if (strong)
+    for (i = 0; i < nfree2; ++i)
+      ac->value_optimal[i] = ac->minimum[i] + 0.5L * ac->interval[i];
 
   // Iterate
 #if DEBUG_RK
@@ -1193,8 +1475,9 @@ rk_bucle_tb (RK * rk)           ///< RK struct.
           // Secondary nodes send the optimal coefficients to the master node
           vo[0] = *tb->optimal;
           memcpy (vo + 1, tb->value_optimal, nfree * sizeof (long double));
-          memcpy (vo + 1 + nfree, ac->value_optimal,
-                  nfree2 * sizeof (long double));
+					if (strong)
+            memcpy (vo + 1 + nfree, ac->value_optimal,
+                    nfree2 * sizeof (long double));
           MPI_Send (vo, 1 + nfree + nfree2, MPI_LONG_DOUBLE, 0, 1,
                     MPI_COMM_WORLD);
 
@@ -1203,8 +1486,9 @@ rk_bucle_tb (RK * rk)           ///< RK struct.
                     MPI_COMM_WORLD, &status);
           *tb->optimal = *ac->optimal = vo[0];
           memcpy (tb->value_optimal, vo + 1, nfree * sizeof (long double));
-          memcpy (ac->value_optimal, vo + 1 + nfree,
-                  nfree2 * sizeof (long double));
+					if (strong)
+            memcpy (ac->value_optimal, vo + 1 + nfree,
+                    nfree2 * sizeof (long double));
         }
       else
         {
@@ -1224,16 +1508,18 @@ rk_bucle_tb (RK * rk)           ///< RK struct.
                   *tb->optimal = *ac->optimal = vo[0];
                   memcpy (tb->value_optimal, vo + 1,
                           nfree * sizeof (long double));
-                  memcpy (ac->value_optimal, vo + 1 + nfree,
-                          nfree2 * sizeof (long double));
+									if (strong)
+                    memcpy (ac->value_optimal, vo + 1 + nfree,
+                            nfree2 * sizeof (long double));
                 }
             }
 
           // Master node sends the optimal coefficients to secondary nodes
           vo[0] = *tb->optimal;
           memcpy (vo + 1, tb->value_optimal, nfree * sizeof (long double));
-          memcpy (vo + 1 + nfree, ac->value_optimal,
-                  nfree2 * sizeof (long double));
+					if (strong)
+            memcpy (vo + 1 + nfree, ac->value_optimal,
+                    nfree2 * sizeof (long double));
           for (j = 1; j < nnodes; ++i)
             MPI_Send (vo, 1 + nfree + nfree2, MPI_LONG_DOUBLE, j, 1,
                       MPI_COMM_WORLD);
@@ -1244,7 +1530,8 @@ rk_bucle_tb (RK * rk)           ///< RK struct.
       // Print the optimal coefficients
 #if DEBUG_RK
       optimize_print_random (tb, stderr);
-      optimize_print_random (ac, stderr);
+			if (strong)
+        optimize_print_random (ac, stderr);
       fprintf (stderr, "optimal=%.19Le\n", *tb->optimal);
 #endif
 
@@ -1418,10 +1705,36 @@ rk_select (RK * rk,             ///< RK struct.
           return 0;
         }
       break;
+    case 6:
+      tb->print = (OptimizePrint) rk_print_6;
+      ac->minimum0 = minimum_ac_rk_6;
+      ac->interval0 = interval_ac_rk_6;
+      ac->random_type = random_ac_rk_6;
+      ac->method = (OptimizeMethod) rk_ac_6;
+      ac->objective = (OptimizeObjective) rk_objective_ac_6;
+      switch (order)
+        {
+        case 2:
+          tb->nfree = 19;
+          tb->print_maxima = rk_print_maxima_6_2;
+          tb->minimum0 = minimum_tb_6_2;
+          tb->interval0 = interval_tb_6_2;
+          tb->random_type = random_tb_6_2;
+          tb->method = (OptimizeMethod) rk_tb_6_2;
+          tb->objective = (OptimizeObjective) rk_objective_tb_6_2;
+          break;
+        default:
+          printf ("Bad order\n");
+          return 0;
+        }
+      break;
     default:
       printf ("Bad steps number\n");
       return 0;
     }
+#if RK_ACCURATE
+	--tb->nfree;
+#endif
 
 #if DEBUG_RK
   fprintf (stderr, "rk_select: end\n");

@@ -35,6 +35,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef RK__H
 #define RK__H 1
 
+#define RK_ACCURATE 1
+///< Macro to search more accurate methods in functions depending only in time.
+
 /**
  * \struct RK
  * \brief struct to define Runge-Kutta data and methods.
@@ -47,6 +50,7 @@ typedef struct
 	///< Optimize struct to define a-c coefficients data and methods.
 	Optimize ac0[1];
 	///< Optimize struct to define initial a-c coefficients data and methods.
+	unsigned int strong; ///< Boolean to cope with strong stability.
 } RK;
 
 #define RUNGE_KUTTA(o) ((Optimize *)((Optimize *)o)->data)
@@ -64,12 +68,19 @@ typedef struct
 #define b41(x) x[10]            ///< b41 Runge-Kutta coefficient.
 #define b42(x) x[11]            ///< b42 Runge-Kutta coefficient.
 #define b43(x) x[12]            ///< b43 Runge-Kutta coefficient.
-#define t5(x) x[13]              ///< t4 Runge-Kutta coefficient.
-#define b50(x) x[14]             ///< b40 Runge-Kutta coefficient.
-#define b51(x) x[15]            ///< b41 Runge-Kutta coefficient.
-#define b52(x) x[16]            ///< b42 Runge-Kutta coefficient.
-#define b53(x) x[17]            ///< b43 Runge-Kutta coefficient.
-#define b54(x) x[18]            ///< b43 Runge-Kutta coefficient.
+#define t5(x) x[13]             ///< t5 Runge-Kutta coefficient.
+#define b50(x) x[14]            ///< b50 Runge-Kutta coefficient.
+#define b51(x) x[15]            ///< b51 Runge-Kutta coefficient.
+#define b52(x) x[16]            ///< b52 Runge-Kutta coefficient.
+#define b53(x) x[17]            ///< b53 Runge-Kutta coefficient.
+#define b54(x) x[18]            ///< b53 Runge-Kutta coefficient.
+#define t6(x) x[19]             ///< t6 Runge-Kutta coefficient.
+#define b60(x) x[20]            ///< b60 Runge-Kutta coefficient.
+#define b61(x) x[21]            ///< b61 Runge-Kutta coefficient.
+#define b62(x) x[22]            ///< b62 Runge-Kutta coefficient.
+#define b63(x) x[23]            ///< b63 Runge-Kutta coefficient.
+#define b64(x) x[24]            ///< b64 Runge-Kutta coefficient.
+#define b65(x) x[25]            ///< b65 Runge-Kutta coefficient.
 #define a20(x) x[0]             ///< a20 Runge-Kutta coefficient.
 #define a21(x) x[1]             ///< a21 Runge-Kutta coefficient.
 #define c20(x) x[2]             ///< c20 Runge-Kutta coefficient.
@@ -98,6 +109,18 @@ typedef struct
 #define c52(x) x[25]            ///< c52 Runge-Kutta coefficient.
 #define c53(x) x[26]            ///< c53 Runge-Kutta coefficient.
 #define c54(x) x[27]            ///< c54 Runge-Kutta coefficient.
+#define a60(x) x[28]            ///< a60 Runge-Kutta coefficient.
+#define a61(x) x[29]            ///< a61 Runge-Kutta coefficient.
+#define a62(x) x[30]            ///< a62 Runge-Kutta coefficient.
+#define a63(x) x[31]            ///< a63 Runge-Kutta coefficient.
+#define a64(x) x[32]            ///< a64 Runge-Kutta coefficient.
+#define a65(x) x[33]            ///< a65 Runge-Kutta coefficient.
+#define c60(x) x[34]            ///< c60 Runge-Kutta coefficient.
+#define c61(x) x[35]            ///< c61 Runge-Kutta coefficient.
+#define c62(x) x[36]            ///< c62 Runge-Kutta coefficient.
+#define c63(x) x[37]            ///< c63 Runge-Kutta coefficient.
+#define c64(x) x[38]            ///< c64 Runge-Kutta coefficient.
+#define c65(x) x[39]            ///< c65 Runge-Kutta coefficient.
 
 extern const long double minimum_ac_rk_2[1];
 extern const long double interval_ac_rk_2[1];
@@ -111,29 +134,45 @@ extern const unsigned int random_ac_rk_4[6];
 extern const long double minimum_ac_rk_5[10];
 extern const long double interval_ac_rk_5[10];
 extern const unsigned int random_ac_rk_5[10];
+extern const long double minimum_ac_rk_6[15];
+extern const long double interval_ac_rk_6[15];
+extern const unsigned int random_ac_rk_6[15];
 
 void rk_print_tb_2 (long double * tb, char *label, FILE *file);
 void rk_print_tb_3 (long double * tb, char *label, FILE *file);
 void rk_print_tb_4 (long double * tb, char *label, FILE *file);
 void rk_print_tb_5 (long double * tb, char *label, FILE *file);
+void rk_print_tb_6 (long double * tb, char *label, FILE *file);
 void rk_print_2 (RK * rk, FILE * file);
 void rk_print_3 (RK * rk, FILE * file);
 void rk_print_4 (RK * rk, FILE * file);
 void rk_print_5 (RK * rk, FILE * file);
+void rk_print_6 (RK * rk, FILE * file);
 void rk_print_maxima_2 (FILE * file);
 void rk_print_maxima_3 (FILE * file);
 void rk_print_maxima_4 (FILE * file);
 void rk_print_maxima_5 (FILE * file);
+void rk_print_maxima_6 (FILE * file);
 void rk_ac_2 (RK * rk);
 void rk_ac_3 (RK * rk);
 void rk_ac_4 (RK * rk);
 void rk_ac_5 (RK * rk);
+void rk_ac_6 (RK * rk);
 long double rk_objective_ac_2 (RK * rk);
 long double rk_objective_ac_3 (RK * rk);
 long double rk_objective_ac_4 (RK * rk);
 long double rk_objective_ac_5 (RK * rk);
-void rk_init (RK * rk, gsl_rng * rng);
+long double rk_objective_ac_6 (RK * rk);
+void rk_init (RK * rk, gsl_rng * rng, unsigned int strong);
 void rk_delete (RK * rk);
+void rk_create_simple (RK * rk,
+                      long double *optimal,
+                      long double *value_optimal,
+                      long double convergence_factor,
+                      long double search_factor,
+                      unsigned long long int nsimulations,
+                      unsigned int nsearch, 
+											unsigned int niterations);
 void rk_create (RK * rk,
                       long double *optimal,
                       long double *value_optimal,
@@ -195,6 +234,16 @@ rk_b_5 (long double *tb)        ///< array of Runge-Kutta coefficients.
 }
 
 /**
+ * Function to get \f$b_{i0}\f$ coefficients of the 6 steps Runge-Kutta methods.
+ */
+static inline void
+rk_b_6 (long double *tb)        ///< array of Runge-Kutta coefficients.
+{
+  rk_b_5 (tb);
+  b60 (tb) = t6 (tb) - b61 (tb) - b62 (tb) - b63 (tb) - b64 (tb) - b65 (tb);
+}
+
+/**
  * Function to calculate the maximum CFL number in 2 steps Runge-Kutta.
  *
  * \return CFL value.
@@ -247,6 +296,24 @@ rk_cfl_5 (long double *tb,      ///< array of Runge-Kutta t-b coefficients.
            1.L / fmaxl (c50 (ac),
 									      fmaxl (c51 (ac), 
 															 fmaxl (c52 (ac), fmaxl (c53 (ac), c54 (ac))))));
+}
+
+/**
+ * Function to calculate the maximum CFL number in 5 steps Runge-Kutta.
+ *
+ * \return CFL value.
+ */
+static inline long double
+rk_cfl_6 (long double *tb,      ///< array of Runge-Kutta t-b coefficients.
+          long double *ac)      ///< array of Runge-Kutta a-c coefficients.
+{
+  return 
+		fminl (rk_cfl_5 (tb, ac),
+           1.L / fmaxl (c60 (ac),
+									      fmaxl (c61 (ac), 
+															 fmaxl (c62 (ac),
+																      fmaxl (c63 (ac), 
+																				     fmaxl (c64 (ac), c65 (ac)))))));
 }
 
 #endif

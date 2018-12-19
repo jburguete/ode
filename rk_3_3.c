@@ -139,8 +139,11 @@ rk_objective_tb_3_3 (RK * rk) ///< RK struct.
 #if DEBUG_RK_3_3
 	fprintf (stderr, "rk_objective_tb_3_3: optimal=%Lg\n", o);
 #endif
-	rk_bucle_ac (rk);
-	o = fminl (o, *rk->ac0->optimal);
+	if (rk->strong)
+	  {
+			rk_bucle_ac (rk);
+			o = fminl (o, *rk->ac0->optimal);
+		}
 end:
 #if DEBUG_RK_3_3
 	fprintf (stderr, "rk_objective_tb_3_3: optimal=%Lg\n", o);

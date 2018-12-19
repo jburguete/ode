@@ -149,8 +149,11 @@ rk_objective_tb_4_4 (RK * rk) ///< RK struct.
 			goto end;
 		}
 	o = 30.L + fmaxl (1.L, fmaxl (t1 (tb), t2 (tb)));
-	rk_bucle_ac (rk);
-	o = fminl (o, *rk->ac0->optimal);
+	if (rk->strong)
+	  {
+			rk_bucle_ac (rk);
+			o = fminl (o, *rk->ac0->optimal);
+		}
 end:
 #if DEBUG_RK_4_4
 	fprintf (stderr, "rk_objective_tb_4_4: optimal=%Lg\n", o);

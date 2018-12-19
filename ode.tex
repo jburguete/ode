@@ -353,7 +353,7 @@ coefficient matrices of table~\ref{TableRKiI}.
 		$c_{i,j}$ \\ \hline
 		1
 	\end{tabular}
-	\caption{One step first order Runge-Kutta method coefficients.
+	\caption{Coefficients of the one step first order Runge-Kutta method (RK-1).
 		\label{TableRKiI}}
 \end{table}
 This a first order method with strong and simple stability for $k_t\leq1$.
@@ -382,8 +382,8 @@ is second order and simple and strong stable for $k_t\leq1$.
 		2/3 \\
 		0 & 2
 	\end{tabular}
-	\caption{Coefficients of the rwo steps second order Runge-Kutta method optime
-		in accuracy.\label{TableRKiiIIa}}
+	\caption{Coefficients of the two steps second order Runge-Kutta method optime
+		in accuracy (RK-2(3)).\label{TableRKiiIIa}}
 \end{table}
 \begin{table}[ht]
 	\centering
@@ -403,7 +403,7 @@ is second order and simple and strong stable for $k_t\leq1$.
 		0 & 1
 	\end{tabular}
 	\caption{Coefficients of the two steps second order Runge-Kutta method optime
-		in strong stability.\label{TableRKiiIIb}}
+		in strong stability (RK-2).\label{TableRKiiIIb}}
 \end{table}
 
 \subsection{Three steps third order}
@@ -432,8 +432,8 @@ simple and strong stable for $k_t\leq1$.
 		0 & 1 \\
 		0 & 0 & 1
 	\end{tabular}
-	\caption{Coefficients of the three steps third order Runge-Kutta method.
-		\label{TableRKiiiIII}}
+	\caption{Coefficients of the three steps third order Runge-Kutta method
+		(RK-3(4)).\label{TableRKiiiIII}}
 \end{table}
 
 \subsection{Four steps fourth order}
@@ -450,11 +450,88 @@ They are not fourth order strong stable Runge-Kutta methods of four steps.
 		1 & 0 & 0 & 1 \\
 		1 & 1/6 & 1/3 & 1/3 & 1/6
 	\end{tabular}
-	\caption{Coefficients of the four steps fourth order Runge-Kutta method.
-		\label{TableRKivIV}}
+	\caption{Coefficients of the four steps fourth order Runge-Kutta method
+		(RK-4).\label{TableRKivIV}}
 \end{table}
 
 \section{Runge-Kutta pairs}
+
+\EQ{\hat{u}_i=u_0+h\,\hat{b}_{i,j}\,f_j.}{EqRKpair}
+
+\EQ{E_i=\hat{u}_i-u_i=h\,\PA{\hat{b}-b}_{i,j}\,f_j.}{EqRKpairE}
+
+\subsection{Two steps first-second order pairs}
+
+The two second order methods defined by the coefficients matrices of
+tables~\ref{TableRKiiIIa} and~\ref{TableRKiiIIb} can be combined con the
+Euler's method defined in table~\ref{TableRKiI} to build the two steps second
+order Runge-Kutta pairs defined in tables~\ref{TableRKIiiIIa}
+and~\ref{TableRKIiiIIb}.
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{c|cc}
+		$d_{i}$ & $b_{i,j}$ \\ \hline
+		2/3 & 2/3 \\
+		1 & 1/4 & 3/4 \\ \hline
+		$\hat{b}_{2,j}$ & 1 & 0 \\ \hline
+		$e_{2,j}$ & 3/4 & -3/4
+	\end{tabular}
+	\caption{Coefficients of the two steps first-second order Runge-Kutta pair
+		optime in accuracy (RK-1-2(3)).\label{TableRKIiiIIa}}
+\end{table}
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{c|cc}
+		$d_{i}$ & $b_{i,j}$ \\ \hline
+		1 & 1 \\
+		1 & 1/2 & 1/2 \\ \hline
+		$\hat{b}_{2,j}$ & 1 & 0 \\ \hline
+		$e_{2,j}$ & 1/2 & -1/2
+	\end{tabular}
+	\caption{Coefficients of the two steps first-second order Runge-Kutta pair
+		optime in strong stability (RK-1-2).\label{TableRKIiiIIb}}
+\end{table}
+
+\subsection{Three steps second-third order pair}
+
+The three steps third order Runge-Kutta defined in table~\ref{TableRKiiiIII}
+can be combined with the second order defined in table~\ref{TableRKiiIIb} to
+produce the three steps second-third order pair defined in
+table~\ref{TableRKIIiiiIII}.
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{c|ccc}
+		$d_{i}$ & $b_{i,j}$ \\ \hline
+		1 & 1 \\
+		1/2 & 1/4 & 1/4 \\
+		1 & 1/6 & 1/6 & 2/3 \\ \hline
+		$\hat{b}_{3,j}$ & 1/2 & 1/2 & 0 \\ \hline
+		$e_{3,j}$ & 1/3 & 1/3 & -2/3
+	\end{tabular}
+	\caption{Coefficients of the three steps second-third order Runge-Kutta pair
+		(RK-2-3(4)).\label{TableRKIIiiiIII}}
+\end{table}
+
+\subsection{Five steps third-fourth order pair}
+
+It is not possible to build a four steps third-fourth order pair but they are
+infinity third-fourth order pairs of five steps. The defined in
+table~\ref{TableRKIIIvIV} is moreover simple stable for $k_t\leq1$.
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{c|ccccc}
+		$d_{i}$ & $b_{i,j}$ \\ \hline
+		2/5 & 2/5 \\
+		1/2 & 0 & 1/2 \\
+		1 & 1/10 & 0 & 9/10 \\
+		3/5 & 117/1250 & 39/125 & 183/1250 & 6/125 \\
+		1 & 73/468 & 125/468 & 2/13 & 73/468 & 125/468 \\ \hline
+		$\hat{b}_{3,j}$ & 7/52 & 125/468 & 16/39 & 22/117 & 0 \\ \hline
+		$e_{3,j}$ & -5/234 & 0 & 10/39 & 5/156 & -125/468
+	\end{tabular}
+	\caption{Coefficients of the five steps third-fourth order Runge-Kutta pair
+		(RK-3-4).\label{TableRKIIIvIV}}
+\end{table}
 
 \section{Multi-steps methods}
 
