@@ -59,20 +59,34 @@ const unsigned int random_tb_4_4[2] = { 2, 2 };
 
 /**
  * Function to print a maxima format file to check the accuracy order of a 4
- * steps 4th order Runge-Kutta method.
+ * steps 4th order Runge-Kutta simple stable method.
  */
 void
-rk_print_maxima_4_4 (FILE * file,       ///< file.
-                     unsigned int nsteps __attribute__ ((unused)),
-                     ///< steps number.
-                     unsigned int order __attribute__ ((unused)))
-  ///< accuracy order.
+tb_print_maxima_4_4 (FILE * file,       ///< file.
+                     unsigned int nsteps,       ///< steps number.
+                     unsigned int order)        ///< accuracy order.
 {
-  rk_print_maxima_4_3 (file, nsteps, order);
+  tb_print_maxima_4_3 (file, nsteps, order);
   fprintf (file, "b43*b32*b21*t1-1/24;\n");
   fprintf (file, "b42*b21*t1^2+b43*(b31*t1^2+b32*t2^2)-1/12;\n");
   fprintf (file, "b42*t2*b21*t1+b43*t3*(b31*t1+b32*t2)-1/8;\n");
   fprintf (file, "b41*t1^3+b42*t2^3+b43*t3^3-1/4;\n");
+#if RK_ACCURATE
+  fprintf (file, "b41*t1^4+b42*t2^4+b43*t3^4-1/5;\n");
+#endif
+}
+
+/**
+ * Function to print a maxima format file to check the accuracy order of a 4
+ * steps 4th order Runge-Kutta method.
+ */
+void
+rk_print_maxima_4_4 (FILE * file,       ///< file.
+                     unsigned int nsteps,       ///< steps number.
+                     unsigned int order)        ///< accuracy order.
+{
+  tb_print_maxima_4_4 (file, nsteps, order);
+  rk_print_maxima_4 (file);
 }
 
 /**
@@ -89,8 +103,14 @@ rk_tb_4_4 (Optimize * optimize) ///< Optimize struct.
   tb = optimize->coefficient;
   r = optimize->random_data;
   t1 (tb) = r[0];
+#if RK_ACCURATE
+  t2 (tb) = 0.5L * (t1 (tb) - 0.6L) / (t1 (tb) - 0.5L);
+#else
   t2 (tb) = r[1];
-  t4 (tb) = t3 (tb) = 1.L;
+#endif
+  t4 (tb) = 1.L;
+  t3 (tb) = (0.2L - 0.25L * t1 (tb) - (0.25L - 1.L / 3.L * t1 (tb)) * t2 (tb))
+    / (0.25L - 1.L / 3.L * t1 (tb) - (1.L / 3.L - 0.5L * t1 (tb)) * t2 (tb));
   b42 (tb) = (1.L / 12.L - 1.L / 6.L * t1 (tb))
     / (t2 (tb) * (t2 (tb) - t1 (tb)) * (1.L - t2 (tb)));
   b43 (tb) = (1.L / 3.L - 0.5L * t1 (tb)
@@ -120,8 +140,9 @@ rk_objective_tb_4_4 (RK * rk)   ///< RK struct.
   fprintf (stderr, "rk_objective_tb_4_4: start\n");
 #endif
   tb = rk->tb->coefficient;
-  if (isnan (b21 (tb)) || isnan (b31 (tb)) || isnan (b32 (tb))
-      || isnan (b41 (tb)) || isnan (b42 (tb)) || isnan (b43 (tb)))
+  if (isnan (t3 (tb)) || isnan (b21 (tb)) || isnan (b31 (tb))
+      || isnan (b32 (tb)) || isnan (b41 (tb)) || isnan (b42 (tb))
+      || isnan (b43 (tb)))
     {
       o = INFINITY;
       goto end;
@@ -143,12 +164,19 @@ rk_objective_tb_4_4 (RK * rk)   ///< RK struct.
     o += b42 (tb);
   if (b43 (tb) < 0.L)
     o += b43 (tb);
+#if RK_ACCURATE
+  if (isnan (t2 (tb)))
+    {
+      o = INFINITY;
+      goto end;
+    }
+#endif
   if (o < 0.L)
     {
       o = 40.L - o;
       goto end;
     }
-  o = 30.L + fmaxl (1.L, fmaxl (t1 (tb), t2 (tb)));
+  o = 30.L + fmaxl (1.L, fmaxl (t1 (tb), fmaxl (t2 (tb), t3 (tb))));
   if (rk->strong)
     {
       rk_bucle_ac (rk);

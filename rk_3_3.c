@@ -59,10 +59,10 @@ const unsigned int random_tb_3_3[2] = { 2, 2 };
 
 /**
  * Function to print a maxima format file to check the accuracy order of a 3
- * steps 3rd order Runge-Kutta method.
+ * steps 3rd order Runge-Kutta simple stable method.
  */
 void
-rk_print_maxima_3_3 (FILE * file,       ///< file.
+tb_print_maxima_3_3 (FILE * file,       ///< file.
                      unsigned int nsteps __attribute__ ((unused)),
                      ///< steps number.
                      unsigned int order __attribute__ ((unused)))
@@ -72,6 +72,21 @@ rk_print_maxima_3_3 (FILE * file,       ///< file.
   fprintf (file, "b31*t1+b32*t2-1/2;\n");
   fprintf (file, "b31*t1^2+b32*t2^2-1/3;\n");
   fprintf (file, "b32*b21*t1-1/6;\n");
+#if RK_ACCURATE
+  fprintf (file, "b31*t1^3+b32*t2^3-1/4;\n");
+#endif
+}
+
+/**
+ * Function to print a maxima format file to check the accuracy order of a 3
+ * steps 3rd order Runge-Kutta method.
+ */
+void
+rk_print_maxima_3_3 (FILE * file,       ///< file.
+                     unsigned int nsteps,       ///< steps number.
+                     unsigned int order)        ///< accuracy order.
+{
+  tb_print_maxima_3_3 (file, nsteps, order);
   rk_print_maxima_3 (file);
 }
 
@@ -89,7 +104,11 @@ rk_tb_3_3 (Optimize * optimize) ///< Optimize struct.
   tb = optimize->coefficient;
   r = optimize->random_data;
   t1 (tb) = r[0];
+#if RK_ACCURATE
+  t2 (tb) = 2.L / 3.L * (t1 (tb) - 0.75L) / (t1 (tb) - 2.L / 3.L);
+#else
   t2 (tb) = r[1];
+#endif
   t3 (tb) = 1.L;
   b32 (tb) = (1.L / 3.L - 0.5L * t1 (tb)) / (t2 (tb) * (t2 (tb) - t1 (tb)));
   b31 (tb) = (1.L / 3.L - 0.5L * t2 (tb)) / (t1 (tb) * (t1 (tb) - t2 (tb)));
@@ -97,7 +116,7 @@ rk_tb_3_3 (Optimize * optimize) ///< Optimize struct.
   rk_b_3 (tb);
 #if DEBUG_RK_3_3
   rk_print_tb_3 (tb, "rk_tb_3_3", stderr);
-  fprintf (stderr, "rk_tb_3_2: end\n");
+  fprintf (stderr, "rk_tb_3_3: end\n");
 #endif
 }
 
@@ -130,6 +149,13 @@ rk_objective_tb_3_3 (RK * rk)   ///< RK struct.
     o += b31 (tb);
   if (b32 (tb) < 0.L)
     o += b32 (tb);
+#if RK_ACCURATE
+  if (isnan (t2 (tb)))
+    {
+      o = INFINITY;
+      goto end;
+    }
+#endif
   if (o < 0.L)
     {
       o = 40.L - o;

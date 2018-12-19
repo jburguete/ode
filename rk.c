@@ -964,12 +964,10 @@ end:
  */
 void
 rk_init (RK * rk,               ///< RK struct.
-         gsl_rng * rng,         ///< GSL pseudo-random number generator struct.
-         unsigned int strong)   ///< 1 on strong stable, 0 on simple stable.
+         gsl_rng * rng)         ///< GSL pseudo-random number generator struct.
 {
-  rk->strong = strong;
   optimize_init (rk->tb, rng);
-  if (strong)
+  if (rk->strong)
     optimize_init (rk->ac0, rng);
 }
 
@@ -1037,6 +1035,7 @@ rk_create (RK * rk,             ///< RK struct.
            unsigned int niterations,    ///< iterations number.
            unsigned int niterations2)   ///< 2nd iterations number.
 {
+  rk->strong = 1;
   optimize_create (rk->tb, optimal, value_optimal, convergence_factor,
                    search_factor, nsimulations, nsearch, niterations);
   optimize_create (rk->ac0, optimal2, value_optimal2, convergence_factor2,
@@ -1561,9 +1560,11 @@ rk_select (RK * rk,             ///< RK struct.
            unsigned int order)  ///< accuracy order.
 {
   Optimize *tb, *ac;
+  unsigned int strong;
 #if DEBUG_RK
   fprintf (stderr, "rk_select: start\n");
 #endif
+  strong = rk->strong;
   tb = rk->tb;
   tb->size = nsteps * (nsteps + 3) / 2 - 1;
   ac = rk->ac0;
@@ -1582,7 +1583,10 @@ rk_select (RK * rk,             ///< RK struct.
         {
         case 2:
           tb->nfree = 1;
-          tb->print_maxima = rk_print_maxima_2_2;
+          if (strong)
+            tb->print_maxima = rk_print_maxima_2_2;
+          else
+            tb->print_maxima = tb_print_maxima_2_2;
           tb->minimum0 = minimum_tb_2_2;
           tb->interval0 = interval_tb_2_2;
           tb->random_type = random_tb_2_2;
@@ -1605,7 +1609,10 @@ rk_select (RK * rk,             ///< RK struct.
         {
         case 2:
           tb->nfree = 4;
-          tb->print_maxima = rk_print_maxima_3_2;
+          if (strong)
+            tb->print_maxima = rk_print_maxima_3_2;
+          else
+            tb->print_maxima = tb_print_maxima_3_2;
           tb->minimum0 = minimum_tb_3_2;
           tb->interval0 = interval_tb_3_2;
           tb->random_type = random_tb_3_2;
@@ -1614,7 +1621,10 @@ rk_select (RK * rk,             ///< RK struct.
           break;
         case 3:
           tb->nfree = 2;
-          tb->print_maxima = rk_print_maxima_3_3;
+          if (strong)
+            tb->print_maxima = rk_print_maxima_3_3;
+          else
+            tb->print_maxima = tb_print_maxima_3_3;
           tb->minimum0 = minimum_tb_3_3;
           tb->interval0 = interval_tb_3_3;
           tb->random_type = random_tb_3_3;
@@ -1637,7 +1647,10 @@ rk_select (RK * rk,             ///< RK struct.
         {
         case 2:
           tb->nfree = 8;
-          tb->print_maxima = rk_print_maxima_4_2;
+          if (strong)
+            tb->print_maxima = rk_print_maxima_4_2;
+          else
+            tb->print_maxima = tb_print_maxima_4_2;
           tb->minimum0 = minimum_tb_4_2;
           tb->interval0 = interval_tb_4_2;
           tb->random_type = random_tb_4_2;
@@ -1646,7 +1659,10 @@ rk_select (RK * rk,             ///< RK struct.
           break;
         case 3:
           tb->nfree = 6;
-          tb->print_maxima = rk_print_maxima_4_3;
+          if (strong)
+            tb->print_maxima = rk_print_maxima_4_3;
+          else
+            tb->print_maxima = tb_print_maxima_4_3;
           tb->minimum0 = minimum_tb_4_3;
           tb->interval0 = interval_tb_4_3;
           tb->random_type = random_tb_4_3;
@@ -1655,7 +1671,10 @@ rk_select (RK * rk,             ///< RK struct.
           break;
         case 4:
           tb->nfree = 2;
-          tb->print_maxima = rk_print_maxima_4_4;
+          if (strong)
+            tb->print_maxima = rk_print_maxima_4_4;
+          else
+            tb->print_maxima = tb_print_maxima_4_4;
           tb->minimum0 = minimum_tb_4_4;
           tb->interval0 = interval_tb_4_4;
           tb->random_type = random_tb_4_4;

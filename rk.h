@@ -160,7 +160,7 @@ long double rk_objective_ac_3 (RK * rk);
 long double rk_objective_ac_4 (RK * rk);
 long double rk_objective_ac_5 (RK * rk);
 long double rk_objective_ac_6 (RK * rk);
-void rk_init (RK * rk, gsl_rng * rng, unsigned int strong);
+void rk_init (RK * rk, gsl_rng * rng);
 void rk_delete (RK * rk);
 void rk_create_simple (RK * rk,
                        long double *optimal,

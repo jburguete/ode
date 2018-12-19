@@ -38,6 +38,7 @@ extern const long double minimum_tb_2_2[1];
 extern const long double interval_tb_2_2[1];
 extern const unsigned int random_tb_2_2[1];
 
+void tb_print_maxima_2_2 (FILE * file, unsigned int nsteps, unsigned int order);
 void rk_print_maxima_2_2 (FILE * file, unsigned int nsteps, unsigned int order);
 void rk_tb_2_2 (Optimize * optimize);
 long double rk_objective_tb_2_2 (RK * rk);

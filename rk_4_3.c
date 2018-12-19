@@ -59,18 +59,32 @@ const unsigned int random_tb_4_3[6] = { 2, 2, 2, 2, 2, 2 };
 
 /**
  * Function to print a maxima format file to check the accuracy order of a 4
+ * steps 3rd order Runge-Kutta simple stable method.
+ */
+void
+tb_print_maxima_4_3 (FILE * file,       ///< file.
+                     unsigned int nsteps,       ///< steps number.
+                     unsigned int order)        ///< accuracy order.
+{
+  tb_print_maxima_4_2 (file, nsteps, order);
+  fprintf (file, "b42*b21*t1+b43*(b31*t1+b32*t2)-1/6;\n");
+  fprintf (file, "b41*t1^2+b42*t2^2+b43*t3^2-1/3;\n");
+#if RK_ACCURATE
+  fprintf (file, "b41*t1^3+b42*t2^3+b43*t3^3-1/4;\n");
+#endif
+}
+
+/**
+ * Function to print a maxima format file to check the accuracy order of a 4
  * steps 3rd order Runge-Kutta method.
  */
 void
 rk_print_maxima_4_3 (FILE * file,       ///< file.
-                     unsigned int nsteps __attribute__ ((unused)),
-                     ///< steps number.
-                     unsigned int order __attribute__ ((unused)))
-  ///< accuracy order.
+                     unsigned int nsteps,       ///< steps number.
+                     unsigned int order)        ///< accuracy order.
 {
-  rk_print_maxima_4_2 (file, nsteps, order);
-  fprintf (file, "b42*b21*t1+b43*(b31*t1+b32*t2)-1/6;\n");
-  fprintf (file, "b41*t1^2+b42*t2^2+b43*t3^2-1/3;\n");
+  tb_print_maxima_4_3 (file, nsteps, order);
+  rk_print_maxima_4 (file);
 }
 
 /**
@@ -91,7 +105,13 @@ rk_tb_4_3 (Optimize * optimize) ///< Optimize struct.
   b21 (tb) = r[2];
   t3 (tb) = r[3];
   b32 (tb) = r[4];
+#if RK_ACCURATE
+  b43 (tb) = (0.25L - 1.L / 3.L * t1 (tb)
+              - (1.L / 3.L - 0.5L * t1 (tb)) * t2 (tb))
+    / (t3 (tb) * (t3 (tb) - t2 (tb)) * (t3 (tb) - t1 (tb)));
+#else
   b43 (tb) = r[5];
+#endif
   t4 (tb) = 1.L;
   b42 (tb) = ((1.L / 3.L - b43 (tb) * sqr (t3 (tb)))
               - t1 (tb) * (0.5L - b43 (tb) * t3 (tb)))
@@ -136,6 +156,15 @@ rk_objective_tb_4_3 (RK * rk)   ///< RK struct.
     o += b41 (tb);
   if (b42 (tb) < 0.L)
     o += b42 (tb);
+#if RK_ACCURATE
+  if (isnan (b43 (tb)))
+    {
+      o = INFINITY;
+      goto end;
+    }
+  if (b43 (tb) < 0.L)
+    o += b43 (tb);
+#endif
   if (o < 0.L)
     {
       o = 40.L - o;

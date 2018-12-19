@@ -60,10 +60,10 @@ const unsigned int random_tb_4_2[8] = { 2, 2, 2, 2, 2, 2, 2, 2 };
 
 /**
  * Function to print a maxima format file to check the accuracy order of a 4
- * steps 2nd order Runge-Kutta method.
+ * steps 2nd order Runge-Kutta simple stable method.
  */
 void
-rk_print_maxima_4_2 (FILE * file,       ///< file.
+tb_print_maxima_4_2 (FILE * file,       ///< file.
                      unsigned int nsteps __attribute__ ((unused)),
                      ///< steps number.
                      unsigned int order __attribute__ ((unused)))
@@ -71,6 +71,22 @@ rk_print_maxima_4_2 (FILE * file,       ///< file.
 {
   fprintf (file, "b40+b41+b42+b43-1;\n");
   fprintf (file, "b41*t1+b42*t2+b43*t3-1/2;\n");
+#if RK_ACCURATE
+  fprintf (file, "b41*t1^2+b42*t2^2+b43*t3^2-1/3;\n");
+#endif
+}
+
+/**
+ * Function to print a maxima format file to check the accuracy order of a 4
+ * steps 2nd order Runge-Kutta method.
+ */
+void
+rk_print_maxima_4_2 (FILE * file,       ///< file.
+                     unsigned int nsteps,       ///< steps number.
+                     unsigned int order)        ///< accuracy order.
+{
+  tb_print_maxima_4_2 (file, nsteps, order);
+  rk_print_maxima_4 (file);
 }
 
 /**
@@ -93,7 +109,13 @@ rk_tb_4_2 (Optimize * optimize) ///< Optimize struct.
   b31 (tb) = r[4];
   b32 (tb) = r[5];
   b42 (tb) = r[6];
+#if RK_ACCURATE
+  b43 (tb) = ((1.L / 3.L - b42 (tb) * sqr (t2 (tb)))
+              - (0.5L - b42 (tb) * t2 (tb)) * t1 (tb))
+    / (t3 (tb) * (t3 (tb) - t1 (tb)));
+#else
   b43 (tb) = r[7];
+#endif
   t4 (tb) = 1.L;
   b41 (tb) = (0.5L - b42 (tb) * t2 (tb) - b43 (tb) * t3 (tb)) / t1 (tb);
   rk_b_4 (tb);
@@ -129,6 +151,15 @@ rk_objective_tb_4_2 (RK * rk)   ///< RK struct.
     o += b40 (tb);
   if (b41 (tb) < 0.L)
     o += b41 (tb);
+#if RK_ACCURATE
+  if (isnan (b43 (tb)))
+    {
+      o = INFINITY;
+      goto end;
+    }
+  if (b43 (tb) < 0.L)
+    o += b43 (tb);
+#endif
   if (o < 0.L)
     {
       o = 40.L - o;

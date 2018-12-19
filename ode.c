@@ -357,6 +357,7 @@ main (int argn,                 ///< arguments number.
 #endif
       // Create optimize data
       rk = (RK *) alloca (nthreads * sizeof (RK));
+      rk->strong = 1;
       if (!rk_select (rk, nsteps, order))
         return 4;
       tb = rk->tb;
@@ -374,7 +375,7 @@ main (int argn,                 ///< arguments number.
       for (i = 1; i < nthreads; ++i)
         memcpy (rk + i, rk, sizeof (RK));
       for (i = 0; i < nthreads; ++i)
-        rk_init (rk + i, rng[j + i], 1);
+        rk_init (rk + i, rng[j + i]);
 
       // Method bucle
       printf ("Optimize bucle\n");
@@ -444,6 +445,7 @@ main (int argn,                 ///< arguments number.
 #endif
       // Create optimize data
       rk = (RK *) alloca (nthreads * sizeof (RK));
+      rk->strong = 0;
       if (!rk_select (rk, nsteps, order))
         return 4;
       tb = rk->tb;
@@ -455,7 +457,7 @@ main (int argn,                 ///< arguments number.
       for (i = 1; i < nthreads; ++i)
         memcpy (rk + i, rk, sizeof (RK));
       for (i = 0; i < nthreads; ++i)
-        rk_init (rk + i, rng[j + i], 0);
+        rk_init (rk + i, rng[j + i]);
 
       // Method bucle
       printf ("Optimize bucle\n");
@@ -468,6 +470,7 @@ main (int argn,                 ///< arguments number.
       snprintf (buffer, 32, "rk-%u-%u.mc", nsteps, order);
       file = fopen (buffer, "w");
       tb->print ((Optimize *) rk, file);
+      tb->print_maxima (file, nsteps, order);
       fclose (file);
 #if PRINT_RANDOM
       fclose (file_random2);
