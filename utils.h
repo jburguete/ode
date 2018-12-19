@@ -40,16 +40,16 @@ extern GMutex mutex[1];
  * Function to print the random variables on a file.
  */
 static inline void
-print_random (long double *r, ///< random variables.
-		          unsigned int nfree, ///< number of freedom degrees.
-		          FILE *file) ///< file.
+print_random (long double *r,   ///< random variables.
+              unsigned int nfree,       ///< number of freedom degrees.
+              FILE * file)      ///< file.
 {
-	unsigned int i;
-	g_mutex_lock (mutex);
+  unsigned int i;
+  g_mutex_lock (mutex);
   for (i = 0; i < nfree; ++i)
-	  fprintf (file, "%.19Le ", r[i]);
-	fprintf (file, "\n");
-	g_mutex_unlock (mutex);
+    fprintf (file, "%.19Le ", r[i]);
+  fprintf (file, "\n");
+  g_mutex_unlock (mutex);
 }
 
 /**
@@ -279,7 +279,7 @@ solve_6 (long double *A,
   G[5] = A[0] * G[5] - A[5] * G[0];
   solve_5 (B + 1, C + 1, D + 1, E + 1, F + 1, G + 1);
   G[0] = (G[0] - B[0] * G[1] - C[0] * G[2] - D[0] * G[3] - E[0] * G[4]
-			    - F[0] * G[5]) / A[0];
+          - F[0] * G[5]) / A[0];
 #if EPSILON
   if (fabsl (G[0]) < LDBL_EPSILON)
     G[0] = 0.L;

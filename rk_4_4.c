@@ -43,19 +43,19 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "rk_4_3.h"
 #include "rk_4_4.h"
 
-#define DEBUG_RK_4_4 0 ///< macro to debug.
+#define DEBUG_RK_4_4 0          ///< macro to debug.
 
 ///> array of minimum freedom degree values for the t-b coefficients of the 4
 ///> steps 4th order Runge-Kutta method.
-const long double minimum_tb_4_4[2] = { 0.L, 0.L};
+const long double minimum_tb_4_4[2] = { 0.L, 0.L };
 
 ///> array of minimum freedom degree intervals for the t-b coefficients of the 4
 ///> steps 4th order Runge-Kutta method.
-const long double interval_tb_4_4[2] = { 1.L, 1.L};
+const long double interval_tb_4_4[2] = { 1.L, 1.L };
 
 ///> array of freedom degree random function types for the t-b coefficients of
 ///> the 4 steps 4th order Runge-Kutta method.
-const unsigned int random_tb_4_4[2] = { 2, 2};
+const unsigned int random_tb_4_4[2] = { 2, 2 };
 
 /**
  * Function to print a maxima format file to check the accuracy order of a 4
@@ -63,10 +63,10 @@ const unsigned int random_tb_4_4[2] = { 2, 2};
  */
 void
 rk_print_maxima_4_4 (FILE * file,       ///< file.
-		                 unsigned int nsteps __attribute__((unused)),
-										 ///< steps number.
-										 unsigned int order __attribute__((unused)))
-                     ///< accuracy order.
+                     unsigned int nsteps __attribute__ ((unused)),
+                     ///< steps number.
+                     unsigned int order __attribute__ ((unused)))
+  ///< accuracy order.
 {
   rk_print_maxima_4_3 (file, nsteps, order);
   fprintf (file, "b43*b32*b21*t1-1/24;\n");
@@ -80,29 +80,29 @@ rk_print_maxima_4_4 (FILE * file,       ///< file.
  * method.
  */
 void
-rk_tb_4_4 (Optimize * optimize)      ///< Optimize struct.
+rk_tb_4_4 (Optimize * optimize) ///< Optimize struct.
 {
-	long double *tb, *r;
+  long double *tb, *r;
 #if DEBUG_RK_4_4
-	fprintf (stderr, "rk_tb_4_4: start\n");
+  fprintf (stderr, "rk_tb_4_4: start\n");
 #endif
-	tb = optimize->coefficient;
-	r = optimize->random_data;
-	t1 (tb) = r[0];
-	t2 (tb) = r[1];
+  tb = optimize->coefficient;
+  r = optimize->random_data;
+  t1 (tb) = r[0];
+  t2 (tb) = r[1];
   t4 (tb) = t3 (tb) = 1.L;
   b42 (tb) = (1.L / 12.L - 1.L / 6.L * t1 (tb))
-		         / (t2 (tb) * (t2 (tb) - t1 (tb)) * (1.L - t2 (tb)));
-  b43 (tb) = (1.L / 3.L - 0.5L * t1 (tb) 
-			        - b42 (tb) * t2 (tb) * (t2 (tb) - t1 (tb))) / (1.L - t1 (tb));
+    / (t2 (tb) * (t2 (tb) - t1 (tb)) * (1.L - t2 (tb)));
+  b43 (tb) = (1.L / 3.L - 0.5L * t1 (tb)
+              - b42 (tb) * t2 (tb) * (t2 (tb) - t1 (tb))) / (1.L - t1 (tb));
   b41 (tb) = (0.5L - b42 (tb) * t2 (tb) - b43 (tb) * t3 (tb)) / t1 (tb);
   b31 (tb) = ((0.125L - 1.L / 6.L * t2 (tb)) / (1.L - t2 (tb))
-              - (1.L / 12.L - 1.L / 6.L * t1 (tb)) / (t2 (tb) - t1 (tb))) 
-		         / (b43 (tb) * t1 (tb));
-  b32 (tb) = (1.L / 12.L - 1.L / 6.L * t1 (tb)) 
-		         / (b43 (tb) * t2 (tb) * (t2 (tb) - t1 (tb)));
+              - (1.L / 12.L - 1.L / 6.L * t1 (tb)) / (t2 (tb) - t1 (tb)))
+    / (b43 (tb) * t1 (tb));
+  b32 (tb) = (1.L / 12.L - 1.L / 6.L * t1 (tb))
+    / (b43 (tb) * t2 (tb) * (t2 (tb) - t1 (tb)));
   b21 (tb) = 1.L / 24.L / (t1 (tb) * b43 (tb) * b32 (tb));
-	rk_b_4 (tb);
+  rk_b_4 (tb);
 }
 
 /**
@@ -112,52 +112,52 @@ rk_tb_4_4 (Optimize * optimize)      ///< Optimize struct.
  * \return objective function value.
  */
 long double
-rk_objective_tb_4_4 (RK * rk) ///< RK struct.
+rk_objective_tb_4_4 (RK * rk)   ///< RK struct.
 {
-	long double *tb;
-	long double o;
+  long double *tb;
+  long double o;
 #if DEBUG_RK_4_4
-	fprintf (stderr, "rk_objective_tb_4_4: start\n");
+  fprintf (stderr, "rk_objective_tb_4_4: start\n");
 #endif
-	tb = rk->tb->coefficient;
-	if (isnan (b21 (tb)) || isnan (b31 (tb)) || isnan (b32 (tb)) 
-		|| isnan (b41 (tb)) || isnan (b42 (tb)) || isnan (b43 (tb)))
-	  {
-			o = INFINITY;
-			goto end;
-		}
-	o = fminl (0.L, b20 (tb));
-	if (b21 (tb) < 0.L)
-		o += b21 (tb);
-	if (b30 (tb) < 0.L)
-		o += b30 (tb);
-	if (b31 (tb) < 0.L)
-		o += b31 (tb);
-	if (b32 (tb) < 0.L)
-		o += b32 (tb);
-	if (b40 (tb) < 0.L)
-		o += b40 (tb);
-	if (b41 (tb) < 0.L)
-		o += b41 (tb);
-	if (b42 (tb) < 0.L)
-		o += b42 (tb);
-	if (b43 (tb) < 0.L)
-		o += b43 (tb);
-	if (o < 0.L)
-	  {
-		  o = 40.L - o;
-			goto end;
-		}
-	o = 30.L + fmaxl (1.L, fmaxl (t1 (tb), t2 (tb)));
-	if (rk->strong)
-	  {
-			rk_bucle_ac (rk);
-			o = fminl (o, *rk->ac0->optimal);
-		}
+  tb = rk->tb->coefficient;
+  if (isnan (b21 (tb)) || isnan (b31 (tb)) || isnan (b32 (tb))
+      || isnan (b41 (tb)) || isnan (b42 (tb)) || isnan (b43 (tb)))
+    {
+      o = INFINITY;
+      goto end;
+    }
+  o = fminl (0.L, b20 (tb));
+  if (b21 (tb) < 0.L)
+    o += b21 (tb);
+  if (b30 (tb) < 0.L)
+    o += b30 (tb);
+  if (b31 (tb) < 0.L)
+    o += b31 (tb);
+  if (b32 (tb) < 0.L)
+    o += b32 (tb);
+  if (b40 (tb) < 0.L)
+    o += b40 (tb);
+  if (b41 (tb) < 0.L)
+    o += b41 (tb);
+  if (b42 (tb) < 0.L)
+    o += b42 (tb);
+  if (b43 (tb) < 0.L)
+    o += b43 (tb);
+  if (o < 0.L)
+    {
+      o = 40.L - o;
+      goto end;
+    }
+  o = 30.L + fmaxl (1.L, fmaxl (t1 (tb), t2 (tb)));
+  if (rk->strong)
+    {
+      rk_bucle_ac (rk);
+      o = fminl (o, *rk->ac0->optimal);
+    }
 end:
 #if DEBUG_RK_4_4
-	fprintf (stderr, "rk_objective_tb_4_4: optimal=%Lg\n", o);
-	fprintf (stderr, "rk_objective_tb_4_4: end\n");
+  fprintf (stderr, "rk_objective_tb_4_4: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_4_4: end\n");
 #endif
-	return o;
+  return o;
 }

@@ -44,7 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "utils.h"
 #include "optimize.h"
 
-#define DEBUG_OPTIMIZE 0 ///< macro to debug.
+#define DEBUG_OPTIMIZE 0        ///< macro to debug.
 
 GMutex mutex[1];                ///< GMutex struct.
 #if PRINT_RANDOM
@@ -80,16 +80,16 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
 {
   long double *is, *vo, *vo2;
   long double o, o2, v;
-	unsigned long long int ii, nrandom;
+  unsigned long long int ii, nrandom;
   unsigned int i, j, k, n, nfree;
 
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_step: start\n");
+  fprintf (stderr, "optimize_step: start\n");
 #endif
 
   // save optimal values
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_step: save optimal values\n");
+  fprintf (stderr, "optimize_step: save optimal values\n");
 #endif
   nfree = optimize->nfree;
   o2 = *optimize->optimal;
@@ -99,30 +99,30 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
 
   // Monte-Carlo algorithm
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_step: Monte-Carlo algorithm\n");
+  fprintf (stderr, "optimize_step: Monte-Carlo algorithm\n");
 #endif
   nrandom = optimize->nrandom;
   for (ii = 0; ii < nrandom; ++ii)
     {
 
-			// random freedom degrees
+      // random freedom degrees
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_step: random freedom degrees\n");
+      fprintf (stderr, "optimize_step: random freedom degrees\n");
 #endif
       optimize_generate_random (optimize);
 #if PRINT_RANDOM
-			print_random (optimize->random_data, nfree, file_random);
+      print_random (optimize->random_data, nfree, file_random);
 #endif
 
       // method coefficients
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_step: method coefficients\n");
+      fprintf (stderr, "optimize_step: method coefficients\n");
 #endif
       optimize->method (optimize);
 
-			// objective function
+      // objective function
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_step: objective function\n");
+      fprintf (stderr, "optimize_step: objective function\n");
 #endif
       o = optimize->objective (optimize);
       if (o < o2)
@@ -134,8 +134,8 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
 
   // array of intervals to search around the optimal
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, 
-			     "optimize_step: array of intervals to search around the optimal\n");
+  fprintf (stderr,
+           "optimize_step: array of intervals to search around the optimal\n");
 #endif
   is = (long double *) alloca (nfree * sizeof (long double));
   for (j = 0; j < nfree; ++j)
@@ -143,7 +143,7 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
 
   // search algorithm bucle
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_step: search algorithm bucle\n");
+  fprintf (stderr, "optimize_step: search algorithm bucle\n");
 #endif
   memcpy (vo2, vo, nfree * sizeof (long double));
   n = optimize->nsearch;
@@ -182,7 +182,7 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
 
   // update optimal values
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_step: update optimal values\n");
+  fprintf (stderr, "optimize_step: update optimal values\n");
 #endif
   if (o2 < *optimize->optimal)
     {
@@ -193,7 +193,7 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
     }
 
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_step: end\n");
+  fprintf (stderr, "optimize_step: end\n");
 #endif
 }
 
@@ -205,12 +205,12 @@ optimize_init (Optimize * optimize,     ///< Optimize struct.
                gsl_rng * rng)   ///< GSL pseudo-random number generator struct.
 {
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_init: start\n");
+  fprintf (stderr, "optimize_init: start\n");
 #endif
   optimize->nrandom = optimize->nsimulations / (nnodes * nthreads) + 1;
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_init: nrandom=%Lu nfree=%u size=%u\n",
-			     optimize->nrandom, optimize->nfree, optimize->size);
+  fprintf (stderr, "optimize_init: nrandom=%Lu nfree=%u size=%u\n",
+           optimize->nrandom, optimize->nfree, optimize->size);
 #endif
   optimize->random_data
     = (long double *) g_slice_alloc (optimize->nfree * sizeof (long double));
@@ -226,7 +226,7 @@ optimize_init (Optimize * optimize,     ///< Optimize struct.
           optimize->nfree * sizeof (long double));
   optimize->rng = rng;
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_init: end\n");
+  fprintf (stderr, "optimize_init: end\n");
 #endif
 }
 
@@ -256,32 +256,32 @@ optimize_bucle (Optimize * optimize)    ///< Optimize struct.
   unsigned int i, j, nfree;
 
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_bucle: start\n");
-	fprintf (stderr, "optimize_bucle: nfree=%u\n", optimize->nfree);
+  fprintf (stderr, "optimize_bucle: start\n");
+  fprintf (stderr, "optimize_bucle: nfree=%u\n", optimize->nfree);
 #endif
 
   // Allocate local array of optimal values
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_bucle: allocate local array of optimal values\n");
+  fprintf (stderr, "optimize_bucle: allocate local array of optimal values\n");
 #endif
   nfree = optimize->nfree;
 #if HAVE_MPI
   vo = (long double *) alloca ((1 + nfree) * sizeof (long double));
-printf ("Rank=%d NNodes=%d\n", rank, nnodes);
+  printf ("Rank=%d NNodes=%d\n", rank, nnodes);
 #endif
 
   // Init some parameters
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_bucle: init some parameters\n");
+  fprintf (stderr, "optimize_bucle: init some parameters\n");
 #endif
   *optimize->optimal = INFINITY;
   for (i = 0; i < nfree; ++i)
     optimize->value_optimal[i]
       = optimize->minimum[i] + 0.5L * optimize->interval[i];
 
-	// Iterate
+  // Iterate
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_bucle: iterate\n");
+  fprintf (stderr, "optimize_bucle: iterate\n");
 #endif
   for (i = 0; i < optimize->niterations; ++i)
     {
@@ -290,9 +290,9 @@ printf ("Rank=%d NNodes=%d\n", rank, nnodes);
       if (nthreads > 1)
         {
           for (j = 0; j < nthreads; ++j)
-            thread[j] 
-							= g_thread_new (NULL, 
-									            (GThreadFunc) (void (*)(void)) optimize_step,
+            thread[j]
+              = g_thread_new (NULL,
+                              (GThreadFunc) (void (*)(void)) optimize_step,
                               (void *) (optimize + j));
           for (j = 0; j < nthreads; ++j)
             g_thread_join (thread[j]);
@@ -359,13 +359,13 @@ printf ("Rank=%d NNodes=%d\n", rank, nnodes);
 
       // Iterate
 #if HAVE_MPI
-			printf ("Rank %u\n", rank);
+      printf ("Rank %u\n", rank);
 #endif
       printf ("Iteration %u Optimal %.19Le\n", i + 1, *optimize->optimal);
     }
 
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_bucle: end\n");
+  fprintf (stderr, "optimize_bucle: end\n");
 #endif
 }
 
@@ -387,14 +387,14 @@ optimize_create (Optimize * optimize,   ///< Optimize struct.
 ///< number of steps on coordinates search optimization algorithm.
                  unsigned int niterations)      ///< iterations number.
 {
-	unsigned int i, nfree;
+  unsigned int i, nfree;
   optimize->optimal = optimal;
   optimize->value_optimal = value_optimal;
   optimize->convergence_factor = convergence_factor;
   optimize->search_factor = search_factor;
   nfree = optimize->nfree;
-	for (optimize->nsimulations = nsimulations, i = 1; i < nfree; ++i)
-	  optimize->nsimulations *= nsimulations;	
+  for (optimize->nsimulations = nsimulations, i = 1; i < nfree; ++i)
+    optimize->nsimulations *= nsimulations;
   optimize->nsearch = nsearch * nfree;
   optimize->niterations = niterations;
 }

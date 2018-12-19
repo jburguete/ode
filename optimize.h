@@ -50,7 +50,7 @@ struct _Optimize
   long double (*objective) (Optimize * optimize);
   ///< pointer to the function to calculate the objective function.
   gsl_rng *rng;                 ///< GSL pseudo-random numbers generator struct.
-	///< pointer to the array of GSL pseudo-random numbers generator structs.
+  ///< pointer to the array of GSL pseudo-random numbers generator structs.
   long double *coefficient;
   ///< array of method coefficientes.
   long double *random_data;
@@ -83,12 +83,12 @@ struct _Optimize
   unsigned int niterations;     ///< iterations number.
   unsigned int nfree;           ///< number of freedom degrees.
   unsigned int size;            ///< total variables number.
-	unsigned int type;            ///< method type.
+  unsigned int type;            ///< method type.
 };
 
-typedef void (*OptimizeMethod)(Optimize * optimize); 
-typedef long double (*OptimizeObjective)(Optimize * optimize); 
-typedef void (*OptimizePrint)(Optimize * optimize, FILE *file);
+typedef void (*OptimizeMethod) (Optimize * optimize);
+typedef long double (*OptimizeObjective) (Optimize * optimize);
+typedef void (*OptimizePrint) (Optimize * optimize, FILE * file);
 
 #if PRINT_RANDOM
 extern FILE *file_random;

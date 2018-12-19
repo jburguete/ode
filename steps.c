@@ -260,8 +260,8 @@ steps_print_9 (Optimize * optimize,     ///< Optimize struct.
  * Function to print on a file the coefficients of the multi-steps 10th step.
  */
 void
-steps_print_10 (Optimize * optimize,     ///< Optimize struct.
-               FILE * file)     ///< file
+steps_print_10 (Optimize * optimize,    ///< Optimize struct.
+                FILE * file)    ///< file
 {
   long double *x;
   steps_print_9 (optimize, file);
@@ -275,8 +275,8 @@ steps_print_10 (Optimize * optimize,     ///< Optimize struct.
  * Function to print on a file the coefficients of the multi-steps 11th step.
  */
 void
-steps_print_11 (Optimize * optimize,     ///< Optimize struct.
-               FILE * file)     ///< file
+steps_print_11 (Optimize * optimize,    ///< Optimize struct.
+                FILE * file)    ///< file
 {
   long double *x;
   steps_print_10 (optimize, file);
@@ -322,8 +322,8 @@ steps_objective_3 (Optimize * optimize) ///< Optimize struct.
   register long double *x;
   register long double k;
   x = optimize->coefficient;
-  if (isnan (a0 (x)) || isnan (c0 (x)) || isnan (a1 (x)) || isnan (c1 (x)) 
-			|| isnan (a2 (x)) || isnan (c2 (x)))
+  if (isnan (a0 (x)) || isnan (c0 (x)) || isnan (a1 (x)) || isnan (c1 (x))
+      || isnan (a2 (x)) || isnan (c2 (x)))
     return INFINITY;
   k = fminl (0.L, a0 (x));
   if (a1 (x) < 0.L)
@@ -387,8 +387,8 @@ steps_objective_5 (Optimize * optimize) ///< Optimize struct.
   register long double k;
   x = optimize->coefficient;
   if (isnan (a0 (x)) || isnan (c0 (x)) || isnan (a1 (x)) || isnan (c1 (x))
-      || isnan (a2 (x)) || isnan (c2 (x)) || isnan (a3 (x)) || isnan (c3 (x)) 
-			|| isnan (a4 (x)) || isnan (c4 (x)))
+      || isnan (a2 (x)) || isnan (c2 (x)) || isnan (a3 (x)) || isnan (c3 (x))
+      || isnan (a4 (x)) || isnan (c4 (x)))
     return INFINITY;
   k = fminl (0.L, a0 (x));
   if (a1 (x) < 0.L)
@@ -474,7 +474,7 @@ steps_objective_7 (Optimize * optimize) ///< Optimize struct.
   if (isnan (a0 (x)) || isnan (c0 (x)) || isnan (a1 (x)) || isnan (c1 (x))
       || isnan (a2 (x)) || isnan (c2 (x)) || isnan (a3 (x)) || isnan (c3 (x))
       || isnan (a4 (x)) || isnan (c4 (x)) || isnan (a5 (x)) || isnan (c5 (x))
-		 	|| isnan (a6 (x)) || isnan (c6 (x)))
+      || isnan (a6 (x)) || isnan (c6 (x)))
     return INFINITY;
   k = fminl (0.L, a0 (x));
   if (a1 (x) < 0.L)
@@ -587,7 +587,7 @@ steps_objective_9 (Optimize * optimize) ///< Optimize struct.
       || isnan (a2 (x)) || isnan (c2 (x)) || isnan (a3 (x)) || isnan (c3 (x))
       || isnan (a4 (x)) || isnan (c4 (x)) || isnan (a5 (x)) || isnan (c5 (x))
       || isnan (a6 (x)) || isnan (c6 (x)) || isnan (a7 (x)) || isnan (c7 (x))
-		 	|| isnan (a8 (x)) || isnan (c8 (x)))
+      || isnan (a8 (x)) || isnan (c8 (x)))
     return INFINITY;
   k = fminl (0.L, a0 (x));
   if (a1 (x) < 0.L)
@@ -633,9 +633,9 @@ steps_objective_9 (Optimize * optimize) ///< Optimize struct.
                          fmaxl (c3 (x),
                                 fmaxl (c4 (x),
                                        fmaxl (c5 (x),
-                                              fmaxl (c6 (x), 
-																								     fmaxl (c7 (x),
-																											      c8 (x)))))))));
+                                              fmaxl (c6 (x),
+                                                     fmaxl (c7 (x),
+                                                            c8 (x)))))))));
 }
 
 /**
@@ -644,7 +644,7 @@ steps_objective_9 (Optimize * optimize) ///< Optimize struct.
  * \return objective function value.
  */
 long double
-steps_objective_10 (Optimize * optimize) ///< Optimize struct.
+steps_objective_10 (Optimize * optimize)        ///< Optimize struct.
 {
   register long double *x;
   register long double k;
@@ -652,8 +652,8 @@ steps_objective_10 (Optimize * optimize) ///< Optimize struct.
   if (isnan (a0 (x)) || isnan (c0 (x)) || isnan (a1 (x)) || isnan (c1 (x))
       || isnan (a2 (x)) || isnan (c2 (x)) || isnan (a3 (x)) || isnan (c3 (x))
       || isnan (a4 (x)) || isnan (c4 (x)) || isnan (a5 (x)) || isnan (c5 (x))
-      || isnan (a6 (x)) || isnan (c6 (x)) || isnan (a7 (x)) || isnan (c7 (x)) 
-			|| isnan (a8 (x)) || isnan (c8 (x)) || isnan (a9 (x)) || isnan (c9 (x)))
+      || isnan (a6 (x)) || isnan (c6 (x)) || isnan (a7 (x)) || isnan (c7 (x))
+      || isnan (a8 (x)) || isnan (c8 (x)) || isnan (a9 (x)) || isnan (c9 (x)))
     return INFINITY;
   k = fminl (0.L, a0 (x));
   if (a1 (x) < 0.L)
@@ -705,9 +705,9 @@ steps_objective_10 (Optimize * optimize) ///< Optimize struct.
                                        fmaxl (c5 (x),
                                               fmaxl (c6 (x),
                                                      fmaxl (c7 (x),
-																											      fmaxl (c8 (x),
-																															     c9 (x))))))))
-									));
+                                                            fmaxl (c8 (x),
+                                                                   c9
+                                                                   (x))))))))));
 }
 
 /**
@@ -716,7 +716,7 @@ steps_objective_10 (Optimize * optimize) ///< Optimize struct.
  * \return objective function value.
  */
 long double
-steps_objective_11 (Optimize * optimize) ///< Optimize struct.
+steps_objective_11 (Optimize * optimize)        ///< Optimize struct.
 {
   register long double *x;
   register long double k;
@@ -724,9 +724,9 @@ steps_objective_11 (Optimize * optimize) ///< Optimize struct.
   if (isnan (a0 (x)) || isnan (c0 (x)) || isnan (a1 (x)) || isnan (c1 (x))
       || isnan (a2 (x)) || isnan (c2 (x)) || isnan (a3 (x)) || isnan (c3 (x))
       || isnan (a4 (x)) || isnan (c4 (x)) || isnan (a5 (x)) || isnan (c5 (x))
-      || isnan (a6 (x)) || isnan (c6 (x)) || isnan (a7 (x)) || isnan (c7 (x)) 
-			|| isnan (a8 (x)) || isnan (c8 (x)) || isnan (a9 (x)) || isnan (c9 (x))
-			|| isnan (a10 (x)) || isnan (c10 (x)))
+      || isnan (a6 (x)) || isnan (c6 (x)) || isnan (a7 (x)) || isnan (c7 (x))
+      || isnan (a8 (x)) || isnan (c8 (x)) || isnan (a9 (x)) || isnan (c9 (x))
+      || isnan (a10 (x)) || isnan (c10 (x)))
     return INFINITY;
   k = fminl (0.L, a0 (x));
   if (a1 (x) < 0.L)
@@ -782,9 +782,11 @@ steps_objective_11 (Optimize * optimize) ///< Optimize struct.
                                        fmaxl (c5 (x),
                                               fmaxl (c6 (x),
                                                      fmaxl (c7 (x),
-																											      fmaxl (c8 (x),
-																															     fmaxl (c9 (x), c10 (x))))))))
-									)));
+                                                            fmaxl (c8 (x),
+                                                                   fmaxl (c9
+                                                                          (x),
+                                                                          c10
+                                                                          (x)))))))))));
 }
 
 /**
@@ -799,7 +801,7 @@ steps_select (Optimize * optimize,      ///< Optimize struct.
 {
   optimize->size = 2 * nsteps;
   optimize->nfree = optimize->size - order - 1;
-	optimize->data = NULL;
+  optimize->data = NULL;
   optimize->print_maxima = steps_print_maxima;
   switch (nsteps)
     {

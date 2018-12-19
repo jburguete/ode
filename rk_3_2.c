@@ -42,19 +42,19 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "rk.h"
 #include "rk_3_2.h"
 
-#define DEBUG_RK_3_2 0 ///< macro to debug.
+#define DEBUG_RK_3_2 0          ///< macro to debug.
 
 ///> array of minimum freedom degree values for the t-b coefficients of the 3
 ///> steps 2nd order Runge-Kutta method.
-const long double minimum_tb_3_2[4] = {0.L, 0.L, 0.L, 0.L};
+const long double minimum_tb_3_2[4] = { 0.L, 0.L, 0.L, 0.L };
 
 ///> array of minimum freedom degree intervals for the t-b coefficients of the 3
 ///> steps 2nd order Runge-Kutta method.
-const long double interval_tb_3_2[4] = {1.L, 1.L, 1.L, 1.L};
+const long double interval_tb_3_2[4] = { 1.L, 1.L, 1.L, 1.L };
 
 ///> array of freedom degree random function types for the t-b coefficients of
 ///> the 3 steps 2nd order Runge-Kutta method.
-const unsigned int random_tb_3_2[4] = {2, 2, 2, 2};
+const unsigned int random_tb_3_2[4] = { 2, 2, 2, 2 };
 
 /**
  * Function to print a maxima format file to check the accuracy order of a 3
@@ -62,14 +62,14 @@ const unsigned int random_tb_3_2[4] = {2, 2, 2, 2};
  */
 void
 rk_print_maxima_3_2 (FILE * file,       ///< file.
-		                 unsigned int nsteps __attribute__((unused)),
-										 ///< steps number.
-										 unsigned int order __attribute__((unused)))
-                     ///< accuracy order.
+                     unsigned int nsteps __attribute__ ((unused)),
+                     ///< steps number.
+                     unsigned int order __attribute__ ((unused)))
+  ///< accuracy order.
 {
   fprintf (file, "b30+b31+b32-1;\n");
   fprintf (file, "b31*t1+b32*t2-1/2;\n");
-	rk_print_maxima_3 (file);
+  rk_print_maxima_3 (file);
 }
 
 /**
@@ -77,24 +77,24 @@ rk_print_maxima_3_2 (FILE * file,       ///< file.
  * method.
  */
 void
-rk_tb_3_2 (Optimize * optimize)      ///< Optimize struct.
+rk_tb_3_2 (Optimize * optimize) ///< Optimize struct.
 {
-	long double *tb, *r;
+  long double *tb, *r;
 #if DEBUG_RK_3_2
-	fprintf (stderr, "rk_tb_3_2: start\n");
+  fprintf (stderr, "rk_tb_3_2: start\n");
 #endif
-	tb = optimize->coefficient;
-	r = optimize->random_data;
-	t1 (tb) = r[0];
-	t2 (tb) = r[1];
-	b21 (tb) = r[2];
-	b32 (tb) = r[3];
+  tb = optimize->coefficient;
+  r = optimize->random_data;
+  t1 (tb) = r[0];
+  t2 (tb) = r[1];
+  b21 (tb) = r[2];
+  b32 (tb) = r[3];
   t3 (tb) = 1.L;
-	b31 (tb) = (0.5L - b32 (tb) * t2 (tb)) / t1 (tb);
-	rk_b_3 (tb);
+  b31 (tb) = (0.5L - b32 (tb) * t2 (tb)) / t1 (tb);
+  rk_b_3 (tb);
 #if DEBUG_RK_3_2
-	rk_print_tb_3 (tb, "rk_tb_3_2", stderr);
-	fprintf (stderr, "rk_tb_3_2: end\n");
+  rk_print_tb_3 (tb, "rk_tb_3_2", stderr);
+  fprintf (stderr, "rk_tb_3_2: end\n");
 #endif
 }
 
@@ -105,39 +105,39 @@ rk_tb_3_2 (Optimize * optimize)      ///< Optimize struct.
  * \return objective function value.
  */
 long double
-rk_objective_tb_3_2 (RK * rk) ///< RK struct.
+rk_objective_tb_3_2 (RK * rk)   ///< RK struct.
 {
-	long double *tb;
-	long double o;
+  long double *tb;
+  long double o;
 #if DEBUG_RK_3_2
-	fprintf (stderr, "rk_objective_tb_3_2: start\n");
+  fprintf (stderr, "rk_objective_tb_3_2: start\n");
 #endif
-	tb = rk->tb->coefficient;
-	if (isnan (b31 (tb)))
-	  {
-	    o = INFINITY;
-		goto end;
-	  }
-	o = fminl (0.L, b20 (tb));
-	if (b30 (tb) < 0.L)
-		o += b30 (tb);
-	if (b31 (tb) < 0.L)
-		o += b31 (tb);
-	if (o < 0.L)
-	  {
-		  o = 40.L - o;
-			goto end;
-		}
-	o = 30.L + fmaxl (1.L, fmaxl (t1 (tb), t2 (tb)));
-	if (rk->strong)
-	  {
-			rk_bucle_ac (rk);
-			o = fminl (o, *rk->ac0->optimal);
-		}
+  tb = rk->tb->coefficient;
+  if (isnan (b31 (tb)))
+    {
+      o = INFINITY;
+      goto end;
+    }
+  o = fminl (0.L, b20 (tb));
+  if (b30 (tb) < 0.L)
+    o += b30 (tb);
+  if (b31 (tb) < 0.L)
+    o += b31 (tb);
+  if (o < 0.L)
+    {
+      o = 40.L - o;
+      goto end;
+    }
+  o = 30.L + fmaxl (1.L, fmaxl (t1 (tb), t2 (tb)));
+  if (rk->strong)
+    {
+      rk_bucle_ac (rk);
+      o = fminl (o, *rk->ac0->optimal);
+    }
 end:
 #if DEBUG_RK_3_2
-	fprintf (stderr, "rk_objective_tb_3_2: optimal=%Lg\n", o);
-	fprintf (stderr, "rk_objective_tb_3_2: end\n");
+  fprintf (stderr, "rk_objective_tb_3_2: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_3_2: end\n");
 #endif
-	return o;
+  return o;
 }

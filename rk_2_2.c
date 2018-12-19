@@ -42,19 +42,19 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "rk.h"
 #include "rk_2_2.h"
 
-#define DEBUG_RK_2_2 0 ///< macro to debug.
+#define DEBUG_RK_2_2 0          ///< macro to debug.
 
 ///> array of minimum freedom degree values for the t-b coefficients of the 2
 ///> steps 2nd order Runge-Kutta method.
-const long double minimum_tb_2_2[1] = {0.5L};
+const long double minimum_tb_2_2[1] = { 0.5L };
 
 ///> array of minimum freedom degree intervals for the t-b coefficients of the 2
 ///> steps 2nd order Runge-Kutta method.
-const long double interval_tb_2_2[1] = {0.5L};
+const long double interval_tb_2_2[1] = { 0.5L };
 
 ///> array of freedom degree random function types for the t-b coefficients of
 ///> the 2 steps 2nd order Runge-Kutta method.
-const unsigned int random_tb_2_2[1] = {2};
+const unsigned int random_tb_2_2[1] = { 2 };
 
 /**
  * Function to print a maxima format file to check the accuracy order of a 2
@@ -62,14 +62,14 @@ const unsigned int random_tb_2_2[1] = {2};
  */
 void
 rk_print_maxima_2_2 (FILE * file,       ///< file.
-		                 unsigned int nsteps __attribute__((unused)),
-										 ///< steps number.
-										 unsigned int order __attribute__((unused)))
-                     ///< accuracy order.
+                     unsigned int nsteps __attribute__ ((unused)),
+                     ///< steps number.
+                     unsigned int order __attribute__ ((unused)))
+  ///< accuracy order.
 {
   fprintf (file, "b20+b21-1;\n");
   fprintf (file, "b21*t1-1/2;\n");
-	rk_print_maxima_2 (file);
+  rk_print_maxima_2 (file);
 }
 
 /**
@@ -77,14 +77,14 @@ rk_print_maxima_2_2 (FILE * file,       ///< file.
  * method.
  */
 void
-rk_tb_2_2 (Optimize * optimize)      ///< Optimize struct.
+rk_tb_2_2 (Optimize * optimize) ///< Optimize struct.
 {
-	long double *tb, *r;
+  long double *tb, *r;
 #if DEBUG_RK_2_2
-	fprintf (stderr, "rk_tb_2_2: start\n");
+  fprintf (stderr, "rk_tb_2_2: start\n");
 #endif
-	tb = optimize->coefficient;
-	r = optimize->random_data;
+  tb = optimize->coefficient;
+  r = optimize->random_data;
 #if RK_ACCURATE
   t1 (tb) = 2.L / 3.L;
 #else
@@ -92,10 +92,10 @@ rk_tb_2_2 (Optimize * optimize)      ///< Optimize struct.
 #endif
   t2 (tb) = 1.L;
   b21 (tb) = 0.5L / t1 (tb);
-	rk_b_2 (tb);
+  rk_b_2 (tb);
 #if DEBUG_RK_2_2
-	rk_print_tb_2 (tb, "rk_tb_2_2", stderr);
-	fprintf (stderr, "rk_tb_2_2: end\n");
+  rk_print_tb_2 (tb, "rk_tb_2_2", stderr);
+  fprintf (stderr, "rk_tb_2_2: end\n");
 #endif
 }
 
@@ -106,29 +106,29 @@ rk_tb_2_2 (Optimize * optimize)      ///< Optimize struct.
  * \return objective function value.
  */
 long double
-rk_objective_tb_2_2 (RK * rk) ///< RK struct.
+rk_objective_tb_2_2 (RK * rk)   ///< RK struct.
 {
-	long double *tb;
-	long double o;
+  long double *tb;
+  long double o;
 #if DEBUG_RK_2_2
-	fprintf (stderr, "rk_objective_tb_2_2: start\n");
+  fprintf (stderr, "rk_objective_tb_2_2: start\n");
 #endif
-	tb = rk->tb->coefficient;
-	if (b20 (tb) < 0.L)
-	  {
-		  o = 40.L - b20 (tb);
-			goto end;
-		}
-	o = 30.L + fmaxl (1.L, t1 (tb));
-	if (rk->strong)
-	  {
-			rk_bucle_ac (rk);
-			o = fminl (o, *rk->ac0->optimal);
-		}
+  tb = rk->tb->coefficient;
+  if (b20 (tb) < 0.L)
+    {
+      o = 40.L - b20 (tb);
+      goto end;
+    }
+  o = 30.L + fmaxl (1.L, t1 (tb));
+  if (rk->strong)
+    {
+      rk_bucle_ac (rk);
+      o = fminl (o, *rk->ac0->optimal);
+    }
 end:
 #if DEBUG_RK_2_2
-	fprintf (stderr, "rk_objective_tb_2_2: optimal=%Lg\n", o);
-	fprintf (stderr, "rk_objective_tb_2_2: end\n");
+  fprintf (stderr, "rk_objective_tb_2_2: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_2_2: end\n");
 #endif
-	return o;
+  return o;
 }

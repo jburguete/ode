@@ -111,16 +111,19 @@ const unsigned int random_ac_rk_5[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 ///> array of minimum freedom degree values for the a-c coefficients of the 6
 ///> steps Runge-Kutta methods.
 const long double minimum_ac_rk_6[15]
-  = { 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L };
+  =
+  { 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L };
 
 ///> array of minimum freedom degree intervals for the a-c coefficients of the 6
 ///> steps Runge-Kutta methods.
 const long double interval_ac_rk_6[15]
-  = { 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L };
+  =
+  { 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L };
 
 ///> array of freedom degree random function types for the a-c coefficients of
 ///> the 6 steps Runge-Kutta methods.
-const unsigned int random_ac_rk_6[15] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const unsigned int random_ac_rk_6[15] =
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 /**
  * Function to print the 2nd step t-b Runge-Kutta coefficients.
@@ -215,8 +218,8 @@ rk_print_2 (RK * rk,            ///< RK struct.
   fprintf (file, "t2:%.19Le;\n", t2 (tb));
   fprintf (file, "b20:%.19Le;\n", b20 (tb));
   fprintf (file, "b21:%.19Le;\n", b21 (tb));
-	if (!rk->strong)
-		return;
+  if (!rk->strong)
+    return;
   ac = rk->ac->coefficient;
   fprintf (file, "a20:%.19Le;\n", a20 (ac));
   fprintf (file, "a21:%.19Le;\n", a21 (ac));
@@ -238,8 +241,8 @@ rk_print_3 (RK * rk,            ///< RK struct.
   fprintf (file, "b30:%.19Le;\n", b30 (tb));
   fprintf (file, "b31:%.19Le;\n", b31 (tb));
   fprintf (file, "b32:%.19Le;\n", b32 (tb));
-	if (!rk->strong)
-		return;
+  if (!rk->strong)
+    return;
   ac = rk->ac->coefficient;
   fprintf (file, "a30:%.19Le;\n", a30 (ac));
   fprintf (file, "a31:%.19Le;\n", a31 (ac));
@@ -264,8 +267,8 @@ rk_print_4 (RK * rk,            ///< RK struct.
   fprintf (file, "b41:%.19Le;\n", b41 (tb));
   fprintf (file, "b42:%.19Le;\n", b42 (tb));
   fprintf (file, "b43:%.19Le;\n", b43 (tb));
-	if (!rk->strong)
-		return;
+  if (!rk->strong)
+    return;
   ac = rk->ac->coefficient;
   fprintf (file, "a40:%.19Le;\n", a40 (ac));
   fprintf (file, "a41:%.19Le;\n", a41 (ac));
@@ -293,8 +296,8 @@ rk_print_5 (RK * rk,            ///< RK struct.
   fprintf (file, "b52:%.19Le;\n", b52 (tb));
   fprintf (file, "b53:%.19Le;\n", b53 (tb));
   fprintf (file, "b54:%.19Le;\n", b54 (tb));
-	if (!rk->strong)
-		return;
+  if (!rk->strong)
+    return;
   ac = rk->ac->coefficient;
   fprintf (file, "a50:%.19Le;\n", a50 (ac));
   fprintf (file, "a51:%.19Le;\n", a51 (ac));
@@ -325,8 +328,8 @@ rk_print_6 (RK * rk,            ///< RK struct.
   fprintf (file, "b63:%.19Le;\n", b63 (tb));
   fprintf (file, "b64:%.19Le;\n", b64 (tb));
   fprintf (file, "b65:%.19Le;\n", b65 (tb));
-	if (!rk->strong)
-		return;
+  if (!rk->strong)
+    return;
   ac = rk->ac->coefficient;
   fprintf (file, "a60:%.19Le;\n", a60 (ac));
   fprintf (file, "a61:%.19Le;\n", a61 (ac));
@@ -962,11 +965,11 @@ end:
 void
 rk_init (RK * rk,               ///< RK struct.
          gsl_rng * rng,         ///< GSL pseudo-random number generator struct.
-				 unsigned int strong)   ///< 1 on strong stable, 0 on simple stable.
+         unsigned int strong)   ///< 1 on strong stable, 0 on simple stable.
 {
-	rk->strong = strong;
+  rk->strong = strong;
   optimize_init (rk->tb, rng);
-	if (strong)
+  if (strong)
     optimize_init (rk->ac0, rng);
 }
 
@@ -976,7 +979,7 @@ rk_init (RK * rk,               ///< RK struct.
 void
 rk_delete (RK * rk)             ///< RK struct.
 {
-	if (rk->strong)
+  if (rk->strong)
     optimize_delete (rk->ac0);
   optimize_delete (rk->tb);
 }
@@ -985,19 +988,19 @@ rk_delete (RK * rk)             ///< RK struct.
  * Function to create a RK struct data on simple stable methods.
  */
 void
-rk_create_simple (RK * rk,             ///< RK struct.
-           long double *optimal,
-           ///< pointer to the optimal objective function value.
-           long double *value_optimal,
-           ///< array of optimal freedom degree values.
-           long double convergence_factor,      ///< convergence factor.
-           long double search_factor,
-           ///< factor to the coordinates search optimization algorithm.
-           unsigned long long int nsimulations,
+rk_create_simple (RK * rk,      ///< RK struct.
+                  long double *optimal,
+                  ///< pointer to the optimal objective function value.
+                  long double *value_optimal,
+                  ///< array of optimal freedom degree values.
+                  long double convergence_factor,       ///< convergence factor.
+                  long double search_factor,
+                  ///< factor to the coordinates search optimization algorithm.
+                  unsigned long long int nsimulations,
 ///< number of total simulations on Monte-Carlo optimization algorithm.
-           unsigned int nsearch,
+                  unsigned int nsearch,
 ///< number of steps on coordinates search optimization algorithm.
-           unsigned int niterations)    ///< iterations number.
+                  unsigned int niterations)     ///< iterations number.
 {
   optimize_create (rk->tb, optimal, value_optimal, convergence_factor,
                    search_factor, nsimulations, nsearch, niterations);
@@ -1423,14 +1426,14 @@ rk_bucle_tb (RK * rk)           ///< RK struct.
 #endif
   tb = rk->tb;
   nfree = tb->nfree;
-	strong = rk->strong;
-	if (strong)
-	  {
+  strong = rk->strong;
+  if (strong)
+    {
       ac = rk->ac0;
       nfree2 = ac->nfree;
-		}
-	else
-		nfree2 = 0;
+    }
+  else
+    nfree2 = 0;
 #if HAVE_MPI
   vo = (long double *) alloca ((1 + nfree + nfree2) * sizeof (long double));
 #endif
@@ -1443,7 +1446,7 @@ rk_bucle_tb (RK * rk)           ///< RK struct.
   *tb->optimal = INFINITY;
   for (i = 0; i < nfree; ++i)
     tb->value_optimal[i] = tb->minimum[i] + 0.5L * tb->interval[i];
-	if (strong)
+  if (strong)
     for (i = 0; i < nfree2; ++i)
       ac->value_optimal[i] = ac->minimum[i] + 0.5L * ac->interval[i];
 
@@ -1475,7 +1478,7 @@ rk_bucle_tb (RK * rk)           ///< RK struct.
           // Secondary nodes send the optimal coefficients to the master node
           vo[0] = *tb->optimal;
           memcpy (vo + 1, tb->value_optimal, nfree * sizeof (long double));
-					if (strong)
+          if (strong)
             memcpy (vo + 1 + nfree, ac->value_optimal,
                     nfree2 * sizeof (long double));
           MPI_Send (vo, 1 + nfree + nfree2, MPI_LONG_DOUBLE, 0, 1,
@@ -1486,7 +1489,7 @@ rk_bucle_tb (RK * rk)           ///< RK struct.
                     MPI_COMM_WORLD, &status);
           *tb->optimal = *ac->optimal = vo[0];
           memcpy (tb->value_optimal, vo + 1, nfree * sizeof (long double));
-					if (strong)
+          if (strong)
             memcpy (ac->value_optimal, vo + 1 + nfree,
                     nfree2 * sizeof (long double));
         }
@@ -1508,7 +1511,7 @@ rk_bucle_tb (RK * rk)           ///< RK struct.
                   *tb->optimal = *ac->optimal = vo[0];
                   memcpy (tb->value_optimal, vo + 1,
                           nfree * sizeof (long double));
-									if (strong)
+                  if (strong)
                     memcpy (ac->value_optimal, vo + 1 + nfree,
                             nfree2 * sizeof (long double));
                 }
@@ -1517,7 +1520,7 @@ rk_bucle_tb (RK * rk)           ///< RK struct.
           // Master node sends the optimal coefficients to secondary nodes
           vo[0] = *tb->optimal;
           memcpy (vo + 1, tb->value_optimal, nfree * sizeof (long double));
-					if (strong)
+          if (strong)
             memcpy (vo + 1 + nfree, ac->value_optimal,
                     nfree2 * sizeof (long double));
           for (j = 1; j < nnodes; ++i)
@@ -1530,7 +1533,7 @@ rk_bucle_tb (RK * rk)           ///< RK struct.
       // Print the optimal coefficients
 #if DEBUG_RK
       optimize_print_random (tb, stderr);
-			if (strong)
+      if (strong)
         optimize_print_random (ac, stderr);
       fprintf (stderr, "optimal=%.19Le\n", *tb->optimal);
 #endif
@@ -1733,7 +1736,7 @@ rk_select (RK * rk,             ///< RK struct.
       return 0;
     }
 #if RK_ACCURATE
-	--tb->nfree;
+  --tb->nfree;
 #endif
 
 #if DEBUG_RK

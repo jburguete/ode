@@ -44,13 +44,13 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 typedef struct
 {
-	Optimize tb[1];
-	///< Optimize struct to define t-b coefficients data and methods.
-	Optimize ac[1];
-	///< Optimize struct to define a-c coefficients data and methods.
-	Optimize ac0[1];
-	///< Optimize struct to define initial a-c coefficients data and methods.
-	unsigned int strong; ///< Boolean to cope with strong stability.
+  Optimize tb[1];
+  ///< Optimize struct to define t-b coefficients data and methods.
+  Optimize ac[1];
+  ///< Optimize struct to define a-c coefficients data and methods.
+  Optimize ac0[1];
+  ///< Optimize struct to define initial a-c coefficients data and methods.
+  unsigned int strong;          ///< Boolean to cope with strong stability.
 } RK;
 
 #define RUNGE_KUTTA(o) ((Optimize *)((Optimize *)o)->data)
@@ -138,11 +138,11 @@ extern const long double minimum_ac_rk_6[15];
 extern const long double interval_ac_rk_6[15];
 extern const unsigned int random_ac_rk_6[15];
 
-void rk_print_tb_2 (long double * tb, char *label, FILE *file);
-void rk_print_tb_3 (long double * tb, char *label, FILE *file);
-void rk_print_tb_4 (long double * tb, char *label, FILE *file);
-void rk_print_tb_5 (long double * tb, char *label, FILE *file);
-void rk_print_tb_6 (long double * tb, char *label, FILE *file);
+void rk_print_tb_2 (long double *tb, char *label, FILE * file);
+void rk_print_tb_3 (long double *tb, char *label, FILE * file);
+void rk_print_tb_4 (long double *tb, char *label, FILE * file);
+void rk_print_tb_5 (long double *tb, char *label, FILE * file);
+void rk_print_tb_6 (long double *tb, char *label, FILE * file);
 void rk_print_2 (RK * rk, FILE * file);
 void rk_print_3 (RK * rk, FILE * file);
 void rk_print_4 (RK * rk, FILE * file);
@@ -166,28 +166,26 @@ long double rk_objective_ac_6 (RK * rk);
 void rk_init (RK * rk, gsl_rng * rng, unsigned int strong);
 void rk_delete (RK * rk);
 void rk_create_simple (RK * rk,
-                      long double *optimal,
-                      long double *value_optimal,
-                      long double convergence_factor,
-                      long double search_factor,
-                      unsigned long long int nsimulations,
-                      unsigned int nsearch, 
-											unsigned int niterations);
+                       long double *optimal,
+                       long double *value_optimal,
+                       long double convergence_factor,
+                       long double search_factor,
+                       unsigned long long int nsimulations,
+                       unsigned int nsearch, unsigned int niterations);
 void rk_create (RK * rk,
-                      long double *optimal,
-                      long double *value_optimal,
-                      long double *optimal2,
-                      long double *value_optimal2,
-                      long double convergence_factor,
-                      long double convergence_factor2,
-                      long double search_factor,
-                      long double search_factor2,
-                      unsigned long long int nsimulations,
-                      unsigned long long int nsimulations2,
-                      unsigned int nsearch, 
-                      unsigned int nsearch2, 
-											unsigned int niterations,
-										 	unsigned int niterations2);
+                long double *optimal,
+                long double *value_optimal,
+                long double *optimal2,
+                long double *value_optimal2,
+                long double convergence_factor,
+                long double convergence_factor2,
+                long double search_factor,
+                long double search_factor2,
+                unsigned long long int nsimulations,
+                unsigned long long int nsimulations2,
+                unsigned int nsearch,
+                unsigned int nsearch2,
+                unsigned int niterations, unsigned int niterations2);
 void rk_step_ac (RK * rk);
 void rk_bucle_ac (RK * rk);
 void rk_step_tb (RK * rk);
@@ -279,7 +277,7 @@ rk_cfl_4 (long double *tb,      ///< array of Runge-Kutta t-b coefficients.
 {
   return fminl (rk_cfl_3 (tb, ac),
                 1.L / fmaxl (c40 (ac),
-									           fmaxl (c41 (ac), fmaxl (c42 (ac), c43 (ac)))));
+                             fmaxl (c41 (ac), fmaxl (c42 (ac), c43 (ac)))));
 }
 
 /**
@@ -291,11 +289,11 @@ static inline long double
 rk_cfl_5 (long double *tb,      ///< array of Runge-Kutta t-b coefficients.
           long double *ac)      ///< array of Runge-Kutta a-c coefficients.
 {
-  return 
-		fminl (rk_cfl_4 (tb, ac),
+  return
+    fminl (rk_cfl_4 (tb, ac),
            1.L / fmaxl (c50 (ac),
-									      fmaxl (c51 (ac), 
-															 fmaxl (c52 (ac), fmaxl (c53 (ac), c54 (ac))))));
+                        fmaxl (c51 (ac),
+                               fmaxl (c52 (ac), fmaxl (c53 (ac), c54 (ac))))));
 }
 
 /**
@@ -307,13 +305,13 @@ static inline long double
 rk_cfl_6 (long double *tb,      ///< array of Runge-Kutta t-b coefficients.
           long double *ac)      ///< array of Runge-Kutta a-c coefficients.
 {
-  return 
-		fminl (rk_cfl_5 (tb, ac),
+  return
+    fminl (rk_cfl_5 (tb, ac),
            1.L / fmaxl (c60 (ac),
-									      fmaxl (c61 (ac), 
-															 fmaxl (c62 (ac),
-																      fmaxl (c63 (ac), 
-																				     fmaxl (c64 (ac), c65 (ac)))))));
+                        fmaxl (c61 (ac),
+                               fmaxl (c62 (ac),
+                                      fmaxl (c63 (ac),
+                                             fmaxl (c64 (ac), c65 (ac)))))));
 }
 
 #endif
