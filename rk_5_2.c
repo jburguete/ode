@@ -61,17 +61,31 @@ const unsigned int random_tb_5_2[13] =
 
 /**
  * Function to print a maxima format file to check the accuracy order of a 5
- * steps 2nd order Runge-Kutta method.
+ * steps 2nd order Runge-Kutta simple stable method.
  */
 void
-rk_print_maxima_5_2 (FILE * file,       ///< file.
+tb_print_maxima_5_2 (FILE * file,       ///< file.
                      unsigned int nsteps __attribute__ ((unused)),
                      ///< steps number.
                      unsigned int order __attribute__ ((unused)))
   ///< accuracy order.
 {
-  fprintf (file, "a50+a51+a52+a53+a54-1;\n");
+  fprintf (file, "b50+b51+b52+b53+b54-1;\n");
   fprintf (file, "b51*t1+b52*t2+b53*t3+b54*t4-1/2;\n");
+  fprintf (file, "b51*t1^2+b52*t2^2+b53*t3^2+b54*t4^2-1/3;\n");
+}
+
+/**
+ * Function to print a maxima format file to check the accuracy order of a 5
+ * steps 2nd order Runge-Kutta method.
+ */
+void
+rk_print_maxima_5_2 (FILE * file,       ///< file.
+                     unsigned int nsteps,       ///< steps number.
+                     unsigned int order)        ///< accuracy order.
+{
+  tb_print_maxima_5_2 (file, nsteps, order);
+  rk_print_maxima_5 (file);
 }
 
 /**
@@ -97,12 +111,50 @@ rk_tb_5_2 (Optimize * optimize) ///< Optimize struct.
   b41 (tb) = r[7];
   b42 (tb) = r[8];
   b43 (tb) = r[9];
-  b52 (tb) = r[10];
-  b53 (tb) = r[11];
-  b54 (tb) = r[12];
+  b51 (tb) = r[10];
+  b52 (tb) = r[11];
+  b53 (tb) = r[12];
   t5 (tb) = 1.L;
-  b51 (tb) = (0.5L - b52 (tb) * t2 (tb) - b53 (tb) * t3 (tb)
-              - b54 (tb) * t4 (tb)) / t1 (tb);
+  b54 (tb) = (0.5L - b51 (tb) * t1 (tb) - b52 (tb) * t2 (tb)
+              - b53 (tb) * t3 (tb)) / t4 (tb);
+  rk_b_5 (tb);
+#if DEBUG_RK_5_2
+  fprintf (stderr, "rk_tb_5_2: end\n");
+#endif
+}
+
+/**
+ * Function to obtain the coefficients of a 5 steps 2nd order, 3rd order in
+ * equations depending only in time, Runge-Kutta method.
+ */
+void
+rk_tb_5_2t (Optimize * optimize)        ///< Optimize struct.
+{
+  long double *tb, *r;
+#if DEBUG_RK_5_2
+  fprintf (stderr, "rk_tb_5_2t: start\n");
+#endif
+  tb = optimize->coefficient;
+  r = optimize->random_data;
+  t5 (tb) = 1.L;
+  t1 (tb) = r[0];
+  t2 (tb) = r[1];
+  b21 (tb) = r[2];
+  t3 (tb) = r[3];
+  b31 (tb) = r[4];
+  b32 (tb) = r[5];
+  t4 (tb) = r[6];
+  b41 (tb) = r[7];
+  b42 (tb) = r[8];
+  b43 (tb) = r[9];
+  b51 (tb) = r[10];
+  b52 (tb) = r[11];
+  b53 (tb) = (1.L / 3.L - 0.5L * t4 (tb)
+              - b51 (tb) * t1 (tb) * (t1 (tb) - t4 (tb))
+              - b52 (tb) * t2 (tb) * (t2 (tb) - t4 (tb)))
+    / (t3 (tb) * (t3 (tb) - t4 (tb)));
+  b54 (tb) = (0.5L - b51 (tb) * t1 (tb) - b52 (tb) * t2 (tb)
+              - b53 (tb) * t3 (tb)) / t4 (tb);
   rk_b_5 (tb);
 #if DEBUG_RK_5_2
   fprintf (stderr, "rk_tb_5_2: end\n");
@@ -124,6 +176,11 @@ rk_objective_tb_5_2 (RK * rk)   ///< RK struct.
   fprintf (stderr, "rk_objective_tb_5_2: start\n");
 #endif
   tb = rk->tb->coefficient;
+  if (isnan (b54 (tb)))
+    {
+      o = INFINITY;
+      goto end;
+    }
   o = fminl (0.L, b20 (tb));
   if (b30 (tb) < 0.L)
     o += b30 (tb);
@@ -131,8 +188,8 @@ rk_objective_tb_5_2 (RK * rk)   ///< RK struct.
     o += b40 (tb);
   if (b50 (tb) < 0.L)
     o += b50 (tb);
-  if (b51 (tb) < 0.L)
-    o += b51 (tb);
+  if (b54 (tb) < 0.L)
+    o += b54 (tb);
   if (o < 0.L)
     {
       o = 40.L - o;
@@ -149,6 +206,57 @@ end:
 #if DEBUG_RK_5_2
   fprintf (stderr, "rk_objective_tb_5_2: optimal=%Lg\n", o);
   fprintf (stderr, "rk_objective_tb_5_2: end\n");
+#endif
+  return o;
+}
+
+/**
+ * Function to calculate the objective function of a 5 steps 2nd order, 3rd
+ * order in equations depending only in time, Runge-Kutta method.
+ *
+ * \return objective function value.
+ */
+long double
+rk_objective_tb_5_2t (RK * rk)  ///< RK struct.
+{
+  long double *tb;
+  long double o;
+#if DEBUG_RK_5_2
+  fprintf (stderr, "rk_objective_tb_5_2t: start\n");
+#endif
+  tb = rk->tb->coefficient;
+  if (isnan (b53 (tb)) || isnan (b54 (tb)))
+    {
+      o = INFINITY;
+      goto end;
+    }
+  o = fminl (0.L, b20 (tb));
+  if (b30 (tb) < 0.L)
+    o += b30 (tb);
+  if (b40 (tb) < 0.L)
+    o += b40 (tb);
+  if (b50 (tb) < 0.L)
+    o += b50 (tb);
+  if (b53 (tb) < 0.L)
+    o += b53 (tb);
+  if (b54 (tb) < 0.L)
+    o += b54 (tb);
+  if (o < 0.L)
+    {
+      o = 40.L - o;
+      goto end;
+    }
+  o = 30.L
+    + fmaxl (1.L, fmaxl (t1 (tb), fmaxl (t2 (tb), fmaxl (t3 (tb), t4 (tb)))));
+  if (rk->strong)
+    {
+      rk_bucle_ac (rk);
+      o = fminl (o, *rk->ac0->optimal);
+    }
+end:
+#if DEBUG_RK_5_2
+  fprintf (stderr, "rk_objective_tb_5_2t: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_5_2t: end\n");
 #endif
   return o;
 }

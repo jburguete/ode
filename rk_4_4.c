@@ -71,9 +71,7 @@ tb_print_maxima_4_4 (FILE * file,       ///< file.
   fprintf (file, "b42*b21*t1^2+b43*(b31*t1^2+b32*t2^2)-1/12;\n");
   fprintf (file, "b42*t2*b21*t1+b43*t3*(b31*t1+b32*t2)-1/8;\n");
   fprintf (file, "b41*t1^3+b42*t2^3+b43*t3^3-1/4;\n");
-#if RK_ACCURATE
   fprintf (file, "b41*t1^4+b42*t2^4+b43*t3^4-1/5;\n");
-#endif
 }
 
 /**
@@ -102,13 +100,9 @@ rk_tb_4_4 (Optimize * optimize) ///< Optimize struct.
 #endif
   tb = optimize->coefficient;
   r = optimize->random_data;
-  t1 (tb) = r[0];
-#if RK_ACCURATE
-  t2 (tb) = 0.5L * (t1 (tb) - 0.6L) / (t1 (tb) - 0.5L);
-#else
-  t2 (tb) = r[1];
-#endif
   t4 (tb) = 1.L;
+  t1 (tb) = r[0];
+  t2 (tb) = r[1];
   t3 (tb) = (0.2L - 0.25L * t1 (tb) - (0.25L - 1.L / 3.L * t1 (tb)) * t2 (tb))
     / (0.25L - 1.L / 3.L * t1 (tb) - (1.L / 3.L - 0.5L * t1 (tb)) * t2 (tb));
   b42 (tb) = (1.L / 12.L - 1.L / 6.L * t1 (tb))
@@ -123,6 +117,44 @@ rk_tb_4_4 (Optimize * optimize) ///< Optimize struct.
     / (b43 (tb) * t2 (tb) * (t2 (tb) - t1 (tb)));
   b21 (tb) = 1.L / 24.L / (t1 (tb) * b43 (tb) * b32 (tb));
   rk_b_4 (tb);
+#if DEBUG_RK_4_4
+  fprintf (stderr, "rk_tb_4_4: end\n");
+#endif
+}
+
+/**
+ * Function to obtain the coefficients of a 4 steps 4th order, 5th order in
+ * equations depending only in time, Runge-Kutta method.
+ */
+void
+rk_tb_4_4t (Optimize * optimize)        ///< Optimize struct.
+{
+  long double *tb, *r;
+#if DEBUG_RK_4_4
+  fprintf (stderr, "rk_tb_4_4t: start\n");
+#endif
+  tb = optimize->coefficient;
+  r = optimize->random_data;
+  t4 (tb) = 1.L;
+  t1 (tb) = r[0];
+  t2 (tb) = 0.5L * (t1 (tb) - 0.6L) / (t1 (tb) - 0.5L);
+  t3 (tb) = (0.2L - 0.25L * t1 (tb) - (0.25L - 1.L / 3.L * t1 (tb)) * t2 (tb))
+    / (0.25L - 1.L / 3.L * t1 (tb) - (1.L / 3.L - 0.5L * t1 (tb)) * t2 (tb));
+  b42 (tb) = (1.L / 12.L - 1.L / 6.L * t1 (tb))
+    / (t2 (tb) * (t2 (tb) - t1 (tb)) * (1.L - t2 (tb)));
+  b43 (tb) = (1.L / 3.L - 0.5L * t1 (tb)
+              - b42 (tb) * t2 (tb) * (t2 (tb) - t1 (tb))) / (1.L - t1 (tb));
+  b41 (tb) = (0.5L - b42 (tb) * t2 (tb) - b43 (tb) * t3 (tb)) / t1 (tb);
+  b31 (tb) = ((0.125L - 1.L / 6.L * t2 (tb)) / (1.L - t2 (tb))
+              - (1.L / 12.L - 1.L / 6.L * t1 (tb)) / (t2 (tb) - t1 (tb)))
+    / (b43 (tb) * t1 (tb));
+  b32 (tb) = (1.L / 12.L - 1.L / 6.L * t1 (tb))
+    / (b43 (tb) * t2 (tb) * (t2 (tb) - t1 (tb)));
+  b21 (tb) = 1.L / 24.L / (t1 (tb) * b43 (tb) * b32 (tb));
+  rk_b_4 (tb);
+#if DEBUG_RK_4_4
+  fprintf (stderr, "rk_tb_4_4t: end\n");
+#endif
 }
 
 /**
@@ -164,13 +196,64 @@ rk_objective_tb_4_4 (RK * rk)   ///< RK struct.
     o += b42 (tb);
   if (b43 (tb) < 0.L)
     o += b43 (tb);
-#if RK_ACCURATE
-  if (isnan (t2 (tb)))
+  if (o < 0.L)
+    {
+      o = 40.L - o;
+      goto end;
+    }
+  o = 30.L + fmaxl (1.L, fmaxl (t1 (tb), fmaxl (t2 (tb), t3 (tb))));
+  if (rk->strong)
+    {
+      rk_bucle_ac (rk);
+      o = fminl (o, *rk->ac0->optimal);
+    }
+end:
+#if DEBUG_RK_4_4
+  fprintf (stderr, "rk_objective_tb_4_4: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_4_4: end\n");
+#endif
+  return o;
+}
+
+/**
+ * Function to calculate the objective function of a 4 steps 4th order, 5th
+ * order in equations depending only in time, Runge-Kutta method.
+ *
+ * \return objective function value.
+ */
+long double
+rk_objective_tb_4_4t (RK * rk)  ///< RK struct.
+{
+  long double *tb;
+  long double o;
+#if DEBUG_RK_4_4
+  fprintf (stderr, "rk_objective_tb_4_4: start\n");
+#endif
+  tb = rk->tb->coefficient;
+  if (isnan (t2 (tb)) || isnan (t3 (tb)) || isnan (b21 (tb)) || isnan (b31 (tb))
+      || isnan (b32 (tb)) || isnan (b41 (tb)) || isnan (b42 (tb))
+      || isnan (b43 (tb)))
     {
       o = INFINITY;
       goto end;
     }
-#endif
+  o = fminl (0.L, b20 (tb));
+  if (b21 (tb) < 0.L)
+    o += b21 (tb);
+  if (b30 (tb) < 0.L)
+    o += b30 (tb);
+  if (b31 (tb) < 0.L)
+    o += b31 (tb);
+  if (b32 (tb) < 0.L)
+    o += b32 (tb);
+  if (b40 (tb) < 0.L)
+    o += b40 (tb);
+  if (b41 (tb) < 0.L)
+    o += b41 (tb);
+  if (b42 (tb) < 0.L)
+    o += b42 (tb);
+  if (b43 (tb) < 0.L)
+    o += b43 (tb);
   if (o < 0.L)
     {
       o = 40.L - o;

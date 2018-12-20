@@ -68,14 +68,28 @@ const unsigned int random_tb_6_2[19]
  * steps 2nd order Runge-Kutta method.
  */
 void
-rk_print_maxima_6_2 (FILE * file,       ///< file.
+tb_print_maxima_6_2 (FILE * file,       ///< file.
                      unsigned int nsteps __attribute__ ((unused)),
                      ///< steps number.
                      unsigned int order __attribute__ ((unused)))
   ///< accuracy order.
 {
-  fprintf (file, "a60+a61+a62+a63+a64+a65-1;\n");
+  fprintf (file, "b60+b61+b62+b63+b64+b65-1;\n");
   fprintf (file, "b61*t1+b62*t2+b63*t3+b64*t4+b65*t5-1/2;\n");
+  fprintf (file, "b61*t1^2+b62*t2^2+b63*t3^2+b64*t4^2+b65*t5^2-1/3;\n");
+}
+
+/**
+ * Function to print a maxima format file to check the accuracy order of a 6
+ * steps 2nd order Runge-Kutta method.
+ */
+void
+rk_print_maxima_6_2 (FILE * file,       ///< file.
+                     unsigned int nsteps,       ///< steps number.
+                     unsigned int order)        ///< accuracy order.
+{
+  tb_print_maxima_6_2 (file, nsteps, order);
+  rk_print_maxima_6 (file);
 }
 
 /**

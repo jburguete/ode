@@ -71,9 +71,7 @@ tb_print_maxima_4_2 (FILE * file,       ///< file.
 {
   fprintf (file, "b40+b41+b42+b43-1;\n");
   fprintf (file, "b41*t1+b42*t2+b43*t3-1/2;\n");
-#if RK_ACCURATE
   fprintf (file, "b41*t1^2+b42*t2^2+b43*t3^2-1/3;\n");
-#endif
 }
 
 /**
@@ -102,25 +100,50 @@ rk_tb_4_2 (Optimize * optimize) ///< Optimize struct.
 #endif
   tb = optimize->coefficient;
   r = optimize->random_data;
+  t4 (tb) = 1.L;
   t1 (tb) = r[0];
   t2 (tb) = r[1];
   b21 (tb) = r[2];
   t3 (tb) = r[3];
   b31 (tb) = r[4];
   b32 (tb) = r[5];
-  b42 (tb) = r[6];
-#if RK_ACCURATE
-  b43 (tb) = ((1.L / 3.L - b42 (tb) * sqr (t2 (tb)))
-              - (0.5L - b42 (tb) * t2 (tb)) * t1 (tb))
-    / (t3 (tb) * (t3 (tb) - t1 (tb)));
-#else
-  b43 (tb) = r[7];
-#endif
-  t4 (tb) = 1.L;
-  b41 (tb) = (0.5L - b42 (tb) * t2 (tb) - b43 (tb) * t3 (tb)) / t1 (tb);
+  b41 (tb) = r[6];
+  b42 (tb) = r[7];
+  b43 (tb) = (0.5L - b41 (tb) * t1 (tb) - b42 (tb) * t2 (tb)) / t3 (tb);
   rk_b_4 (tb);
 #if DEBUG_RK_4_2
   fprintf (stderr, "rk_tb_4_2: end\n");
+#endif
+}
+
+/**
+ * Function to obtain the coefficients of a 4 steps 2nd order, 3rd order in
+ * equations depending only in time, Runge-Kutta method.
+ */
+void
+rk_tb_4_2t (Optimize * optimize)        ///< Optimize struct.
+{
+  long double *tb, *r;
+#if DEBUG_RK_4_2
+  fprintf (stderr, "rk_tb_4_2t: start\n");
+#endif
+  tb = optimize->coefficient;
+  r = optimize->random_data;
+  t4 (tb) = 1.L;
+  t1 (tb) = r[0];
+  t2 (tb) = r[1];
+  b21 (tb) = r[2];
+  t3 (tb) = r[3];
+  b31 (tb) = r[4];
+  b32 (tb) = r[5];
+  b41 (tb) = r[6];
+  b42 (tb) = (1.L / 3.L - 0.5L * t3 (tb)
+              - b41 (tb) * t1 (tb) * (t1 (tb) - t3 (tb)))
+    / (t2 (tb) * (t2 (tb) - t3 (tb)));
+  b43 (tb) = (0.5L - b41 (tb) * t1 (tb) - b42 (tb) * t2 (tb)) / t3 (tb);
+  rk_b_4 (tb);
+#if DEBUG_RK_4_2
+  fprintf (stderr, "rk_tb_4_2t: end\n");
 #endif
 }
 
@@ -139,7 +162,7 @@ rk_objective_tb_4_2 (RK * rk)   ///< RK struct.
   fprintf (stderr, "rk_objective_tb_4_2: start\n");
 #endif
   tb = rk->tb->coefficient;
-  if (isnan (b41 (tb)))
+  if (isnan (b43 (tb)))
     {
       o = INFINITY;
       goto end;
@@ -149,17 +172,8 @@ rk_objective_tb_4_2 (RK * rk)   ///< RK struct.
     o += b30 (tb);
   if (b40 (tb) < 0.L)
     o += b40 (tb);
-  if (b41 (tb) < 0.L)
-    o += b41 (tb);
-#if RK_ACCURATE
-  if (isnan (b43 (tb)))
-    {
-      o = INFINITY;
-      goto end;
-    }
   if (b43 (tb) < 0.L)
     o += b43 (tb);
-#endif
   if (o < 0.L)
     {
       o = 40.L - o;
@@ -175,6 +189,54 @@ end:
 #if DEBUG_RK_4_2
   fprintf (stderr, "rk_objective_tb_4_2: optimal=%Lg\n", o);
   fprintf (stderr, "rk_objective_tb_4_2: end\n");
+#endif
+  return o;
+}
+
+/**
+ * Function to calculate the objective function of a 4 steps 2nd order, 3rd
+ * order in equations depending only in time, Runge-Kutta method.
+ *
+ * \return objective function value.
+ */
+long double
+rk_objective_tb_4_2t (RK * rk)  ///< RK struct.
+{
+  long double *tb;
+  long double o;
+#if DEBUG_RK_4_2
+  fprintf (stderr, "rk_objective_tb_4_2t: start\n");
+#endif
+  tb = rk->tb->coefficient;
+  if (isnan (b42 (tb)) || isnan (b43 (tb)))
+    {
+      o = INFINITY;
+      goto end;
+    }
+  o = fminl (0.L, b20 (tb));
+  if (b30 (tb) < 0.L)
+    o += b30 (tb);
+  if (b40 (tb) < 0.L)
+    o += b40 (tb);
+  if (b42 (tb) < 0.L)
+    o += b42 (tb);
+  if (b43 (tb) < 0.L)
+    o += b43 (tb);
+  if (o < 0.L)
+    {
+      o = 40.L - o;
+      goto end;
+    }
+  o = 30.L + fmaxl (1.L, fmaxl (t1 (tb), fmaxl (t2 (tb), t3 (tb))));
+  if (rk->strong)
+    {
+      rk_bucle_ac (rk);
+      o = fminl (o, *rk->ac0->optimal);
+    }
+end:
+#if DEBUG_RK_4_2
+  fprintf (stderr, "rk_objective_tb_4_2t: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_4_2t: end\n");
 #endif
   return o;
 }

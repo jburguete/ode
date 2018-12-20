@@ -47,7 +47,9 @@ typedef struct
   ///< Optimize struct to define a-c coefficients data and methods.
   Optimize ac0[1];
   ///< Optimize struct to define initial a-c coefficients data and methods.
-  unsigned int strong;          ///< Boolean to cope with strong stability.
+  unsigned int strong;          ///< boolean to cope with strong stability.
+  unsigned int time_accuracy;
+  ///< boolean to cope with extended time accuracy.
 } RK;
 
 #define RUNGE_KUTTA(o) ((Optimize *)((Optimize *)o)->data)

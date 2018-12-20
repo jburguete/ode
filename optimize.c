@@ -395,6 +395,7 @@ optimize_create (Optimize * optimize,   ///< Optimize struct.
   nfree = optimize->nfree;
   for (optimize->nsimulations = nsimulations, i = 1; i < nfree; ++i)
     optimize->nsimulations *= nsimulations;
+  printf ("nsimulations=%Lu nfree=%u\n", optimize->nsimulations, nfree);
   optimize->nsearch = nsearch * nfree;
   optimize->niterations = niterations;
 }

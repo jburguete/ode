@@ -69,9 +69,7 @@ tb_print_maxima_3_2 (FILE * file,       ///< file.
 {
   fprintf (file, "b30+b31+b32-1;\n");
   fprintf (file, "b31*t1+b32*t2-1/2;\n");
-#if RK_ACCURATE
   fprintf (file, "b31*t1^2+b32*t2^2-1/3;\n");
-#endif
 }
 
 /**
@@ -100,20 +98,42 @@ rk_tb_3_2 (Optimize * optimize) ///< Optimize struct.
 #endif
   tb = optimize->coefficient;
   r = optimize->random_data;
+  t3 (tb) = 1.L;
   t1 (tb) = r[0];
   t2 (tb) = r[1];
   b21 (tb) = r[2];
-#if RK_ACCURATE
-  b32 (tb) = (1.L / 3.L - 0.5L) / (t2 (tb) * (t2 (tb) - t1 (tb)));
-#else
   b32 (tb) = r[3];
-#endif
-  t3 (tb) = 1.L;
   b31 (tb) = (0.5L - b32 (tb) * t2 (tb)) / t1 (tb);
   rk_b_3 (tb);
 #if DEBUG_RK_3_2
   rk_print_tb_3 (tb, "rk_tb_3_2", stderr);
   fprintf (stderr, "rk_tb_3_2: end\n");
+#endif
+}
+
+/**
+ * Function to obtain the coefficients of a 3 steps 2nd order, 3rd order in
+ * equations depending only in time, Runge-Kutta method.
+ */
+void
+rk_tb_3_2t (Optimize * optimize)        ///< Optimize struct.
+{
+  long double *tb, *r;
+#if DEBUG_RK_3_2
+  fprintf (stderr, "rk_tb_3_2t: start\n");
+#endif
+  tb = optimize->coefficient;
+  r = optimize->random_data;
+  t3 (tb) = 1.L;
+  t1 (tb) = r[0];
+  t2 (tb) = r[1];
+  b21 (tb) = r[2];
+  b32 (tb) = (1.L / 3.L - 0.5L) / (t2 (tb) * (t2 (tb) - t1 (tb)));
+  b31 (tb) = (0.5L - b32 (tb) * t2 (tb)) / t1 (tb);
+  rk_b_3 (tb);
+#if DEBUG_RK_3_2
+  rk_print_tb_3 (tb, "rk_tb_3_2t", stderr);
+  fprintf (stderr, "rk_tb_3_2t: end\n");
 #endif
 }
 
@@ -142,15 +162,6 @@ rk_objective_tb_3_2 (RK * rk)   ///< RK struct.
     o += b30 (tb);
   if (b31 (tb) < 0.L)
     o += b31 (tb);
-#if RK_ACCURATE
-  if (isnan (b32 (tb)))
-    {
-      o = INFINITY;
-      goto end;
-    }
-  if (b32 (tb) < 0.L)
-    o += b32 (tb);
-#endif
   if (o < 0.L)
     {
       o = 40.L - o;
@@ -166,6 +177,52 @@ end:
 #if DEBUG_RK_3_2
   fprintf (stderr, "rk_objective_tb_3_2: optimal=%Lg\n", o);
   fprintf (stderr, "rk_objective_tb_3_2: end\n");
+#endif
+  return o;
+}
+
+/**
+ * Function to calculate the objective function of a 3 steps 2nd order, 3rd
+ * order in equations depending only in time, Runge-Kutta method.
+ *
+ * \return objective function value.
+ */
+long double
+rk_objective_tb_3_2t (RK * rk)  ///< RK struct.
+{
+  long double *tb;
+  long double o;
+#if DEBUG_RK_3_2
+  fprintf (stderr, "rk_objective_tb_3_2t: start\n");
+#endif
+  tb = rk->tb->coefficient;
+  if (isnan (b31 (tb)) || isnan (b32 (tb)))
+    {
+      o = INFINITY;
+      goto end;
+    }
+  o = fminl (0.L, b20 (tb));
+  if (b30 (tb) < 0.L)
+    o += b30 (tb);
+  if (b31 (tb) < 0.L)
+    o += b31 (tb);
+  if (b32 (tb) < 0.L)
+    o += b32 (tb);
+  if (o < 0.L)
+    {
+      o = 40.L - o;
+      goto end;
+    }
+  o = 30.L + fmaxl (1.L, fmaxl (t1 (tb), t2 (tb)));
+  if (rk->strong)
+    {
+      rk_bucle_ac (rk);
+      o = fminl (o, *rk->ac0->optimal);
+    }
+end:
+#if DEBUG_RK_3_2
+  fprintf (stderr, "rk_objective_tb_3_2t: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_3_2t: end\n");
 #endif
   return o;
 }

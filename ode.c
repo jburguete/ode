@@ -224,6 +224,10 @@ enum
   METHOD_TYPE_RUNGE_KUTTA = 1,  ///< Runge-Kutta method.
   METHOD_TYPE_STEPS = 2,        ///< multi-steps method.
   METHOD_TYPE_RUNGE_KUTTA_SIMPLE = 3,   ///< simple stable Runge-Kutta method.
+  METHOD_TYPE_RUNGE_KUTTA_TIME = 4,
+  ///< Runge-Kutta method with extended accuracy in time.
+  METHOD_TYPE_RUNGE_KUTTA_TIME_SIMPLE = 5,
+  ///< simple stable Runge-Kutta method with extended accuracy in time.
 } MethodType;
 
 unsigned int nsteps;            ///< steps number.
@@ -288,7 +292,7 @@ main (int argn,                 ///< arguments number.
   if ((argn != 10 && argn != 15)
       || sscanf (argc[1], "%u", &type) != 1
       || type < 1
-      || type > 3
+      || type > 4
       || sscanf (argc[1], "%u", &type) != 1
       || sscanf (argc[2], "%u", &nsteps) != 1
       || sscanf (argc[3], "%u", &order) != 1
@@ -350,14 +354,22 @@ main (int argn,                 ///< arguments number.
 #endif
 
   j = rank * nthreads;
-  if (type == METHOD_TYPE_RUNGE_KUTTA)
+  switch (type)
     {
+    case METHOD_TYPE_RUNGE_KUTTA:
+    case METHOD_TYPE_RUNGE_KUTTA_TIME:
+
 #if PRINT_RANDOM
       file_random2 = fopen ("random2", "w");
 #endif
+
       // Create optimize data
       rk = (RK *) alloca (nthreads * sizeof (RK));
       rk->strong = 1;
+      if (type == METHOD_TYPE_RUNGE_KUTTA)
+        rk->time_accuracy = 0;
+      else
+        rk->time_accuracy = 1;
       if (!rk_select (rk, nsteps, order))
         return 4;
       tb = rk->tb;
@@ -394,6 +406,7 @@ main (int argn,                 ///< arguments number.
       tb->print ((Optimize *) rk, file);
       tb->print_maxima (file, nsteps, order);
       fclose (file);
+
 #if PRINT_RANDOM
       fclose (file_random2);
 #endif
@@ -402,9 +415,10 @@ main (int argn,                 ///< arguments number.
       g_slice_free1 (nfree2 * sizeof (long double), value_optimal2);
       for (i = 0; i < nthreads; ++i)
         rk_delete (rk + i);
-    }
-  else if (type == METHOD_TYPE_STEPS)
-    {
+      break;
+
+    case METHOD_TYPE_STEPS:
+
       // Create optimize data
       s = (Optimize *) alloca (nthreads * sizeof (Optimize));
       if (!steps_select (s, nsteps, order))
@@ -437,15 +451,21 @@ main (int argn,                 ///< arguments number.
       // Free memory
       for (i = 0; i < nthreads; ++i)
         optimize_delete (s + i);
-    }
-  else if (type == METHOD_TYPE_RUNGE_KUTTA_SIMPLE)
-    {
+      break;
+
+    case METHOD_TYPE_RUNGE_KUTTA_SIMPLE:
+    case METHOD_TYPE_RUNGE_KUTTA_TIME_SIMPLE:
+
 #if PRINT_RANDOM
       file_random2 = fopen ("random2", "w");
 #endif
       // Create optimize data
       rk = (RK *) alloca (nthreads * sizeof (RK));
       rk->strong = 0;
+      if (type == METHOD_TYPE_RUNGE_KUTTA_SIMPLE)
+        rk->time_accuracy = 0;
+      else
+        rk->time_accuracy = 1;
       if (!rk_select (rk, nsteps, order))
         return 4;
       tb = rk->tb;
@@ -472,6 +492,7 @@ main (int argn,                 ///< arguments number.
       tb->print ((Optimize *) rk, file);
       tb->print_maxima (file, nsteps, order);
       fclose (file);
+
 #if PRINT_RANDOM
       fclose (file_random2);
 #endif
@@ -479,9 +500,10 @@ main (int argn,                 ///< arguments number.
       // Free memory
       for (i = 0; i < nthreads; ++i)
         rk_delete (rk + i);
-    }
-  else
-    {
+
+      break;
+
+    default:
       printf ("Unknown method type\n");
       return 3;
     }
@@ -489,6 +511,7 @@ main (int argn,                 ///< arguments number.
   printf ("optimal=%.19Le cpu time=%lg real time=%lu\n",
           optimal, (clock () - t0) / ((double) CLOCKS_PER_SEC),
           time (NULL) - d0);
+
 #if PRINT_RANDOM
   fclose (file_random);
 #endif

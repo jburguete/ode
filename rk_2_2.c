@@ -69,9 +69,7 @@ tb_print_maxima_2_2 (FILE * file,       ///< file.
 {
   fprintf (file, "b20+b21-1;\n");
   fprintf (file, "b21*t1-1/2;\n");
-#if RK_ACCURATE
   fprintf (file, "b21*t1^2-1/3;\n");
-#endif
 }
 
 /**
@@ -100,17 +98,35 @@ rk_tb_2_2 (Optimize * optimize) ///< Optimize struct.
 #endif
   tb = optimize->coefficient;
   r = optimize->random_data;
-#if RK_ACCURATE
-  t1 (tb) = 2.L / 3.L;
-#else
-  t1 (tb) = r[0];
-#endif
   t2 (tb) = 1.L;
+  t1 (tb) = r[0];
   b21 (tb) = 0.5L / t1 (tb);
   rk_b_2 (tb);
 #if DEBUG_RK_2_2
   rk_print_tb_2 (tb, "rk_tb_2_2", stderr);
   fprintf (stderr, "rk_tb_2_2: end\n");
+#endif
+}
+
+/**
+ * Function to obtain the coefficients of a 2 steps 2nd order, 3rd order in
+ * equations depending only in time, Runge-Kutta method.
+ */
+void
+rk_tb_2_2t (Optimize * optimize)        ///< Optimize struct.
+{
+  long double *tb;
+#if DEBUG_RK_2_2
+  fprintf (stderr, "rk_tb_2_2t: start\n");
+#endif
+  tb = optimize->coefficient;
+  t2 (tb) = 1.L;
+  t1 (tb) = 2.L / 3.L;
+  b21 (tb) = 0.5L / t1 (tb);
+  rk_b_2 (tb);
+#if DEBUG_RK_2_2
+  rk_print_tb_2 (tb, "rk_tb_2_2t", stderr);
+  fprintf (stderr, "rk_tb_2_2t: end\n");
 #endif
 }
 
@@ -144,6 +160,32 @@ end:
 #if DEBUG_RK_2_2
   fprintf (stderr, "rk_objective_tb_2_2: optimal=%Lg\n", o);
   fprintf (stderr, "rk_objective_tb_2_2: end\n");
+#endif
+  return o;
+}
+
+/**
+ * Function to calculate the objective function of a 2 steps 2nd order, 3rd 
+ * order in equations depending only in time, Runge-Kutta method.
+ *
+ * \return objective function value.
+ */
+long double
+rk_objective_tb_2_2t (RK * rk)  ///< RK struct.
+{
+  long double o;
+#if DEBUG_RK_2_2
+  fprintf (stderr, "rk_objective_tb_2_2t: start\n");
+#endif
+  o = 31.L;
+  if (rk->strong)
+    {
+      rk_bucle_ac (rk);
+      o = fminl (o, *rk->ac0->optimal);
+    }
+#if DEBUG_RK_2_2
+  fprintf (stderr, "rk_objective_tb_2_2t: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_2_2t: end\n");
 #endif
   return o;
 }

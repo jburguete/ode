@@ -1590,8 +1590,16 @@ rk_select (RK * rk,             ///< RK struct.
           tb->minimum0 = minimum_tb_2_2;
           tb->interval0 = interval_tb_2_2;
           tb->random_type = random_tb_2_2;
-          tb->method = (OptimizeMethod) rk_tb_2_2;
-          tb->objective = (OptimizeObjective) rk_objective_tb_2_2;
+          if (rk->time_accuracy)
+            {
+              tb->method = (OptimizeMethod) rk_tb_2_2t;
+              tb->objective = (OptimizeObjective) rk_objective_tb_2_2t;
+            }
+          else
+            {
+              tb->method = (OptimizeMethod) rk_tb_2_2;
+              tb->objective = (OptimizeObjective) rk_objective_tb_2_2;
+            }
           break;
         default:
           printf ("Bad order\n");
@@ -1616,8 +1624,16 @@ rk_select (RK * rk,             ///< RK struct.
           tb->minimum0 = minimum_tb_3_2;
           tb->interval0 = interval_tb_3_2;
           tb->random_type = random_tb_3_2;
-          tb->method = (OptimizeMethod) rk_tb_3_2;
-          tb->objective = (OptimizeObjective) rk_objective_tb_3_2;
+          if (rk->time_accuracy)
+            {
+              tb->method = (OptimizeMethod) rk_tb_3_2t;
+              tb->objective = (OptimizeObjective) rk_objective_tb_3_2t;
+            }
+          else
+            {
+              tb->method = (OptimizeMethod) rk_tb_3_2;
+              tb->objective = (OptimizeObjective) rk_objective_tb_3_2;
+            }
           break;
         case 3:
           tb->nfree = 2;
@@ -1628,8 +1644,16 @@ rk_select (RK * rk,             ///< RK struct.
           tb->minimum0 = minimum_tb_3_3;
           tb->interval0 = interval_tb_3_3;
           tb->random_type = random_tb_3_3;
-          tb->method = (OptimizeMethod) rk_tb_3_3;
-          tb->objective = (OptimizeObjective) rk_objective_tb_3_3;
+          if (rk->time_accuracy)
+            {
+              tb->method = (OptimizeMethod) rk_tb_3_3t;
+              tb->objective = (OptimizeObjective) rk_objective_tb_3_3t;
+            }
+          else
+            {
+              tb->method = (OptimizeMethod) rk_tb_3_3;
+              tb->objective = (OptimizeObjective) rk_objective_tb_3_3;
+            }
           break;
         default:
           printf ("Bad order\n");
@@ -1654,8 +1678,16 @@ rk_select (RK * rk,             ///< RK struct.
           tb->minimum0 = minimum_tb_4_2;
           tb->interval0 = interval_tb_4_2;
           tb->random_type = random_tb_4_2;
-          tb->method = (OptimizeMethod) rk_tb_4_2;
-          tb->objective = (OptimizeObjective) rk_objective_tb_4_2;
+          if (rk->time_accuracy)
+            {
+              tb->method = (OptimizeMethod) rk_tb_4_2t;
+              tb->objective = (OptimizeObjective) rk_objective_tb_4_2t;
+            }
+          else
+            {
+              tb->method = (OptimizeMethod) rk_tb_4_2;
+              tb->objective = (OptimizeObjective) rk_objective_tb_4_2;
+            }
           break;
         case 3:
           tb->nfree = 6;
@@ -1666,8 +1698,16 @@ rk_select (RK * rk,             ///< RK struct.
           tb->minimum0 = minimum_tb_4_3;
           tb->interval0 = interval_tb_4_3;
           tb->random_type = random_tb_4_3;
-          tb->method = (OptimizeMethod) rk_tb_4_3;
-          tb->objective = (OptimizeObjective) rk_objective_tb_4_3;
+          if (rk->time_accuracy)
+            {
+              tb->method = (OptimizeMethod) rk_tb_4_3t;
+              tb->objective = (OptimizeObjective) rk_objective_tb_4_3t;
+            }
+          else
+            {
+              tb->method = (OptimizeMethod) rk_tb_4_3;
+              tb->objective = (OptimizeObjective) rk_objective_tb_4_3;
+            }
           break;
         case 4:
           tb->nfree = 2;
@@ -1678,8 +1718,16 @@ rk_select (RK * rk,             ///< RK struct.
           tb->minimum0 = minimum_tb_4_4;
           tb->interval0 = interval_tb_4_4;
           tb->random_type = random_tb_4_4;
-          tb->method = (OptimizeMethod) rk_tb_4_4;
-          tb->objective = (OptimizeObjective) rk_objective_tb_4_4;
+          if (rk->time_accuracy)
+            {
+              tb->method = (OptimizeMethod) rk_tb_4_4t;
+              tb->objective = (OptimizeObjective) rk_objective_tb_4_4t;
+            }
+          else
+            {
+              tb->method = (OptimizeMethod) rk_tb_4_4;
+              tb->objective = (OptimizeObjective) rk_objective_tb_4_4;
+            }
           break;
         default:
           printf ("Bad order\n");
@@ -1697,21 +1745,43 @@ rk_select (RK * rk,             ///< RK struct.
         {
         case 2:
           tb->nfree = 13;
-          tb->print_maxima = rk_print_maxima_5_2;
+          if (strong)
+            tb->print_maxima = rk_print_maxima_5_2;
+          else
+            tb->print_maxima = tb_print_maxima_5_2;
           tb->minimum0 = minimum_tb_5_2;
           tb->interval0 = interval_tb_5_2;
           tb->random_type = random_tb_5_2;
-          tb->method = (OptimizeMethod) rk_tb_5_2;
-          tb->objective = (OptimizeObjective) rk_objective_tb_5_2;
+          if (rk->time_accuracy)
+            {
+              tb->method = (OptimizeMethod) rk_tb_5_2t;
+              tb->objective = (OptimizeObjective) rk_objective_tb_5_2t;
+            }
+          else
+            {
+              tb->method = (OptimizeMethod) rk_tb_5_2;
+              tb->objective = (OptimizeObjective) rk_objective_tb_5_2;
+            }
           break;
         case 3:
           tb->nfree = 11;
-          tb->print_maxima = rk_print_maxima_5_3;
+          if (strong)
+            tb->print_maxima = rk_print_maxima_5_3;
+          else
+            tb->print_maxima = tb_print_maxima_5_3;
           tb->minimum0 = minimum_tb_5_3;
           tb->interval0 = interval_tb_5_3;
           tb->random_type = random_tb_5_3;
-          tb->method = (OptimizeMethod) rk_tb_5_3;
-          tb->objective = (OptimizeObjective) rk_objective_tb_5_3;
+          if (rk->time_accuracy)
+            {
+              tb->method = (OptimizeMethod) rk_tb_5_3t;
+              tb->objective = (OptimizeObjective) rk_objective_tb_5_3t;
+            }
+          else
+            {
+              tb->method = (OptimizeMethod) rk_tb_5_3;
+              tb->objective = (OptimizeObjective) rk_objective_tb_5_3;
+            }
           break;
         case 4:
           tb->nfree = 7;
@@ -1742,6 +1812,18 @@ rk_select (RK * rk,             ///< RK struct.
           tb->minimum0 = minimum_tb_6_2;
           tb->interval0 = interval_tb_6_2;
           tb->random_type = random_tb_6_2;
+/*
+		  if (rk->time_accuracy)
+			{
+              tb->method = (OptimizeMethod) rk_tb_6_2t;
+              tb->objective = (OptimizeObjective) rk_objective_tb_6_2t;
+			}
+		  else
+			{
+              tb->method = (OptimizeMethod) rk_tb_6_2;
+              tb->objective = (OptimizeObjective) rk_objective_tb_6_2;
+			}
+*/
           tb->method = (OptimizeMethod) rk_tb_6_2;
           tb->objective = (OptimizeObjective) rk_objective_tb_6_2;
           break;
@@ -1754,9 +1836,8 @@ rk_select (RK * rk,             ///< RK struct.
       printf ("Bad steps number\n");
       return 0;
     }
-#if RK_ACCURATE
-  --tb->nfree;
-#endif
+  if (rk->time_accuracy)
+    --tb->nfree;
 
 #if DEBUG_RK
   fprintf (stderr, "rk_select: end\n");

@@ -75,6 +75,7 @@ rk_print_maxima_5_4 (FILE * file,       ///< file.
   fprintf (file, "b52*t2*b21*t1+b53*t3*(b31*t1+b32*t2)"
            "+b54*t4*(b41*t1+b42*t2+b43*t3)-1/8;\n");
   fprintf (file, "b51*t1^3+b52*t2^3+b53*t3^3+b54*t4^3-1/4;\n");
+  fprintf (file, "b51*t1^4+b52*t2^4+b53*t3^4+b54*t4^4-1/5;\n");
 }
 
 /**
@@ -91,6 +92,7 @@ rk_tb_5_4 (Optimize * optimize) ///< Optimize struct.
 #endif
   tb = optimize->coefficient;
   r = optimize->random_data;
+  t5 (tb) = 1.L;
   t1 (tb) = r[0];
   t2 (tb) = r[1];
   b21 (tb) = r[2];
@@ -98,7 +100,6 @@ rk_tb_5_4 (Optimize * optimize) ///< Optimize struct.
   b31 (tb) = r[4];
   b32 (tb) = r[5];
   t4 (tb) = r[6];
-  t5 (tb) = 1.L;
   A[0] = t1 (tb);
   B[0] = t2 (tb);
   C[0] = t3 (tb);

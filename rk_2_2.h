@@ -41,6 +41,8 @@ extern const unsigned int random_tb_2_2[1];
 void tb_print_maxima_2_2 (FILE * file, unsigned int nsteps, unsigned int order);
 void rk_print_maxima_2_2 (FILE * file, unsigned int nsteps, unsigned int order);
 void rk_tb_2_2 (Optimize * optimize);
+void rk_tb_2_2t (Optimize * optimize);
 long double rk_objective_tb_2_2 (RK * rk);
+long double rk_objective_tb_2_2t (RK * rk);
 
 #endif

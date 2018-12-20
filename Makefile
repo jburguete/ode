@@ -1,4 +1,4 @@
-.PHONY: clean
+.PHONY: all clean strip
 
 cfiles = optimize.h utils.h config.h Makefile
 
@@ -64,6 +64,8 @@ cc = gcc -flto -g -std=gnu11
 cflags = `pkg-config --cflags glib-2.0 gthread-2.0 gsl` -c -O3 -march=native \
 	-Wall -Wextra -D_FORTIFY_SOURCE=2
 libs = -lm `pkg-config --libs glib-2.0 gthread-2.0 gsl`
+
+all: ode ode.pdf
 
 ode: $(ofiles) ode.o
 	$(cc) ode.o $(ofiles) $(libs) -o ode
@@ -218,8 +220,11 @@ rk_6_3.o: rk_6_3.c rk_6_3.h rk.h $(cfiles)
 ode.o: ode.c $(hfiles) $(cfiles)
 	$(cc) $(cflags) ode.c -o ode.o
 
+ode.pdf: ode.tex Makefile
+	pdflatex ode
+
 clean:
-	rm -rf ode *.o html latex
+	rm -rf ode *.{o,aux,toc,log} html latex
 
 strip: ode
 	strip ode
