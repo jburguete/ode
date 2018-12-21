@@ -222,6 +222,8 @@ ode.o: ode.c $(hfiles) $(cfiles)
 
 ode.pdf: ode.tex Makefile
 	pdflatex ode
+	pdflatex ode
+	pdflatex ode
 
 clean:
 	rm -rf ode *.{o,aux,toc,log} html latex

@@ -41,6 +41,8 @@ extern const unsigned int random_tb_5_4[7];
 void tb_print_maxima_5_4 (FILE * file, unsigned int nsteps, unsigned int order);
 void rk_print_maxima_5_4 (FILE * file, unsigned int nsteps, unsigned int order);
 void rk_tb_5_4 (Optimize * optimize);
+void rk_tb_5_4t (Optimize * optimize);
 long double rk_objective_tb_5_4 (RK * rk);
+long double rk_objective_tb_5_4t (RK * rk);
 
 #endif

@@ -263,8 +263,8 @@ main (int argn,                 ///< arguments number.
 #endif
 
   // Number of processors
-  nthreads = sysconf (_SC_NPROCESSORS_CONF);
-  //nthreads = 1;
+  //nthreads = sysconf (_SC_NPROCESSORS_CONF);
+  nthreads = 1;
 
   // Init the clock
   t0 = clock ();
@@ -292,7 +292,7 @@ main (int argn,                 ///< arguments number.
   if ((argn != 10 && argn != 15)
       || sscanf (argc[1], "%u", &type) != 1
       || type < 1
-      || type > 4
+      || type > 5
       || sscanf (argc[1], "%u", &type) != 1
       || sscanf (argc[2], "%u", &nsteps) != 1
       || sscanf (argc[3], "%u", &order) != 1

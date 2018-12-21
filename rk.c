@@ -1785,12 +1785,26 @@ rk_select (RK * rk,             ///< RK struct.
           break;
         case 4:
           tb->nfree = 7;
-          tb->print_maxima = rk_print_maxima_5_4;
+          if (strong)
+            tb->print_maxima = rk_print_maxima_5_4;
+          else
+            tb->print_maxima = tb_print_maxima_5_4;
           tb->minimum0 = minimum_tb_5_4;
           tb->interval0 = interval_tb_5_4;
           tb->random_type = random_tb_5_4;
-          tb->method = (OptimizeMethod) rk_tb_5_4;
-          tb->objective = (OptimizeObjective) rk_objective_tb_5_4;
+          if (rk->time_accuracy)
+            {
+#if RK_PAIR
+              --tb->nfree;
+#endif
+              tb->method = (OptimizeMethod) rk_tb_5_4t;
+              tb->objective = (OptimizeObjective) rk_objective_tb_5_4t;
+            }
+          else
+            {
+              tb->method = (OptimizeMethod) rk_tb_5_4;
+              tb->objective = (OptimizeObjective) rk_objective_tb_5_4;
+            }
           break;
         default:
           printf ("Bad order\n");
