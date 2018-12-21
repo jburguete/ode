@@ -55,7 +55,7 @@ const long double interval_tb_5_4[7] = { 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L };
 
 ///> array of freedom degree random function types for the t-b coefficients of
 ///> the 5 steps 4th order Runge-Kutta method.
-const unsigned int random_tb_5_4[7] = { 0, 0, 0, 0, 0, 0, 0 };
+const unsigned int random_tb_5_4[7] = { 2, 2, 2, 2, 2, 2, 2 };
 
 /**
  * Function to print a maxima format file to check the accuracy order of a 5
@@ -179,11 +179,11 @@ rk_tb_5_4t (Optimize * optimize) ///< Optimize struct.
   t5 (tb) = 1.L;
   t1 (tb) = r[0];
   t2 (tb) = r[1];
-  b21 (tb) = r[2];
-  t3 (tb) = r[3];
-  t4 (tb) = r[4];
+  t3 (tb) = r[2];
+  t4 (tb) = r[3];
+	b31 (tb) = r[4];
 #if !RK_PAIR
-	b31 (tb) = r[5];
+  b21 (tb) = r[5];
 #endif
   A[0] = t1 (tb);
   B[0] = t2 (tb);
@@ -210,6 +210,16 @@ rk_tb_5_4t (Optimize * optimize) ///< Optimize struct.
   b53 (tb) = E[2];
   b52 (tb) = E[1];
   b51 (tb) = E[0];
+#if RK_PAIR
+  e53 = (0.25L - 1.L / 3.L * t1 (tb) - (1.L / 3.L - 0.5L * t1 (tb) )* t2 (tb))
+		/ (t3 (tb) * (t3 (tb) - t2 (tb)) * (t3 (tb) - t1 (tb)));
+  e52 = (1.L / 3.L - 0.5L * t1 (tb) - t3 (tb) * (t3 (tb) - t1 (tb)) * e53)
+		/ (t2 (tb) * (t2 (tb) - t1 (tb)));
+	b21 (tb) = (1.L / 6.L * b53 (tb) * (t4 (tb) - t3 (tb)) 
+				      + e53 * (0.125L - 1.L / 6.L * t4 (tb)))
+		/ (t1 (tb) * (e52 * b53 (tb) * (t4 (tb) - t3 (tb)) 
+				          - e53 * b52 (tb) * (t4 (tb) - t2 (tb))));
+#endif
 	b32 (tb) = (1.L / 6.L * t4 (tb) - 0.125L 
 			        - t1 (tb) * (b52 (tb) * b21 (tb) * (t4 (tb) - t2 (tb))
 			                     + b53 (tb) * b31 (tb) * (t4 (tb) - t3 (tb))))
@@ -232,14 +242,6 @@ rk_tb_5_4t (Optimize * optimize) ///< Optimize struct.
   b43 (tb) = D[2] / b54 (tb);
   b42 (tb) = D[1] / b54 (tb);
   b41 (tb) = D[0] / b54 (tb);
-#if RK_PAIR
-  e53 = (0.25L - 1.L / 3.L * t1 (tb) - (1.L / 3.L - 0.5L * t1 (tb) )* t2 (tb))
-		/ (t3 (tb) * (t3 (tb) - t2 (tb)) * (t2 (tb) - t1 (tb)));
-  e52 = (1.L / 3.L - 0.5L * t1 (tb) - t3 (tb) * (t3 (tb) - t1 (tb)) * e53)
-		/ (t2 (tb) * (t2 (tb) - t1 (tb)));
-	b31 (tb) = ((1.L / 6.L - e52 * b21 (tb) * t1 (tb)) / e53 - b32 (tb) * t2 (tb))
-		/ t1 (tb);
-#endif
   rk_b_5 (tb);
 #if DEBUG_RK_5_4
 	rk_print_tb_5 (tb, "rk_tb_5_4t", stderr);
@@ -321,11 +323,30 @@ rk_objective_tb_5_4t (RK * rk)   ///< RK struct.
 {
   long double *tb;
   long double o;
+#if RK_PAIR
+	long double e50, e51, e52, e53, e54;
+#endif
 #if DEBUG_RK_5_4
   fprintf (stderr, "rk_objective_tb_5_4t: start\n");
 #endif
   tb = rk->tb->coefficient;
-  if (isnan (b31 (tb)) || isnan (b32 (tb)) || isnan (b41 (tb)) || 
+#if DEBUG_RK_5_4
+	rk_print_tb_5 (tb, "rk_objective_tb_5_4t", stderr);
+#endif
+#if RK_PAIR
+  e53 = (0.25L - 1.L / 3.L * t1 (tb) - (1.L / 3.L - 0.5L * t1 (tb) )* t2 (tb))
+		/ (t3 (tb) * (t3 (tb) - t2 (tb)) * (t3 (tb) - t1 (tb)));
+  e52 = (1.L / 3.L - 0.5L * t1 (tb) - t3 (tb) * (t3 (tb) - t1 (tb)) * e53)
+		/ (t2 (tb) * (t2 (tb) - t1 (tb)));
+  e51 = (0.5L - t2 (tb) * e52 - t3 (tb) * e53) / t1 (tb);
+	e50 = 1.L - e51 - e52 - e53;
+  if (isnan (e51) || isnan (e52) || isnan (e53)) 
+    {
+      o = INFINITY;
+      goto end;
+    }
+#endif
+  if (isnan (b21 (tb)) || isnan (b32 (tb)) || isnan (b41 (tb)) || 
 			isnan (b42 (tb)) || isnan (b43 (tb)) || isnan (b51 (tb)) || 
 			isnan (b52 (tb)) || isnan (b53 (tb)) || isnan (b54 (tb)))
     {
@@ -333,10 +354,10 @@ rk_objective_tb_5_4t (RK * rk)   ///< RK struct.
       goto end;
     }
   o = fminl (0.L, b20 (tb));
+  if (b21 (tb) < 0.L)
+    o += b21 (tb);
   if (b30 (tb) < 0.L)
     o += b30 (tb);
-  if (b31 (tb) < 0.L)
-    o += b31 (tb);
   if (b32 (tb) < 0.L)
     o += b32 (tb);
   if (b40 (tb) < 0.L)
@@ -357,6 +378,18 @@ rk_objective_tb_5_4t (RK * rk)   ///< RK struct.
     o += b53 (tb);
   if (b54 (tb) < 0.L)
     o += b54 (tb);
+#if RK_PAIR
+  if (e50 < 0.L)
+    o += e50;
+  if (e51 < 0.L)
+    o += e51;
+  if (e52 < 0.L)
+    o += e52;
+  if (e53 < 0.L)
+    o += e53;
+  if (e54 < 0.L)
+    o += e54;
+#endif
   if (o < 0.L)
     {
       o = 40.L - o;

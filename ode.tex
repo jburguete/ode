@@ -516,21 +516,28 @@ table~\ref{TableRKIIiiiIII}.
 
 It is not possible to build a four steps third-fourth order pair but they are
 infinity third-fourth order pairs of five steps. The defined in
-table~\ref{TableRKIIIvIV} is moreover simple stable for $k_t\leq1$.
+table~\ref{TableRKIIIvIV} is moreover simple stable for $k_t\leq1$ and 
+fourth-fifth order in equations depending only on time.
 \begin{table}[ht]
+	\renewcommand*{\arraystretch}{1.3}
 	\centering
 	\begin{tabular}{c|ccccc}
 		$d_{i}$ & $b_{i,j}$ \\ \hline
-		2/5 & 2/5 \\
-		1/2 & 0 & 1/2 \\
-		1 & 1/10 & 0 & 9/10 \\
-		3/5 & 117/1250 & 39/125 & 183/1250 & 6/125 \\
-		1 & 73/468 & 125/468 & 2/13 & 73/468 & 125/468 \\ \hline
-		$\hat{b}_{5,j}$ & 7/52 & 125/468 & 16/39 & 22/117 & 0 \\ \hline
-		$e_{5,j}$ & -5/234 & 0 & 10/39 & 5/156 & -125/468
+		$\frac{11}{40}$ & $\frac{11}{40}$ \\
+		1 & $\frac{223}{803}$ & $\frac{580}{803}$ \\
+		$\frac12$ & $\frac{141}{14600}$ & $\frac25$ & $\frac{1319}{14600}$ \\
+		$\frac{17}{20}$ & $\frac{66115057}{1927200000}$ & 
+			$\frac{112897731}{465740000}$ & $\frac{15650557}{5080800000}$
+			& $\frac{2737}{4800}$ \\
+		1 & $\frac{107}{1122}$ & $\frac{64000}{198099}$ & $\frac7{522}$ & 
+			$\frac{46}{189}$ & $\frac{8000}{24633}$ \\ \hline
+		$\hat{b}_{5,j}$ & $\frac16$ & 0 & $\frac16$ & $\frac23$ & 0 \\ \hline
+		$e_{5,j}$ & $\frac{40}{561}$ & $-\frac{64000}{198099}$ & $\frac{40}{261}$
+			& $\frac{80}{189}$ & $-\frac{8000}{24633}$
 	\end{tabular}
-	\caption{Coefficients of the five steps third-fourth order Runge-Kutta pair
-		(RK-3-4).\label{TableRKIIIvIV}}
+	\caption{Coefficients of the five steps third-fourth order, fourth-fifth order
+		in equations depending only in time, Runge-Kutta pair	(RK-3(4)-4(5)).
+		\label{TableRKIIIvIV}}
 \end{table}
 
 \section{Multi-steps methods}
