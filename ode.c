@@ -263,8 +263,8 @@ main (int argn,                 ///< arguments number.
 #endif
 
   // Number of processors
-  //nthreads = sysconf (_SC_NPROCESSORS_CONF);
-  nthreads = 1;
+  nthreads = sysconf (_SC_NPROCESSORS_CONF);
+  //nthreads = 1;
 
   // Init the clock
   t0 = clock ();

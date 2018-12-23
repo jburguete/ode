@@ -47,7 +47,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ///> array of minimum freedom degree values for the t-b coefficients of the 6
 ///> steps 2nd order Runge-Kutta method.
 const long double minimum_tb_6_2[19]
-  = { 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 1.L,
+  = { 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L,
   0.L, 0.L, 0.L, 0.L
 };
 
@@ -105,6 +105,7 @@ rk_tb_6_2 (Optimize * optimize) ///< Optimize struct.
 #endif
   tb = optimize->coefficient;
   r = optimize->random_data;
+  t6 (tb) = 1.L;
   t1 (tb) = r[0];
   t2 (tb) = r[1];
   b21 (tb) = r[2];
@@ -124,12 +125,58 @@ rk_tb_6_2 (Optimize * optimize) ///< Optimize struct.
   b63 (tb) = r[16];
   b64 (tb) = r[17];
   b65 (tb) = r[18];
-  t6 (tb) = 1.L;
   b61 (tb) = (0.5L - b62 (tb) * t2 (tb) - b63 (tb) * t3 (tb)
               - b64 (tb) * t4 (tb) - b65 (tb) * t5 (tb)) / t1 (tb);
   rk_b_6 (tb);
 #if DEBUG_RK_6_2
+	rk_print_tb_6 (tb, "rk_tb_6_2", stderr);
   fprintf (stderr, "rk_tb_6_2: end\n");
+#endif
+}
+
+/**
+ * Function to obtain the coefficients of a 6 steps 2nd order, 3rd order in
+ * equations depending only in time, Runge-Kutta method.
+ */
+void
+rk_tb_6_2t (Optimize * optimize)        ///< Optimize struct.
+{
+  long double *tb, *r;
+#if DEBUG_RK_6_2
+  fprintf (stderr, "rk_tb_6_2t: start\n");
+#endif
+  tb = optimize->coefficient;
+  r = optimize->random_data;
+  t6 (tb) = 1.L;
+  t1 (tb) = r[0];
+  t2 (tb) = r[1];
+  b21 (tb) = r[2];
+  t3 (tb) = r[3];
+  b31 (tb) = r[4];
+  b32 (tb) = r[5];
+  t4 (tb) = r[6];
+  b41 (tb) = r[7];
+  b42 (tb) = r[8];
+  b43 (tb) = r[9];
+  t5 (tb) = r[10];
+  b51 (tb) = r[11];
+  b52 (tb) = r[12];
+  b53 (tb) = r[13];
+  b54 (tb) = r[14];
+  b61 (tb) = r[15];
+  b62 (tb) = r[16];
+  b63 (tb) = r[17];
+  b64 (tb) = (1.L / 3.L - 0.5L * t5 (tb)
+              - b61 (tb) * t1 (tb) * (t1 (tb) - t5 (tb))
+              - b62 (tb) * t2 (tb) * (t2 (tb) - t5 (tb))
+              - b63 (tb) * t3 (tb) * (t3 (tb) - t5 (tb)))
+    / (t4 (tb) * (t4 (tb) - t5 (tb)));
+  b65 (tb) = (0.5L - b61 (tb) * t1 (tb) - b62 (tb) * t2 (tb)
+              - b63 (tb) * t3 (tb) - b64 (tb) * t4 (tb)) / t5 (tb);
+  rk_b_6 (tb);
+#if DEBUG_RK_6_2
+	rk_print_tb_6 (tb, "rk_tb_6_2t", stderr);
+  fprintf (stderr, "rk_tb_6_2t: end\n");
 #endif
 }
 
@@ -148,6 +195,11 @@ rk_objective_tb_6_2 (RK * rk)   ///< RK struct.
   fprintf (stderr, "rk_objective_tb_6_2: start\n");
 #endif
   tb = rk->tb->coefficient;
+	if (isnan (b61 (tb)))
+	  {
+			o = INFINITY;
+			goto end;
+		}
   o = fminl (0.L, b20 (tb));
   if (b30 (tb) < 0.L)
     o += b30 (tb);
@@ -178,6 +230,65 @@ end:
 #if DEBUG_RK_6_2
   fprintf (stderr, "rk_objective_tb_6_2: optimal=%Lg\n", o);
   fprintf (stderr, "rk_objective_tb_6_2: end\n");
+#endif
+  return o;
+}
+
+/**
+ * Function to calculate the objective function of a 6 steps 2nd order, third
+ * order in equations depending only on time, Runge-Kutta method.
+ *
+ * \return objective function value.
+ */
+long double
+rk_objective_tb_6_2t (RK * rk)   ///< RK struct.
+{
+  long double *tb;
+  long double o;
+#if DEBUG_RK_6_2
+  fprintf (stderr, "rk_objective_tb_6_2t: start\n");
+#endif
+  tb = rk->tb->coefficient;
+#if DEBUG_RK_6_2
+	rk_print_tb_6 (tb, "rk_objective_tb_6_2t", stderr);
+#endif
+	if (isnan (b64 (tb)) || isnan (b64 (tb)))
+	  {
+			o = INFINITY;
+			goto end;
+		}
+  o = fminl (0.L, b20 (tb));
+  if (b30 (tb) < 0.L)
+    o += b30 (tb);
+  if (b40 (tb) < 0.L)
+    o += b40 (tb);
+  if (b50 (tb) < 0.L)
+    o += b50 (tb);
+  if (b60 (tb) < 0.L)
+    o += b60 (tb);
+  if (b64 (tb) < 0.L)
+    o += b64 (tb);
+  if (b65 (tb) < 0.L)
+    o += b65 (tb);
+  if (o < 0.L)
+    {
+      o = 40.L - o;
+      goto end;
+    }
+  o = 30.L
+    + fmaxl (1.L,
+             fmaxl (t1 (tb),
+                    fmaxl (t2 (tb),
+                           fmaxl (t3 (tb), fmaxl (t4 (tb), t5 (tb))))));
+  if (rk->strong)
+    {
+      rk_bucle_ac (rk);
+      o = fminl (o, *rk->ac0->optimal);
+    }
+end:
+#if DEBUG_RK_6_2
+  fprintf (stderr, "rk_objective_tb_6_2t: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_6_2t: end\n");
 #endif
   return o;
 }

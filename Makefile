@@ -18,7 +18,7 @@ rkhfiles = rk.h \
 	rk_3_2.h rk_3_3.h \
 	rk_4_2.h rk_4_3.h rk_4_4.h \
 	rk_5_2.h rk_5_3.h rk_5_4.h \
-	rk_6_2.h rk_6_3.h
+	rk_6_2.h rk_6_3.h rk_6_4.h
 
 hfiles = $(shfiles) $(rkhfiles)
 
@@ -38,7 +38,7 @@ rkcfiles = rk.c \
 	rk_3_2.c rk_3_3.c \
 	rk_4_2.c rk_4_3.c rk_4_4.c \
 	rk_5_2.c rk_5_3.c rk_5_4.c \
-	rk_6_2.c rk_6_3.c
+	rk_6_2.c rk_6_3.c rk_6_4.c
 
 sofiles = steps.o \
 	steps_3_2.o steps_3_3.o \
@@ -56,7 +56,7 @@ rkofiles = rk.o \
 	rk_3_2.o rk_3_3.o \
 	rk_4_2.o rk_4_3.o rk_4_4.o \
 	rk_5_2.o rk_5_3.o rk_5_4.o \
-	rk_6_2.o rk_6_3.o
+	rk_6_2.o rk_6_3.o rk_6_4.o
 
 ofiles = optimize.o $(sofiles) $(rkofiles)
 
@@ -216,6 +216,9 @@ rk_6_2.o: rk_6_2.c rk_6_2.h rk.h $(cfiles)
 
 rk_6_3.o: rk_6_3.c rk_6_3.h rk.h $(cfiles)
 	$(cc) $(cflags) rk_6_3.c -o rk_6_3.o
+
+rk_6_4.o: rk_6_4.c rk_6_4.h rk.h $(cfiles)
+	$(cc) $(cflags) rk_6_4.c -o rk_6_4.o
 
 ode.o: ode.c $(hfiles) $(cfiles)
 	$(cc) $(cflags) ode.c -o ode.o

@@ -71,7 +71,6 @@ tb_print_maxima_6_3 (FILE * file,       ///< file.
   tb_print_maxima_6_2 (file, nsteps, order);
   fprintf (file, "b62*b21*t1+b63*(b31*t1+b32*t2)+b64*(b41*t1+b42*t2+b43*t3)"
            "+b65*(b51*t1+b52*t2+b53*t3+b54*t4)-1/6;\n");
-  fprintf (file, "b61*t1^2+b62*t2^2+b63*t3^2+b64*t4^2+b65*t5^2-1/3;\n");
   fprintf (file, "b61*t1^3+b62*t2^3+b63*t3^3+b64*t4^3+b65*t5^3-1/4;\n");
 }
 
@@ -127,7 +126,7 @@ rk_tb_6_3 (Optimize * optimize) ///< Optimize struct.
   A[1] = A[0] * t1 (tb);
   B[1] = B[0] * t2 (tb);
   C[1] = C[0] * t3 (tb);
-  D[1] = 1.L / 3.L - b64 (tb) * sqr (t4 (tb)) - b65 (tb) * sqrt (t5 (tb));
+  D[1] = 1.L / 3.L - b64 (tb) * sqr (t4 (tb)) - b65 (tb) * sqr (t5 (tb));
   A[2] = 0.L;
   B[2] = b21 (tb) * t1 (tb);
   C[2] = b31 (tb) * t1 (tb) + b32 (tb) * t2 (tb);
@@ -185,12 +184,12 @@ rk_tb_6_3t (Optimize * optimize)        ///< Optimize struct.
   B[1] = B[0] * t2 (tb);
   C[1] = C[0] * t3 (tb);
   D[1] = D[0] * t4 (tb);
-  E[1] = 1.L / 3.L - b65 (tb) * sqrt (t5 (tb));
+  E[1] = 1.L / 3.L - b65 (tb) * sqr (t5 (tb));
   A[2] = A[1] * t1 (tb);
   B[2] = B[1] * t2 (tb);
   C[2] = C[1] * t3 (tb);
   D[2] = D[1] * t4 (tb);
-  E[2] = 1.L / 4.L - b65 (tb) * sqrt (t5 (tb)) * t5 (tb);
+  E[2] = 0.25L - b65 (tb) * sqr (t5 (tb)) * t5 (tb);
   A[3] = 0.L;
   B[3] = b21 (tb) * t1 (tb);
   C[3] = b31 (tb) * t1 (tb) + b32 (tb) * t2 (tb);

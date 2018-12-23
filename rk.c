@@ -54,7 +54,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "rk_5_3.h"
 #include "rk_5_4.h"
 #include "rk_6_2.h"
-//#include "rk_6_3.h"
+#include "rk_6_3.h"
+#include "rk_6_4.h"
 
 #define DEBUG_RK 0              ///< macro to debug.
 
@@ -1321,6 +1322,9 @@ rk_step_tb (RK * rk)            ///< RK struct.
 #if PRINT_RANDOM
       print_random (tb->random_data, nfree, file_random);
 #endif
+#if DEBUG_RK
+      print_random (tb->random_data, nfree, stderr);
+#endif
 
       // method coefficients
 #if DEBUG_RK
@@ -1376,7 +1380,7 @@ rk_step_tb (RK * rk)            ///< RK struct.
                       nfree * sizeof (long double));
               g_mutex_unlock (mutex);
             }
-          tb->random_data[j] = v - is[j];
+          tb->random_data[j] = fmaxl (0.L, v - is[j]);
           tb->method (tb);
           o = tb->objective (tb);
           if (o < *tb->optimal)
@@ -1822,24 +1826,63 @@ rk_select (RK * rk,             ///< RK struct.
         {
         case 2:
           tb->nfree = 19;
-          tb->print_maxima = rk_print_maxima_6_2;
+          if (strong)
+            tb->print_maxima = rk_print_maxima_6_2;
+          else
+            tb->print_maxima = tb_print_maxima_6_2;
           tb->minimum0 = minimum_tb_6_2;
           tb->interval0 = interval_tb_6_2;
           tb->random_type = random_tb_6_2;
-/*
-		  if (rk->time_accuracy)
-			{
+	     	  if (rk->time_accuracy)
+			      {
               tb->method = (OptimizeMethod) rk_tb_6_2t;
               tb->objective = (OptimizeObjective) rk_objective_tb_6_2t;
-			}
-		  else
-			{
+			      }
+		      else
+			      {
               tb->method = (OptimizeMethod) rk_tb_6_2;
               tb->objective = (OptimizeObjective) rk_objective_tb_6_2;
-			}
-*/
-          tb->method = (OptimizeMethod) rk_tb_6_2;
-          tb->objective = (OptimizeObjective) rk_objective_tb_6_2;
+			      }
+          break;
+        case 3:
+          tb->nfree = 17;
+          if (strong)
+            tb->print_maxima = rk_print_maxima_6_3;
+          else
+            tb->print_maxima = tb_print_maxima_6_3;
+          tb->minimum0 = minimum_tb_6_3;
+          tb->interval0 = interval_tb_6_3;
+          tb->random_type = random_tb_6_3;
+	     	  if (rk->time_accuracy)
+			      {
+              tb->method = (OptimizeMethod) rk_tb_6_3t;
+              tb->objective = (OptimizeObjective) rk_objective_tb_6_3t;
+			      }
+		      else
+			      {
+              tb->method = (OptimizeMethod) rk_tb_6_3;
+              tb->objective = (OptimizeObjective) rk_objective_tb_6_3;
+			      }
+          break;
+        case 4:
+          tb->nfree = 13;
+          if (strong)
+            tb->print_maxima = rk_print_maxima_6_4;
+          else
+            tb->print_maxima = tb_print_maxima_6_4;
+          tb->minimum0 = minimum_tb_6_4;
+          tb->interval0 = interval_tb_6_4;
+          tb->random_type = random_tb_6_4;
+	     	  if (rk->time_accuracy)
+			      {
+              tb->method = (OptimizeMethod) rk_tb_6_4t;
+              tb->objective = (OptimizeObjective) rk_objective_tb_6_4t;
+			      }
+		      else
+			      {
+              tb->method = (OptimizeMethod) rk_tb_6_4;
+              tb->objective = (OptimizeObjective) rk_objective_tb_6_4;
+			      }
           break;
         default:
           printf ("Bad order\n");

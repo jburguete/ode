@@ -101,6 +101,7 @@ rk_tb_5_2 (Optimize * optimize) ///< Optimize struct.
 #endif
   tb = optimize->coefficient;
   r = optimize->random_data;
+  t5 (tb) = 1.L;
   t1 (tb) = r[0];
   t2 (tb) = r[1];
   b21 (tb) = r[2];
@@ -114,7 +115,6 @@ rk_tb_5_2 (Optimize * optimize) ///< Optimize struct.
   b51 (tb) = r[10];
   b52 (tb) = r[11];
   b53 (tb) = r[12];
-  t5 (tb) = 1.L;
   b54 (tb) = (0.5L - b51 (tb) * t1 (tb) - b52 (tb) * t2 (tb)
               - b53 (tb) * t3 (tb)) / t4 (tb);
   rk_b_5 (tb);
@@ -157,7 +157,7 @@ rk_tb_5_2t (Optimize * optimize)        ///< Optimize struct.
               - b53 (tb) * t3 (tb)) / t4 (tb);
   rk_b_5 (tb);
 #if DEBUG_RK_5_2
-  fprintf (stderr, "rk_tb_5_2: end\n");
+  fprintf (stderr, "rk_tb_5_2t: end\n");
 #endif
 }
 
