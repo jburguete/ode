@@ -353,7 +353,7 @@ coefficient matrices of table~\ref{TableRKiI}.
 		$c_{i,j}$ \\ \hline
 		1
 	\end{tabular}
-	\caption{Coefficients of the one step first order Runge-Kutta method (RK-1).
+	\caption{Coefficients of the one step first order Runge-Kutta method (RK1-1).
 		\label{TableRKiI}}
 \end{table}
 This a first order method with strong and simple stability for $k_t\leq1$.
@@ -383,7 +383,7 @@ is second order and simple and strong stable for $k_t\leq1$.
 		0 & 2
 	\end{tabular}
 	\caption{Coefficients of the two steps second order Runge-Kutta method optime
-		in accuracy (RK-2(3)).\label{TableRKiiIIa}}
+		in accuracy (RK2-2(3)).\label{TableRKiiIIa}}
 \end{table}
 \begin{table}[ht]
 	\centering
@@ -403,7 +403,7 @@ is second order and simple and strong stable for $k_t\leq1$.
 		0 & 1
 	\end{tabular}
 	\caption{Coefficients of the two steps second order Runge-Kutta method optime
-		in strong stability (RK-2).\label{TableRKiiIIb}}
+		in strong stability (RK2-2).\label{TableRKiiIIb}}
 \end{table}
 
 \subsection{Three steps third order}
@@ -433,7 +433,7 @@ simple and strong stable for $k_t\leq1$.
 		0 & 0 & 1
 	\end{tabular}
 	\caption{Coefficients of the three steps third order Runge-Kutta method
-		(RK-3(4)).\label{TableRKiiiIII}}
+		(RK3-3(4)).\label{TableRKiiiIII}}
 \end{table}
 
 \subsection{Four steps fourth order}
@@ -451,7 +451,31 @@ They are not fourth order strong stable Runge-Kutta methods of four steps.
 		1 & 1/6 & 1/3 & 1/3 & 1/6
 	\end{tabular}
 	\caption{Coefficients of the four steps fourth order Runge-Kutta method
-		(RK-4).\label{TableRKivIV}}
+		(RK4-4).\label{TableRKivIV}}
+\end{table}
+
+\subsection{Five steps fourth order}
+
+It is not possible to build a fifth order Runge-Kutta method with five steps.
+The method defined in table~\ref{TableRKvIV} is simple stable for $k_t\leq1$,
+fourth order and fifth order in equations depending only on time.
+\begin{table}[ht]
+	\renewcommand*{\arraystretch}{1.3}
+	\centering
+	\begin{tabular}{c|ccccc}
+		$d_{i}$ & $b_{i,j}$ \\ \hline
+		$\frac{11}{40}$ & $\frac{11}{40}$ \\
+		1 & $\frac{223}{803}$ & $\frac{580}{803}$ \\
+		$\frac12$ & $\frac{141}{14600}$ & $\frac25$ & $\frac{1319}{14600}$ \\
+		$\frac{17}{20}$ & $\frac{66115057}{1927200000}$ & 
+			$\frac{112897731}{465740000}$ & $\frac{15650557}{5080800000}$
+			& $\frac{2737}{4800}$ \\
+		1 & $\frac{107}{1122}$ & $\frac{64000}{198099}$ & $\frac7{522}$ & 
+			$\frac{46}{189}$ & $\frac{8000}{24633}$
+	\end{tabular}
+	\caption{Coefficients of the five steps fourth order, fifth order in
+		equations depending only in time, Runge-Kutta pair (RK5-4(5)).
+		\label{TableRKIIIvIV}}
 \end{table}
 
 \section{Runge-Kutta pairs}
@@ -476,8 +500,9 @@ and~\ref{TableRKIiiIIb}.
 		$\hat{b}_{2,j}$ & 1 & 0 \\ \hline
 		$e_{2,j}$ & 3/4 & -3/4
 	\end{tabular}
-	\caption{Coefficients of the two steps first-second order Runge-Kutta pair
-		optime in accuracy (RK-1-2(3)).\label{TableRKIiiIIa}}
+	\caption{Coefficients of the two steps first-second order, first-third order
+		in equations depending only in time, Runge-Kutta pair (RK2-1-2(3)).
+		\label{TableRKIiiIIa}}
 \end{table}
 \begin{table}[ht]
 	\centering
@@ -489,7 +514,7 @@ and~\ref{TableRKIiiIIb}.
 		$e_{2,j}$ & 1/2 & -1/2
 	\end{tabular}
 	\caption{Coefficients of the two steps first-second order Runge-Kutta pair
-		optime in strong stability (RK-1-2).\label{TableRKIiiIIb}}
+		optime in strong stability (RK2-1-2).\label{TableRKIiiIIb}}
 \end{table}
 
 \subsection{Three steps second-third order pair}
@@ -508,14 +533,37 @@ table~\ref{TableRKIIiiiIII}.
 		$\hat{b}_{3,j}$ & 1/2 & 1/2 & 0 \\ \hline
 		$e_{3,j}$ & 1/3 & 1/3 & -2/3
 	\end{tabular}
-	\caption{Coefficients of the three steps second-third order Runge-Kutta pair
-		(RK-2-3(4)).\label{TableRKIIiiiIII}}
+	\caption{Coefficients of the three steps second-third order, second-fourth
+		order in equations depending only in time, Runge-Kutta pair (RK3-2-3(4)).
+		\label{TableRKIIiiiIII}}
+\end{table}
+
+\subsection{Four steps second-third order pair}
+
+It is not possible to build a four steps third-fourth order pair but they are
+infinity two-three order pairs of four steps. The defined in
+table~\ref{TableRKIIivIII} is moreover simple stable for $k_t\leq1$ and 
+third-fourth order in equations depending only on time.
+\begin{table}[ht]
+	\renewcommand*{\arraystretch}{1.3}
+	\centering
+	\begin{tabular}{c|cccc}
+		$d_{i}$ & $b_{i,j}$ \\ \hline
+		$\frac13$ & $\frac13$ \\
+		1 & 0 & 1 \\
+		$\frac23$ & $\frac16$ & $\frac14$ & $\frac14$ \\
+		1 & $\frac18$ & $\frac38$ & $\frac18$ & $\frac38$ \\ \hline
+		$\hat{b}_{4,j}$ & 0 & $\frac34$ & $\frac14$ & 0 \\ \hline
+		$e_{4,j}$ & $-\frac18$ & $\frac38$ & $\frac18$ & $-\frac38$
+	\end{tabular}
+	\caption{Coefficients of the four steps second-third order, third-fourth order
+		in equations depending only in time, Runge-Kutta pair (RK4-2(3)-3(4)).
+		\label{TableRKIIivIII}}
 \end{table}
 
 \subsection{Five steps third-fourth order pair}
 
-It is not possible to build a four steps third-fourth order pair but they are
-infinity third-fourth order pairs of five steps. The defined in
+They are infinity third-fourth order pairs of five steps. The defined in
 table~\ref{TableRKIIIvIV} is moreover simple stable for $k_t\leq1$ and 
 fourth-fifth order in equations depending only on time.
 \begin{table}[ht]
@@ -536,7 +584,7 @@ fourth-fifth order in equations depending only on time.
 			& $\frac{80}{189}$ & $-\frac{8000}{24633}$
 	\end{tabular}
 	\caption{Coefficients of the five steps third-fourth order, fourth-fifth order
-		in equations depending only in time, Runge-Kutta pair	(RK-3(4)-4(5)).
+		in equations depending only in time, Runge-Kutta pair (RK-3(4)-4(5)).
 		\label{TableRKIIIvIV}}
 \end{table}
 
