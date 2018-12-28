@@ -50,7 +50,7 @@ typedef struct
   unsigned int strong;          ///< boolean to cope with strong stability.
   unsigned int time_accuracy;
   ///< boolean to cope with extended time accuracy.
-	unsigned int pair;            ///< boolean to build Runge-Kutta pairs.
+  unsigned int pair;            ///< boolean to build Runge-Kutta pairs.
 } RK;
 
 #define RUNGE_KUTTA(o) ((Optimize *)((Optimize *)o)->data)
@@ -170,7 +170,7 @@ void rk_bucle_ac (RK * rk);
 void rk_step_tb (RK * rk);
 void rk_bucle_tb (RK * rk);
 int rk_select (RK * rk, unsigned int nsteps, unsigned int order);
-int rk_run (xmlNode * node, gsl_rng **rng);
+int rk_run (xmlNode * node, gsl_rng ** rng);
 
 /**
  * Function to get \f$b_{i0}\f$ coefficients of the 2 steps Runge-Kutta methods.

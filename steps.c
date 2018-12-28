@@ -1115,41 +1115,40 @@ steps_select (Optimize * optimize,      ///< Optimize struct.
  * \return 1 on success, 0 on error.
  */
 int
-steps_run (xmlNode * node, ///< XML node.
-		       gsl_rng ** rng) ///< array of gsl_rng structs.
+steps_run (xmlNode * node,      ///< XML node.
+           gsl_rng ** rng)      ///< array of gsl_rng structs.
 {
   Optimize s[nthreads];
-	char filename[32];
-	gchar *buffer;
-	FILE *file;
-	long double *value_optimal;
-	long double optimal;
-	int code;
-	unsigned int i, j, nsteps, order, nfree;
+  char filename[32];
+  gchar *buffer;
+  FILE *file;
+  long double *value_optimal;
+  long double optimal;
+  int code;
+  unsigned int i, j, nsteps, order, nfree;
 
 #if DEBUG_STEPS
   fprintf (stderr, "steps_run: start\n");
 #endif
 
   nsteps = xml_node_get_uint (node, XML_STEPS, &code);
-	if (code)
-	  {
-			error_message = g_strdup (_("Bad steps number"));
-			goto exit_on_error;
-		}
+  if (code)
+    {
+      error_message = g_strdup (_("Bad steps number"));
+      goto exit_on_error;
+    }
   order = xml_node_get_uint (node, XML_ORDER, &code);
-	if (code)
-	  {
-			error_message = g_strdup (_("Bad order"));
-			goto exit_on_error;
-		}
-	if (!steps_select (s, nsteps, order))
-		goto exit_on_error;
-	if (!optimize_read (s, node))
-		goto exit_on_error;
+  if (code)
+    {
+      error_message = g_strdup (_("Bad order"));
+      goto exit_on_error;
+    }
+  if (!steps_select (s, nsteps, order))
+    goto exit_on_error;
+  if (!optimize_read (s, node))
+    goto exit_on_error;
   nfree = s->nfree;
-  value_optimal
-    = (long double *) g_slice_alloc (nfree * sizeof (long double));
+  value_optimal = (long double *) g_slice_alloc (nfree * sizeof (long double));
   optimize_create (s, &optimal, value_optimal);
   for (i = 1; i < nthreads; ++i)
     memcpy (s + i, s, sizeof (Optimize));
@@ -1179,14 +1178,14 @@ steps_run (xmlNode * node, ///< XML node.
 #if DEBUG_STEPS
   fprintf (stderr, "steps_run: end\n");
 #endif
-	return 1;
+  return 1;
 
 exit_on_error:
-	buffer = error_message;
-	error_message = g_strconcat ("Multi-steps:\n", buffer, NULL);
-	g_free (buffer);
+  buffer = error_message;
+  error_message = g_strconcat ("Multi-steps:\n", buffer, NULL);
+  g_free (buffer);
 #if DEBUG_STEPS
   fprintf (stderr, "steps_run: end\n");
 #endif
-	return 0;
+  return 0;
 }

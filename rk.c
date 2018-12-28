@@ -1030,11 +1030,11 @@ rk_step_ac (RK * rk)            ///< RK struct.
       fprintf (stderr, "rk_step_ac: random freedom degrees\n");
 #endif
       optimize_generate_random (ac);
-			if (file_variables)
-			  {
-					print_variables (tb->random_data, tb->nfree, file_variables);
+      if (file_variables)
+        {
+          print_variables (tb->random_data, tb->nfree, file_variables);
           print_variables (ac->random_data, nfree, file_variables);
-				}
+        }
 
       // method coefficients
 #if DEBUG_RK
@@ -1055,7 +1055,7 @@ rk_step_ac (RK * rk)            ///< RK struct.
           o2 = o;
           memcpy (vo, ac->random_data, nfree * sizeof (long double));
         }
-			if (file_variables)
+      if (file_variables)
         fprintf (file_variables, "%.19Le\n", o);
     }
 
@@ -1091,11 +1091,11 @@ rk_step_ac (RK * rk)            ///< RK struct.
         {
           v = vo[j];
           ac->random_data[j] = v + is[j];
-			    if (file_variables)
-    			  {
-		    			print_variables (tb->random_data, tb->nfree, file_variables);
+          if (file_variables)
+            {
+              print_variables (tb->random_data, tb->nfree, file_variables);
               print_variables (ac->random_data, nfree, file_variables);
-    				}
+            }
 #if DEBUG_RK
           fprintf (stderr, "rk_step_ac: j=%u random=%Lg\n", j,
                    ac->random_data[j]);
@@ -1111,14 +1111,14 @@ rk_step_ac (RK * rk)            ///< RK struct.
               o2 = o;
               memcpy (vo2, ac->random_data, nfree * sizeof (long double));
             }
-			    if (file_variables)
+          if (file_variables)
             fprintf (file_variables, "%.19Le\n", o);
-          ac->random_data[j] = fmaxl(0.L, v - is[j]);
-			    if (file_variables)
-    			  {
-		    			print_variables (tb->random_data, tb->nfree, file_variables);
+          ac->random_data[j] = fmaxl (0.L, v - is[j]);
+          if (file_variables)
+            {
+              print_variables (tb->random_data, tb->nfree, file_variables);
               print_variables (ac->random_data, nfree, file_variables);
-    				}
+            }
           ac->method ((Optimize *) rk);
           o = ac->objective ((Optimize *) rk);
 #if DEBUG_RK
@@ -1130,16 +1130,16 @@ rk_step_ac (RK * rk)            ///< RK struct.
               o2 = o;
               memcpy (vo2, ac->random_data, nfree * sizeof (long double));
             }
-			    if (file_variables)
+          if (file_variables)
             fprintf (file_variables, "%.19Le\n", o);
           ac->random_data[j] = v;
         }
 
       // increase or reduce intervals if converging or not
       if (!k)
-				f = 0.5L;
-			else
-				f = 1.2L;
+        f = 0.5L;
+      else
+        f = 1.2L;
       for (j = 0; j < nfree; ++j)
         is[j] *= f;
     }
@@ -1268,7 +1268,7 @@ rk_step_tb (RK * rk)            ///< RK struct.
   tb = rk->tb;
   nfree = tb->nfree;
   vo = (long double *) alloca (nfree * sizeof (long double));
-	b = (file_variables && !rk->strong) ? 1 : 0;
+  b = (file_variables && !rk->strong) ? 1 : 0;
 
   // Monte-Carlo algorithm
 #if DEBUG_RK
@@ -1285,7 +1285,7 @@ rk_step_tb (RK * rk)            ///< RK struct.
       fprintf (stderr, "rk_step_tb: random freedom degrees\n");
 #endif
       optimize_generate_random (tb);
-			if (b)
+      if (b)
         print_variables (tb->random_data, nfree, file_variables);
 
       // method coefficients
@@ -1307,7 +1307,7 @@ rk_step_tb (RK * rk)            ///< RK struct.
                   nfree * sizeof (long double));
           g_mutex_unlock (mutex);
         }
-			if (b)
+      if (b)
         fprintf (file_variables, "%.19Le\n", o);
     }
 
@@ -1333,7 +1333,7 @@ rk_step_tb (RK * rk)            ///< RK struct.
         {
           v = vo[j];
           tb->random_data[j] = v + is[j];
-			    if (b)
+          if (b)
             print_variables (tb->random_data, nfree, file_variables);
           tb->method (tb);
           o = tb->objective (tb);
@@ -1346,10 +1346,10 @@ rk_step_tb (RK * rk)            ///< RK struct.
                       nfree * sizeof (long double));
               g_mutex_unlock (mutex);
             }
-			    if (b)
+          if (b)
             fprintf (file_variables, "%.19Le\n", o);
           tb->random_data[j] = fmaxl (0.L, v - is[j]);
-			    if (b)
+          if (b)
             print_variables (tb->random_data, nfree, file_variables);
           tb->method (tb);
           o = tb->objective (tb);
@@ -1362,16 +1362,16 @@ rk_step_tb (RK * rk)            ///< RK struct.
                       nfree * sizeof (long double));
               g_mutex_unlock (mutex);
             }
-			    if (b)
+          if (b)
             fprintf (file_variables, "%.19Le\n", o);
           tb->random_data[j] = v;
         }
 
       // increase or reduce intervals if converging or not
       if (!k)
-				f = 0.5L;
-			else
-				f = 1.2L;
+        f = 0.5L;
+      else
+        f = 1.2L;
       for (j = 0; j < nfree; ++j)
         is[j] *= f;
     }
@@ -1538,7 +1538,7 @@ rk_select (RK * rk,             ///< RK struct.
            unsigned int nsteps, ///< steps number.
            unsigned int order)  ///< accuracy order.
 {
-	const char *message[] = { _("Bad order"), _("Bad steps number") };
+  const char *message[] = { _("Bad order"), _("Bad steps number") };
   Optimize *tb, *ac;
   unsigned int strong, code;
 #if DEBUG_RK
@@ -1774,7 +1774,7 @@ rk_select (RK * rk,             ///< RK struct.
           tb->random_type = random_tb_5_4;
           if (rk->time_accuracy)
             {
-							if (rk->pair)
+              if (rk->pair)
                 --tb->nfree;
               tb->method = (OptimizeMethod) rk_tb_5_4t;
               tb->objective = (OptimizeObjective) rk_objective_tb_5_4t;
@@ -1808,16 +1808,16 @@ rk_select (RK * rk,             ///< RK struct.
           tb->minimum0 = minimum_tb_6_2;
           tb->interval0 = interval_tb_6_2;
           tb->random_type = random_tb_6_2;
-	     	  if (rk->time_accuracy)
-			      {
+          if (rk->time_accuracy)
+            {
               tb->method = (OptimizeMethod) rk_tb_6_2t;
               tb->objective = (OptimizeObjective) rk_objective_tb_6_2t;
-			      }
-		      else
-			      {
+            }
+          else
+            {
               tb->method = (OptimizeMethod) rk_tb_6_2;
               tb->objective = (OptimizeObjective) rk_objective_tb_6_2;
-			      }
+            }
           break;
         case 3:
           tb->nfree = 17;
@@ -1828,16 +1828,16 @@ rk_select (RK * rk,             ///< RK struct.
           tb->minimum0 = minimum_tb_6_3;
           tb->interval0 = interval_tb_6_3;
           tb->random_type = random_tb_6_3;
-	     	  if (rk->time_accuracy)
-			      {
+          if (rk->time_accuracy)
+            {
               tb->method = (OptimizeMethod) rk_tb_6_3t;
               tb->objective = (OptimizeObjective) rk_objective_tb_6_3t;
-			      }
-		      else
-			      {
+            }
+          else
+            {
               tb->method = (OptimizeMethod) rk_tb_6_3;
               tb->objective = (OptimizeObjective) rk_objective_tb_6_3;
-			      }
+            }
           break;
         case 4:
           tb->nfree = 13;
@@ -1848,16 +1848,16 @@ rk_select (RK * rk,             ///< RK struct.
           tb->minimum0 = minimum_tb_6_4;
           tb->interval0 = interval_tb_6_4;
           tb->random_type = random_tb_6_4;
-	     	  if (rk->time_accuracy)
-			      {
+          if (rk->time_accuracy)
+            {
               tb->method = (OptimizeMethod) rk_tb_6_4t;
               tb->objective = (OptimizeObjective) rk_objective_tb_6_4t;
-			      }
-		      else
-			      {
+            }
+          else
+            {
               tb->method = (OptimizeMethod) rk_tb_6_4;
               tb->objective = (OptimizeObjective) rk_objective_tb_6_4;
-			      }
+            }
           break;
         default:
           code = 0;
@@ -1877,7 +1877,7 @@ rk_select (RK * rk,             ///< RK struct.
   return 1;
 
 exit_on_error:
-	error_message = g_strdup (message[code]);
+  error_message = g_strdup (message[code]);
 #if DEBUG_RK
   fprintf (stderr, "rk_select: end\n");
 #endif
@@ -1890,105 +1890,104 @@ exit_on_error:
  * \return 1 on success, 0 on error.
  */
 int
-rk_run (xmlNode * node, ///< XML node.
-		    gsl_rng ** rng) ///< array of gsl_rng structs.
+rk_run (xmlNode * node,         ///< XML node.
+        gsl_rng ** rng)         ///< array of gsl_rng structs.
 {
   RK rk[nthreads];
-	char filename[32];
+  char filename[32];
   Optimize *tb, *ac;
-	gchar *buffer;
-	xmlChar *prop;
-	FILE *file;
-	long double *value_optimal, *value_optimal2;
-	long double optimal, optimal2;
-	int code;
-	unsigned int i, j, nsteps, order, nfree, nfree2;
+  gchar *buffer;
+  xmlChar *prop;
+  FILE *file;
+  long double *value_optimal, *value_optimal2;
+  long double optimal, optimal2;
+  int code;
+  unsigned int i, j, nsteps, order, nfree, nfree2;
 
 #if DEBUG_RK
   fprintf (stderr, "rk_run: start\n");
 #endif
 
-	tb = rk->tb;
+  tb = rk->tb;
   nsteps = xml_node_get_uint (node, XML_STEPS, &code);
-	if (code)
-	  {
-			error_message = g_strdup (_("Bad steps number"));
-			goto exit_on_error;
-		}
+  if (code)
+    {
+      error_message = g_strdup (_("Bad steps number"));
+      goto exit_on_error;
+    }
   order = xml_node_get_uint (node, XML_ORDER, &code);
-	if (code)
-	  {
-			error_message = g_strdup (_("Bad order"));
-			goto exit_on_error;
-		}
-	prop = xmlGetProp (node, XML_STRONG);
-	if (!prop || !xmlStrcmp (prop, XML_NO))
+  if (code)
+    {
+      error_message = g_strdup (_("Bad order"));
+      goto exit_on_error;
+    }
+  prop = xmlGetProp (node, XML_STRONG);
+  if (!prop || !xmlStrcmp (prop, XML_NO))
     rk->strong = 0;
-	else if (!xmlStrcmp (prop, XML_YES))
+  else if (!xmlStrcmp (prop, XML_YES))
     rk->strong = 1;
-	else
-	  {
-			error_message = g_strdup (_("Bad strong stability"));
-			goto exit_on_error;
-		}
-	xmlFree (prop);
-	prop = xmlGetProp (node, XML_PAIR);
-	if (!prop || !xmlStrcmp (prop, XML_NO))
+  else
+    {
+      error_message = g_strdup (_("Bad strong stability"));
+      goto exit_on_error;
+    }
+  xmlFree (prop);
+  prop = xmlGetProp (node, XML_PAIR);
+  if (!prop || !xmlStrcmp (prop, XML_NO))
     rk->pair = 0;
-	else if (!xmlStrcmp (prop, XML_YES))
+  else if (!xmlStrcmp (prop, XML_YES))
     rk->pair = 1;
-	else
-	  {
-			error_message = g_strdup (_("Bad pair"));
-			goto exit_on_error;
-		}
-	xmlFree (prop);
-	prop = xmlGetProp (node, XML_TIME_ACCURACY);
-	if (!prop || !xmlStrcmp (prop, XML_NO))
+  else
+    {
+      error_message = g_strdup (_("Bad pair"));
+      goto exit_on_error;
+    }
+  xmlFree (prop);
+  prop = xmlGetProp (node, XML_TIME_ACCURACY);
+  if (!prop || !xmlStrcmp (prop, XML_NO))
     rk->time_accuracy = 0;
-	else if (!xmlStrcmp (prop, XML_YES))
+  else if (!xmlStrcmp (prop, XML_YES))
     rk->time_accuracy = 1;
-	else
-	  {
-			error_message = g_strdup (_("Bad time accuracy"));
-			goto exit_on_error;
-		}
-	xmlFree (prop);
-	if (!rk_select (rk, nsteps, order))
-		goto exit_on_error;
-	if (!optimize_read (tb, node))
-		goto exit_on_error;
+  else
+    {
+      error_message = g_strdup (_("Bad time accuracy"));
+      goto exit_on_error;
+    }
+  xmlFree (prop);
+  if (!rk_select (rk, nsteps, order))
+    goto exit_on_error;
+  if (!optimize_read (tb, node))
+    goto exit_on_error;
   nfree = tb->nfree;
-  value_optimal
-    = (long double *) g_slice_alloc (nfree * sizeof (long double));
+  value_optimal = (long double *) g_slice_alloc (nfree * sizeof (long double));
   optimize_create (tb, &optimal, value_optimal);
-	if (rk->strong)
-	  {
+  if (rk->strong)
+    {
       ac = rk->ac0;
-			node = node->children;
-			if (!node)
-			  {
-					error_message = g_strdup (_("No a-c coefficients data"));
-					goto exit_on_error;
-				}
-			if (xmlStrcmp (node->name, XML_AC))
-			  {
-					error_message = g_strdup (_("Bad a-c coefficients XML node"));
-					goto exit_on_error;
-				}
-	    if (!optimize_read (ac, node))
-			  {
-					buffer = error_message;
-					error_message 
-						= g_strconcat (_("a-c coefficients"), ":\n", error_message, NULL);
-					g_free (buffer);
-		      goto exit_on_error;
-				}
+      node = node->children;
+      if (!node)
+        {
+          error_message = g_strdup (_("No a-c coefficients data"));
+          goto exit_on_error;
+        }
+      if (xmlStrcmp (node->name, XML_AC))
+        {
+          error_message = g_strdup (_("Bad a-c coefficients XML node"));
+          goto exit_on_error;
+        }
+      if (!optimize_read (ac, node))
+        {
+          buffer = error_message;
+          error_message
+            = g_strconcat (_("a-c coefficients"), ":\n", error_message, NULL);
+          g_free (buffer);
+          goto exit_on_error;
+        }
       nfree2 = ac->nfree;
       value_optimal2
         = (long double *) g_slice_alloc (nfree2 * sizeof (long double));
       optimize_create (ac, &optimal2, value_optimal2);
-		}
+    }
   for (i = 1; i < nthreads; ++i)
     memcpy (rk + i, rk, sizeof (RK));
   j = rank * nthreads;
@@ -2003,22 +2002,22 @@ rk_run (xmlNode * node, ///< XML node.
   printf ("Print the optimal coefficients\n");
   memcpy (tb->random_data, tb->value_optimal, nfree * sizeof (long double));
   tb->method (tb);
-	if (rk->strong)
-	  {
+  if (rk->strong)
+    {
       memcpy (ac->random_data, ac->value_optimal,
               nfree2 * sizeof (long double));
       memcpy (rk->ac, ac, sizeof (Optimize));
       ac->method ((Optimize *) rk);
-		}
+    }
   snprintf (filename, 32, "rk-%u-%u-%u-%u-%u.mc",
-			      nsteps, order, rk->time_accuracy, rk->pair, rk->strong);
+            nsteps, order, rk->time_accuracy, rk->pair, rk->strong);
   file = fopen (filename, "w");
   tb->print ((Optimize *) rk, file);
   tb->print_maxima (file, nsteps, order);
   fclose (file);
 
   // Free memory
-	if (rk->strong)
+  if (rk->strong)
     g_slice_free1 (nfree2 * sizeof (long double), value_optimal2);
   for (i = 0; i < nthreads; ++i)
     rk_delete (rk + i);
@@ -2028,14 +2027,14 @@ rk_run (xmlNode * node, ///< XML node.
 #if DEBUG_RK
   fprintf (stderr, "rk_run: end\n");
 #endif
-	return 1;
+  return 1;
 
 exit_on_error:
-	buffer = error_message;
-	error_message = g_strconcat ("Runge-Kutta:\n", buffer, NULL);
-	g_free (buffer);
+  buffer = error_message;
+  error_message = g_strconcat ("Runge-Kutta:\n", buffer, NULL);
+  g_free (buffer);
 #if DEBUG_RK
   fprintf (stderr, "rk_run: end\n");
 #endif
-	return 0;
+  return 0;
 }

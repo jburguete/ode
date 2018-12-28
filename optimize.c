@@ -110,7 +110,7 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
       fprintf (stderr, "optimize_step: random freedom degrees\n");
 #endif
       optimize_generate_random (optimize);
-			if (file_variables)
+      if (file_variables)
         print_variables (optimize->random_data, nfree, file_variables);
 
       // method coefficients
@@ -129,7 +129,7 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
           o2 = o;
           memcpy (vo, optimize->random_data, nfree * sizeof (long double));
         }
-			if (file_variables)
+      if (file_variables)
         fprintf (file_variables, "%.19Le\n", o);
     }
 
@@ -177,9 +177,9 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
 
       // increase or reduce intervals if converging or not
       if (!k)
-				f = 0.5L;
-			else
-				f = 1.2L;
+        f = 0.5L;
+      else
+        f = 1.2L;
       for (j = 0; j < nfree; ++j)
         is[j] *= f;
     }
@@ -383,10 +383,10 @@ optimize_create (Optimize * optimize,   ///< Optimize struct.
                  long double *value_optimal)
                  ///< array of optimal freedom degree values.
 {
-	unsigned long long int nsimulations;
+  unsigned long long int nsimulations;
   unsigned int i, nfree;
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_create: start\n");
+  fprintf (stderr, "optimize_create: start\n");
 #endif
   optimize->optimal = optimal;
   optimize->value_optimal = value_optimal;
@@ -396,8 +396,8 @@ optimize_create (Optimize * optimize,   ///< Optimize struct.
   optimize->nclimbings *= nfree;
 #if DEBUG_OPTIMIZE
   fprintf (stderr, "optimize_create nsimulations=%Lu nclimbings=%u nfree=%u\n",
-		 	     optimize->nsimulations, optimize->nclimbings, nfree);
-	fprintf (stderr, "optimize_create: end\n");
+           optimize->nsimulations, optimize->nclimbings, nfree);
+  fprintf (stderr, "optimize_create: end\n");
 #endif
 }
 
@@ -407,54 +407,54 @@ optimize_create (Optimize * optimize,   ///< Optimize struct.
  * \return 1 on success, 0 on error.
  */
 int
-optimize_read (Optimize * optimize, ///< Optimize struct.
-		           xmlNode * node) ///< XML node.
+optimize_read (Optimize * optimize,     ///< Optimize struct.
+               xmlNode * node)  ///< XML node.
 {
-	int code;
+  int code;
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_read: start\n");
+  fprintf (stderr, "optimize_read: start\n");
 #endif
-	optimize->nsimulations = xml_node_get_uint (node, XML_NSIMULATIONS, &code);
-	if (code || !optimize->nsimulations)
-	  {
-			error_message = g_strdup (_("Bad simulations number"));
-			goto exit_on_error;
-		}
-	optimize->nclimbings
-	 	= xml_node_get_uint_with_default (node, XML_NCLIMBINGS, 0, &code);
-	if (code)
-	  {
-			error_message = g_strdup (_("Bad hill climbings number"));
-			goto exit_on_error;
-		}
-	optimize->niterations = xml_node_get_uint (node, XML_NITERATIONS, &code);
-	if (code || !optimize->niterations)
-	  {
-			error_message = g_strdup (_("Bad iterations number"));
-			goto exit_on_error;
-		}
-	optimize->convergence_factor
-		= xml_node_get_float (node, XML_CONVERGENCE_FACTOR, &code);
-	if (code || optimize->convergence_factor < LDBL_EPSILON)
-	  {
-			error_message = g_strdup (_("Bad convergence factor"));
-			goto exit_on_error;
-		}
-	optimize->climbing_factor
-		= xml_node_get_float (node, XML_CLIMBING_FACTOR, &code);
-	if (code || optimize->climbing_factor < LDBL_EPSILON)
-	  {
-			error_message = g_strdup (_("Bad climging factor"));
-			goto exit_on_error;
-		}
+  optimize->nsimulations = xml_node_get_uint (node, XML_NSIMULATIONS, &code);
+  if (code || !optimize->nsimulations)
+    {
+      error_message = g_strdup (_("Bad simulations number"));
+      goto exit_on_error;
+    }
+  optimize->nclimbings
+    = xml_node_get_uint_with_default (node, XML_NCLIMBINGS, 0, &code);
+  if (code)
+    {
+      error_message = g_strdup (_("Bad hill climbings number"));
+      goto exit_on_error;
+    }
+  optimize->niterations = xml_node_get_uint (node, XML_NITERATIONS, &code);
+  if (code || !optimize->niterations)
+    {
+      error_message = g_strdup (_("Bad iterations number"));
+      goto exit_on_error;
+    }
+  optimize->convergence_factor
+    = xml_node_get_float (node, XML_CONVERGENCE_FACTOR, &code);
+  if (code || optimize->convergence_factor < LDBL_EPSILON)
+    {
+      error_message = g_strdup (_("Bad convergence factor"));
+      goto exit_on_error;
+    }
+  optimize->climbing_factor
+    = xml_node_get_float (node, XML_CLIMBING_FACTOR, &code);
+  if (code || optimize->climbing_factor < LDBL_EPSILON)
+    {
+      error_message = g_strdup (_("Bad climging factor"));
+      goto exit_on_error;
+    }
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_read: end\n");
+  fprintf (stderr, "optimize_read: end\n");
 #endif
-	return 1;
+  return 1;
 
 exit_on_error:
 #if DEBUG_OPTIMIZE
-	fprintf (stderr, "optimize_read: end\n");
+  fprintf (stderr, "optimize_read: end\n");
 #endif
-	return 0;
+  return 0;
 }

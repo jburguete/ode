@@ -234,13 +234,13 @@ enum
  */
 enum
 {
-	ERROR_CODE_NARGS = 1, ///< bad command line arguments number.
-	ERROR_CODE_BAD_DOC = 2, ///< bad XML file.
-	ERROR_CODE_NO_XML_ROOT = 3, ///< no XML root node.	
-	ERROR_CODE_BAD_RK = 4, ///< bad Runge-Kutta method.
-	ERROR_CODE_BAD_STEPS = 5, ///< bad multi-steps method.
-	ERROR_CODE_UNKNOWN_METHOD = 6, ///< unknown method.
-	ERROR_CODE_UNKNOWN_OPTION = 7, ///< unknown option.
+  ERROR_CODE_NARGS = 1,         ///< bad command line arguments number.
+  ERROR_CODE_BAD_DOC = 2,       ///< bad XML file.
+  ERROR_CODE_NO_XML_ROOT = 3,   ///< no XML root node.      
+  ERROR_CODE_BAD_RK = 4,        ///< bad Runge-Kutta method.
+  ERROR_CODE_BAD_STEPS = 5,     ///< bad multi-steps method.
+  ERROR_CODE_UNKNOWN_METHOD = 6,        ///< unknown method.
+  ERROR_CODE_UNKNOWN_OPTION = 7,        ///< unknown option.
 } ErrorCode;
 
 unsigned int nsteps;            ///< steps number.
@@ -255,18 +255,17 @@ int
 main (int argn,                 ///< arguments number.
       char **argc)              ///< argument chains array.
 {
-	const struct option options [] =
-	{
-		{ "threads", required_argument, NULL, 't' },
-		{ NULL, 0, NULL, 0 }
-	};
-	xmlDoc *doc;
-	xmlNode *node;
+  const struct option options[] = {
+    {"threads", required_argument, NULL, 't'},
+    {NULL, 0, NULL, 0}
+  };
+  xmlDoc *doc;
+  xmlNode *node;
   gsl_rng *rng0, **rng;
   time_t d0;
   clock_t t0;
   unsigned long int seed;
-	int o, option_index;
+  int o, option_index;
   unsigned int i, j, k;
 
 #if HAVE_MPI
@@ -274,28 +273,28 @@ main (int argn,                 ///< arguments number.
   MPI_Init (&argn, &argc);
 #endif
 
-	// Enabling spaces in XML files
-	xmlKeepBlanksDefault (0);
+  // Enabling spaces in XML files
+  xmlKeepBlanksDefault (0);
 
   // Setting the threads as the number of processors
   nthreads = sysconf (_SC_NPROCESSORS_CONF);
 
-	// Parsing command line options
-	while (1)
-	  {
-			o = getopt_long (argn, argc, "t:", options, &option_index);
-			if (o == -1)
-				break;
-			switch (o)
-			  {
-				case 't':
-				  nthreads = atoi	(optarg);
-					break;
-				default:
-					show_error (_("Unknown option"));
-					return ERROR_CODE_UNKNOWN_OPTION;
-				}
-		}
+  // Parsing command line options
+  while (1)
+    {
+      o = getopt_long (argn, argc, "t:", options, &option_index);
+      if (o == -1)
+        break;
+      switch (o)
+        {
+        case 't':
+          nthreads = atoi (optarg);
+          break;
+        default:
+          show_error (_("Unknown option"));
+          return ERROR_CODE_UNKNOWN_OPTION;
+        }
+    }
 
   // Init the clock
   t0 = clock ();
@@ -320,26 +319,26 @@ main (int argn,                 ///< arguments number.
 
   // Select the numerical model
   printf ("Selecting method optind=%d\n", optind);
-	argn -= optind;
+  argn -= optind;
   if (argn != 1 && argn != 2)
     {
       show_error (_("Usage is:\n"
-						        "./ode [-t --threads threads_number] input_file "
-										"[variables_file]"));
+                    "./ode [-t --threads threads_number] input_file "
+                    "[variables_file]"));
       return ERROR_CODE_NARGS;
     }
-	doc = xmlParseFile (argc[optind]);
-	if (!doc)
-	  {
-			show_error (_("Unable to parse the input file"));
-			return ERROR_CODE_BAD_DOC;
-		}
-	node = xmlDocGetRootElement (doc);
-	if (!node)
-	  {
-			show_error (_("No XML root node"));
-			return ERROR_CODE_NO_XML_ROOT;
-		}
+  doc = xmlParseFile (argc[optind]);
+  if (!doc)
+    {
+      show_error (_("Unable to parse the input file"));
+      return ERROR_CODE_BAD_DOC;
+    }
+  node = xmlDocGetRootElement (doc);
+  if (!node)
+    {
+      show_error (_("No XML root node"));
+      return ERROR_CODE_NO_XML_ROOT;
+    }
 
   // Init a random numbers generator per node and thread
   printf ("Initing random numbers\n");
@@ -353,28 +352,28 @@ main (int argn,                 ///< arguments number.
         gsl_rng_set (rng[k], gsl_rng_get (rng0));
       }
 
-	if (argn == 2)
+  if (argn == 2)
     file_variables = fopen (argc[++optind], "w");
 
   j = rank * nthreads;
-	if (!xmlStrcmp (node->name, XML_RUNGE_KUTTA))
+  if (!xmlStrcmp (node->name, XML_RUNGE_KUTTA))
     {
-			if (!rk_run (node, rng))
-			  {
-					show_error (error_message);
-				  return ERROR_CODE_BAD_RK;
-				}
-		}
-	else if (!xmlStrcmp (node->name, XML_STEPS))
-	  {
-			if (!steps_run (node, rng))
-			  {
-					show_error (error_message);
-				  return ERROR_CODE_BAD_STEPS;
-				}
-		}
-	else
-	  {
+      if (!rk_run (node, rng))
+        {
+          show_error (error_message);
+          return ERROR_CODE_BAD_RK;
+        }
+    }
+  else if (!xmlStrcmp (node->name, XML_STEPS))
+    {
+      if (!steps_run (node, rng))
+        {
+          show_error (error_message);
+          return ERROR_CODE_BAD_STEPS;
+        }
+    }
+  else
+    {
       show_error (_("Unknown method type"));
       return ERROR_CODE_UNKNOWN_METHOD;
     }
@@ -383,7 +382,7 @@ main (int argn,                 ///< arguments number.
           (clock () - t0) / ((double) CLOCKS_PER_SEC), time (NULL) - d0);
 
   // Free memory
-	if (file_variables)
+  if (file_variables)
     fclose (file_variables);
   j = nnodes * nthreads;
   for (i = 0; i < j; ++i)
