@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<Runge-Kutta steps="2" order="2" nsimulations="100" nclimbings="64" niterations="32" convergence-factor="0.02" climbing-factor="0.1" strong="yes">
+	<ac nsimulations="100" nclimbings="64" niterations="32" convergence-factor="0.002" climbing-factor="0.1"/>
+</Runge-Kutta>
