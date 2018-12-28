@@ -256,17 +256,24 @@ main (int argn,                 ///< arguments number.
       char **argc)              ///< argument chains array.
 {
   const struct option options[] = {
+    {"help", no_argument, NULL, 'h'},
+    {"seed", required_argument, NULL, 's'},
     {"threads", required_argument, NULL, 't'},
     {NULL, 0, NULL, 0}
   };
+  const char *usage = _("Usage is:\n"
+                        "./ode "
+                        "[-t --threads threads_number] "
+                        "[-s --seed random_seed] "
+                        "input_file [variables_file]");
   xmlDoc *doc;
   xmlNode *node;
   gsl_rng *rng0, **rng;
   time_t d0;
   clock_t t0;
-  unsigned long int seed;
+  unsigned long int seed = 7l;
   int o, option_index;
-  unsigned int i, j, k;
+  unsigned int i, j, k, h = 0;
 
 #if HAVE_MPI
   // Init MPI
@@ -282,18 +289,33 @@ main (int argn,                 ///< arguments number.
   // Parsing command line options
   while (1)
     {
-      o = getopt_long (argn, argc, "t:", options, &option_index);
+      o = getopt_long (argn, argc, "hs:t:", options, &option_index);
       if (o == -1)
         break;
       switch (o)
         {
+        case 's':
+          seed = atol (optarg);
+          break;
         case 't':
           nthreads = atoi (optarg);
+          break;
+        case 'h':
+          printf ("%s\n", usage);
+          h = 1;
           break;
         default:
           show_error (_("Unknown option"));
           return ERROR_CODE_UNKNOWN_OPTION;
         }
+    }
+  argn -= optind;
+  if (argn != 1 && argn != 2)
+    {
+      if (h)
+        return 0;
+      show_error (usage);
+      return ERROR_CODE_NARGS;
     }
 
   // Init the clock
@@ -315,18 +337,9 @@ main (int argn,                 ///< arguments number.
 
 #endif
 
-  printf ("Rank=%d nnodes=%d nthreads=%u\n", rank, nnodes, nthreads);
-
   // Select the numerical model
+  printf ("Rank=%d nnodes=%d nthreads=%u\n", rank, nnodes, nthreads);
   printf ("Selecting method optind=%d\n", optind);
-  argn -= optind;
-  if (argn != 1 && argn != 2)
-    {
-      show_error (_("Usage is:\n"
-                    "./ode [-t --threads threads_number] input_file "
-                    "[variables_file]"));
-      return ERROR_CODE_NARGS;
-    }
   doc = xmlParseFile (argc[optind]);
   if (!doc)
     {
@@ -382,6 +395,7 @@ main (int argn,                 ///< arguments number.
           (clock () - t0) / ((double) CLOCKS_PER_SEC), time (NULL) - d0);
 
   // Free memory
+  xmlFreeDoc (doc);
   if (file_variables)
     fclose (file_variables);
   j = nnodes * nthreads;
