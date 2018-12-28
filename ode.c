@@ -33,6 +33,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #define _GNU_SOURCE
 #include <stdio.h>
+#include <stdlib.h>
+#include <getopt.h>
 #include <math.h>
 #include <string.h>
 #include <alloca.h>
@@ -237,7 +239,8 @@ enum
 	ERROR_CODE_NO_XML_ROOT = 3, ///< no XML root node.	
 	ERROR_CODE_BAD_RK = 4, ///< bad Runge-Kutta method.
 	ERROR_CODE_BAD_STEPS = 5, ///< bad multi-steps method.
-	ERROR_CODE_UNKNOWN = 5, ///< unknown method.
+	ERROR_CODE_UNKNOWN_METHOD = 6, ///< unknown method.
+	ERROR_CODE_UNKNOWN_OPTION = 7, ///< unknown option.
 } ErrorCode;
 
 unsigned int nsteps;            ///< steps number.
@@ -252,13 +255,18 @@ int
 main (int argn,                 ///< arguments number.
       char **argc)              ///< argument chains array.
 {
+	const struct option options [] =
+	{
+		{ "threads", required_argument, NULL, 't' },
+		{ NULL, 0, NULL, 0 }
+	};
 	xmlDoc *doc;
 	xmlNode *node;
   gsl_rng *rng0, **rng;
-  FILE *file;
   time_t d0;
   clock_t t0;
   unsigned long int seed;
+	int o, option_index;
   unsigned int i, j, k;
 
 #if HAVE_MPI
@@ -269,9 +277,25 @@ main (int argn,                 ///< arguments number.
 	// Enabling spaces in XML files
 	xmlKeepBlanksDefault (0);
 
-  // Number of processors
+  // Setting the threads as the number of processors
   nthreads = sysconf (_SC_NPROCESSORS_CONF);
-  //nthreads = 1;
+
+	// Parsing command line options
+	while (1)
+	  {
+			o = getopt_long (argn, argc, "t:", options, &option_index);
+			if (o == -1)
+				break;
+			switch (o)
+			  {
+				case 't':
+				  nthreads = atoi	(optarg);
+					break;
+				default:
+					show_error (_("Unknown option"));
+					return ERROR_CODE_UNKNOWN_OPTION;
+				}
+		}
 
   // Init the clock
   t0 = clock ();
@@ -295,13 +319,16 @@ main (int argn,                 ///< arguments number.
   printf ("Rank=%d nnodes=%d nthreads=%u\n", rank, nnodes, nthreads);
 
   // Select the numerical model
-  printf ("Selecting method\n");
-  if (argn != 2)
+  printf ("Selecting method optind=%d\n", optind);
+	argn -= optind;
+  if (argn != 1 && argn != 2)
     {
-      show_error (_("Usage is:\n./ode input_file"));
+      show_error (_("Usage is:\n"
+						        "./ode [-t --threads threads_number] input_file "
+										"[variables_file]"));
       return ERROR_CODE_NARGS;
     }
-	doc = xmlParseFile (argc[1]);
+	doc = xmlParseFile (argc[optind]);
 	if (!doc)
 	  {
 			show_error (_("Unable to parse the input file"));
@@ -326,9 +353,8 @@ main (int argn,                 ///< arguments number.
         gsl_rng_set (rng[k], gsl_rng_get (rng0));
       }
 
-#if PRINT_RANDOM
-  file_random = fopen ("random", "w");
-#endif
+	if (argn == 2)
+    file_variables = fopen (argc[++optind], "w");
 
   j = rank * nthreads;
 	if (!xmlStrcmp (node->name, XML_RUNGE_KUTTA))
@@ -350,17 +376,15 @@ main (int argn,                 ///< arguments number.
 	else
 	  {
       show_error (_("Unknown method type"));
-      return ERROR_CODE_UNKNOWN;
+      return ERROR_CODE_UNKNOWN_METHOD;
     }
 
   printf ("cpu time=%lg real time=%lu\n",
           (clock () - t0) / ((double) CLOCKS_PER_SEC), time (NULL) - d0);
 
-#if PRINT_RANDOM
-  fclose (file_random);
-#endif
-
   // Free memory
+	if (file_variables)
+    fclose (file_variables);
   j = nnodes * nthreads;
   for (i = 0; i < j; ++i)
     gsl_rng_free (rng[i]);

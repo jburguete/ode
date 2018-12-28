@@ -50,10 +50,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DEBUG_OPTIMIZE 0        ///< macro to debug.
 
 GMutex mutex[1];                ///< GMutex struct.
-#if PRINT_RANDOM
-FILE *file_random;              ///< random variables file.
-FILE *file_random2;             ///< 2nd random variables file.
-#endif
+FILE *file_variables = NULL;    ///< random variables file.
 int rank;                       ///< MPI rank.
 int nnodes;                     ///< MPI nodes number.
 unsigned nthreads;              ///< threads number.
@@ -113,9 +110,8 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
       fprintf (stderr, "optimize_step: random freedom degrees\n");
 #endif
       optimize_generate_random (optimize);
-#if PRINT_RANDOM
-      print_random (optimize->random_data, nfree, file_random);
-#endif
+			if (file_variables)
+        print_variables (optimize->random_data, nfree, file_variables);
 
       // method coefficients
 #if DEBUG_OPTIMIZE
@@ -133,6 +129,8 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
           o2 = o;
           memcpy (vo, optimize->random_data, nfree * sizeof (long double));
         }
+			if (file_variables)
+        fprintf (file_variables, "%.19Le\n", o);
     }
 
   // array of intervals to climb around the optimal

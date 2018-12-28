@@ -993,7 +993,7 @@ rk_delete (RK * rk)             ///< RK struct.
 void
 rk_step_ac (RK * rk)            ///< RK struct.
 {
-  Optimize *ac;
+  Optimize *tb, *ac;
   long double *is, *vo, *vo2;
   long double o, o2, v, f;
   unsigned long long int ii, nsimulations;
@@ -1007,6 +1007,7 @@ rk_step_ac (RK * rk)            ///< RK struct.
 #if DEBUG_RK
   fprintf (stderr, "rk_step_ac: save optimal values\n");
 #endif
+  tb = rk->tb;
   ac = rk->ac;
   nfree = ac->nfree;
   o2 = *ac->optimal;
@@ -1029,9 +1030,11 @@ rk_step_ac (RK * rk)            ///< RK struct.
       fprintf (stderr, "rk_step_ac: random freedom degrees\n");
 #endif
       optimize_generate_random (ac);
-#if PRINT_RANDOM
-      print_random (ac->random_data, nfree, file_random2);
-#endif
+			if (file_variables)
+			  {
+					print_variables (tb->random_data, tb->nfree, file_variables);
+          print_variables (ac->random_data, nfree, file_variables);
+				}
 
       // method coefficients
 #if DEBUG_RK
@@ -1052,6 +1055,8 @@ rk_step_ac (RK * rk)            ///< RK struct.
           o2 = o;
           memcpy (vo, ac->random_data, nfree * sizeof (long double));
         }
+			if (file_variables)
+        fprintf (file_variables, "%.19Le\n", o);
     }
 
   // array of intervals to search around the optimal
@@ -1086,6 +1091,11 @@ rk_step_ac (RK * rk)            ///< RK struct.
         {
           v = vo[j];
           ac->random_data[j] = v + is[j];
+			    if (file_variables)
+    			  {
+		    			print_variables (tb->random_data, tb->nfree, file_variables);
+              print_variables (ac->random_data, nfree, file_variables);
+    				}
 #if DEBUG_RK
           fprintf (stderr, "rk_step_ac: j=%u random=%Lg\n", j,
                    ac->random_data[j]);
@@ -1101,7 +1111,14 @@ rk_step_ac (RK * rk)            ///< RK struct.
               o2 = o;
               memcpy (vo2, ac->random_data, nfree * sizeof (long double));
             }
+			    if (file_variables)
+            fprintf (file_variables, "%.19Le\n", o);
           ac->random_data[j] = fmaxl(0.L, v - is[j]);
+			    if (file_variables)
+    			  {
+		    			print_variables (tb->random_data, tb->nfree, file_variables);
+              print_variables (ac->random_data, nfree, file_variables);
+    				}
           ac->method ((Optimize *) rk);
           o = ac->objective ((Optimize *) rk);
 #if DEBUG_RK
@@ -1113,6 +1130,8 @@ rk_step_ac (RK * rk)            ///< RK struct.
               o2 = o;
               memcpy (vo2, ac->random_data, nfree * sizeof (long double));
             }
+			    if (file_variables)
+            fprintf (file_variables, "%.19Le\n", o);
           ac->random_data[j] = v;
         }
 
@@ -1236,7 +1255,7 @@ rk_step_tb (RK * rk)            ///< RK struct.
   long double *is, *vo;
   long double o, v, f;
   unsigned long long int ii, nrandom;
-  unsigned int i, j, k, n, nfree;
+  unsigned int b, i, j, k, n, nfree;
 
 #if DEBUG_RK
   fprintf (stderr, "rk_step_tb: start\n");
@@ -1249,6 +1268,7 @@ rk_step_tb (RK * rk)            ///< RK struct.
   tb = rk->tb;
   nfree = tb->nfree;
   vo = (long double *) alloca (nfree * sizeof (long double));
+	b = (file_variables && !rk->strong) ? 1 : 0;
 
   // Monte-Carlo algorithm
 #if DEBUG_RK
@@ -1265,12 +1285,8 @@ rk_step_tb (RK * rk)            ///< RK struct.
       fprintf (stderr, "rk_step_tb: random freedom degrees\n");
 #endif
       optimize_generate_random (tb);
-#if PRINT_RANDOM
-      print_random (tb->random_data, nfree, file_random);
-#endif
-#if DEBUG_RK
-      print_random (tb->random_data, nfree, stderr);
-#endif
+			if (b)
+        print_variables (tb->random_data, nfree, file_variables);
 
       // method coefficients
 #if DEBUG_RK
@@ -1291,6 +1307,8 @@ rk_step_tb (RK * rk)            ///< RK struct.
                   nfree * sizeof (long double));
           g_mutex_unlock (mutex);
         }
+			if (b)
+        fprintf (file_variables, "%.19Le\n", o);
     }
 
   // array of intervals to climb around the optimal
@@ -1315,6 +1333,8 @@ rk_step_tb (RK * rk)            ///< RK struct.
         {
           v = vo[j];
           tb->random_data[j] = v + is[j];
+			    if (b)
+            print_variables (tb->random_data, nfree, file_variables);
           tb->method (tb);
           o = tb->objective (tb);
           if (o < *tb->optimal)
@@ -1326,7 +1346,11 @@ rk_step_tb (RK * rk)            ///< RK struct.
                       nfree * sizeof (long double));
               g_mutex_unlock (mutex);
             }
+			    if (b)
+            fprintf (file_variables, "%.19Le\n", o);
           tb->random_data[j] = fmaxl (0.L, v - is[j]);
+			    if (b)
+            print_variables (tb->random_data, nfree, file_variables);
           tb->method (tb);
           o = tb->objective (tb);
           if (o < *tb->optimal)
@@ -1338,6 +1362,8 @@ rk_step_tb (RK * rk)            ///< RK struct.
                       nfree * sizeof (long double));
               g_mutex_unlock (mutex);
             }
+			    if (b)
+            fprintf (file_variables, "%.19Le\n", o);
           tb->random_data[j] = v;
         }
 
@@ -1990,10 +2016,6 @@ rk_run (xmlNode * node, ///< XML node.
   tb->print ((Optimize *) rk, file);
   tb->print_maxima (file, nsteps, order);
   fclose (file);
-
-#if PRINT_RANDOM
-  fclose (file_random2);
-#endif
 
   // Free memory
 	if (rk->strong)

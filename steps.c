@@ -1171,10 +1171,6 @@ steps_run (xmlNode * node, ///< XML node.
   s->print_maxima (file, nsteps, order);
   fclose (file);
 
-#if PRINT_RANDOM
-  fclose (file_random2);
-#endif
-
   // Free memory
   for (i = 0; i < nthreads; ++i)
     optimize_delete (s + i);

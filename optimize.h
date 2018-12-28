@@ -90,10 +90,7 @@ typedef void (*OptimizeMethod) (Optimize * optimize);
 typedef long double (*OptimizeObjective) (Optimize * optimize);
 typedef void (*OptimizePrint) (Optimize * optimize, FILE * file);
 
-#if PRINT_RANDOM
-extern FILE *file_random;
-extern FILE *file_random2;
-#endif
+extern FILE *file_variables;
 extern int rank;
 extern int nnodes;
 extern unsigned nthreads;

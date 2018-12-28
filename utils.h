@@ -53,15 +53,14 @@ xml_node_get_float (xmlNode * node, const xmlChar * prop, int *error_code);
  * Function to print the random variables on a file.
  */
 static inline void
-print_random (long double *r,   ///< random variables.
-              unsigned int nfree,       ///< number of freedom degrees.
-              FILE * file)      ///< file.
+print_variables (long double *r,   ///< random variables.
+                 unsigned int nfree,       ///< number of freedom degrees.
+                 FILE * file)      ///< file.
 {
   unsigned int i;
   g_mutex_lock (mutex);
   for (i = 0; i < nfree; ++i)
     fprintf (file, "%.19Le ", r[i]);
-  fprintf (file, "\n");
   g_mutex_unlock (mutex);
 }
 

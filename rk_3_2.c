@@ -130,7 +130,7 @@ rk_tb_3_2t (Optimize * optimize)        ///< Optimize struct.
   t1 (tb) = r[0];
   t2 (tb) = r[1];
   b21 (tb) = r[2];
-  b32 (tb) = (1.L / 3.L - 0.5L) / (t2 (tb) * (t2 (tb) - t1 (tb)));
+  b32 (tb) = (1.L / 3.L - 0.5L * t1 (tb)) / (t2 (tb) * (t2 (tb) - t1 (tb)));
   b31 (tb) = (0.5L - b32 (tb) * t2 (tb)) / t1 (tb);
   rk_b_3 (tb);
 #if DEBUG_RK_3_2
