@@ -72,14 +72,14 @@ struct _Optimize
   void *data;
   ///< pointer to additional method data.
   long double convergence_factor;       ///< convergence factor.
-  long double search_factor;
-  ///< factor to the coordinates search optimization algorithm.
+  long double climbing_factor;
+  ///< factor to the coordinates hill climbing optimization algorithm.
   unsigned long long int nsimulations;
   ///< number of total simulations on Monte-Carlo optimization algorithm.
   unsigned long long int nrandom;
   ///< number of simulations per thread on Monte-Carlo optimization algorithm.
-  unsigned int nsearch;
-  ///< number of steps on coordinates search optimization algorithm.
+  unsigned int nclimbings;
+  ///< number of steps on coordinates hill climbing optimization algorithm.
   unsigned int niterations;     ///< iterations number.
   unsigned int nfree;           ///< number of freedom degrees.
   unsigned int size;            ///< total variables number.
@@ -103,13 +103,9 @@ void optimize_step (Optimize * optimize);
 void optimize_init (Optimize * optimize, gsl_rng * rng);
 void optimize_delete (Optimize * optimize);
 void optimize_bucle (Optimize * optimize);
-void optimize_create (Optimize * optimize,
-                      long double *optimal,
-                      long double *value_optimal,
-                      long double convergence_factor,
-                      long double search_factor,
-                      unsigned long long int nsimulations,
-                      unsigned int nsearch, unsigned int niterations);
+void optimize_create (Optimize * optimize, long double *optimal,
+                      long double *value_optimal);
+int optimize_read (Optimize * optimize, xmlNode * node);
 
 /**
  * Function to generate the freedom degree values.

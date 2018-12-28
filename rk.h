@@ -50,6 +50,7 @@ typedef struct
   unsigned int strong;          ///< boolean to cope with strong stability.
   unsigned int time_accuracy;
   ///< boolean to cope with extended time accuracy.
+	unsigned int pair;            ///< boolean to build Runge-Kutta pairs.
 } RK;
 
 #define RUNGE_KUTTA(o) ((Optimize *)((Optimize *)o)->data)
@@ -164,32 +165,12 @@ long double rk_objective_ac_5 (RK * rk);
 long double rk_objective_ac_6 (RK * rk);
 void rk_init (RK * rk, gsl_rng * rng);
 void rk_delete (RK * rk);
-void rk_create_simple (RK * rk,
-                       long double *optimal,
-                       long double *value_optimal,
-                       long double convergence_factor,
-                       long double search_factor,
-                       unsigned long long int nsimulations,
-                       unsigned int nsearch, unsigned int niterations);
-void rk_create (RK * rk,
-                long double *optimal,
-                long double *value_optimal,
-                long double *optimal2,
-                long double *value_optimal2,
-                long double convergence_factor,
-                long double convergence_factor2,
-                long double search_factor,
-                long double search_factor2,
-                unsigned long long int nsimulations,
-                unsigned long long int nsimulations2,
-                unsigned int nsearch,
-                unsigned int nsearch2,
-                unsigned int niterations, unsigned int niterations2);
 void rk_step_ac (RK * rk);
 void rk_bucle_ac (RK * rk);
 void rk_step_tb (RK * rk);
 void rk_bucle_tb (RK * rk);
 int rk_select (RK * rk, unsigned int nsteps, unsigned int order);
+int rk_run (xmlNode * node, gsl_rng **rng);
 
 /**
  * Function to get \f$b_{i0}\f$ coefficients of the 2 steps Runge-Kutta methods.

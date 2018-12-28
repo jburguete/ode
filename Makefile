@@ -58,17 +58,20 @@ rkofiles = rk.o \
 	rk_5_2.o rk_5_3.o rk_5_4.o \
 	rk_6_2.o rk_6_3.o rk_6_4.o
 
-ofiles = optimize.o $(sofiles) $(rkofiles)
+ofiles = optimize.o $(sofiles) $(rkofiles) utils.o
 
 cc = gcc -flto -g -std=gnu11
-cflags = `pkg-config --cflags glib-2.0 gthread-2.0 gsl` -c -O3 -march=native \
-	-Wall -Wextra -D_FORTIFY_SOURCE=2
-libs = -lm `pkg-config --libs glib-2.0 gthread-2.0 gsl`
+cflags = `pkg-config --cflags libxml-2.0 glib-2.0 gthread-2.0 gsl` -c -O3 \
+	-march=native -Wall -Wextra -D_FORTIFY_SOURCE=2
+libs = -lm `pkg-config --libs libxml-2.0 glib-2.0 gthread-2.0 gsl`
 
 all: ode ode.pdf
 
 ode: $(ofiles) ode.o
 	$(cc) ode.o $(ofiles) $(libs) -o ode
+
+utils.o: utils.c utils.h config.h
+	$(cc) $(cflags) utils.c -o utils.o
 
 optimize.o: optimize.c optimize.h $(cfiles)
 	$(cc) $(cflags) optimize.c -o optimize.o

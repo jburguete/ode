@@ -34,8 +34,11 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #define _GNU_SOURCE
 #include <string.h>
+#include <float.h>
 #include <math.h>
+#include <libxml/parser.h>
 #include <glib.h>
+#include <libintl.h>
 #include <gsl/gsl_rng.h>
 #if HAVE_MPI
 #include <mpi.h>
@@ -984,66 +987,6 @@ rk_delete (RK * rk)             ///< RK struct.
 }
 
 /**
- * Function to create a RK struct data on simple stable methods.
- */
-void
-rk_create_simple (RK * rk,      ///< RK struct.
-                  long double *optimal,
-                  ///< pointer to the optimal objective function value.
-                  long double *value_optimal,
-                  ///< array of optimal freedom degree values.
-                  long double convergence_factor,       ///< convergence factor.
-                  long double search_factor,
-                  ///< factor to the coordinates search optimization algorithm.
-                  unsigned long long int nsimulations,
-///< number of total simulations on Monte-Carlo optimization algorithm.
-                  unsigned int nsearch,
-///< number of steps on coordinates search optimization algorithm.
-                  unsigned int niterations)     ///< iterations number.
-{
-  optimize_create (rk->tb, optimal, value_optimal, convergence_factor,
-                   search_factor, nsimulations, nsearch, niterations);
-}
-
-/**
- * Function to create a RK struct data.
- */
-void
-rk_create (RK * rk,             ///< RK struct.
-           long double *optimal,
-           ///< pointer to the optimal objective function value.
-           long double *value_optimal,
-           ///< array of optimal freedom degree values.
-           long double *optimal2,
-           ///< pointer to the 2nd optimal objective function value.
-           long double *value_optimal2,
-           ///< array of 2nd optimal freedom degree values.
-           long double convergence_factor,      ///< convergence factor.
-           long double convergence_factor2,
-           ///< 2nd convergence factor.
-           long double search_factor,
-           ///< factor to the coordinates search optimization algorithm.
-           long double search_factor2,
-           ///< 2nd factor to the coordinates search optimization algorithm.
-           unsigned long long int nsimulations,
-///< number of total simulations on Monte-Carlo optimization algorithm.
-           unsigned long long int nsimulations2,
-///< 2nd number of total simulations on Monte-Carlo optimization algorithm.
-           unsigned int nsearch,
-///< number of steps on coordinates search optimization algorithm.
-           unsigned int nsearch2,
-///< 2nd number of steps on coordinates search optimization algorithm.
-           unsigned int niterations,    ///< iterations number.
-           unsigned int niterations2)   ///< 2nd iterations number.
-{
-  rk->strong = 1;
-  optimize_create (rk->tb, optimal, value_optimal, convergence_factor,
-                   search_factor, nsimulations, nsearch, niterations);
-  optimize_create (rk->ac0, optimal2, value_optimal2, convergence_factor2,
-                   search_factor2, nsimulations2, nsearch2, niterations2);
-}
-
-/**
  * Function to perform every optimization step for the a-c Runge-Kutta 
  * coefficients.
  */
@@ -1052,7 +995,7 @@ rk_step_ac (RK * rk)            ///< RK struct.
 {
   Optimize *ac;
   long double *is, *vo, *vo2;
-  long double o, o2, v;
+  long double o, o2, v, f;
   unsigned long long int ii, nsimulations;
   unsigned int i, j, k, n, nfree;
 
@@ -1120,18 +1063,18 @@ rk_step_ac (RK * rk)            ///< RK struct.
 #endif
   is = (long double *) alloca (nfree * sizeof (long double));
   for (j = 0; j < nfree; ++j)
-    is[j] = ac->interval0[j] * ac->search_factor;
+    is[j] = ac->interval0[j] * ac->climbing_factor;
 #if DEBUG_RK
   for (j = 0; j < nfree; ++j)
     fprintf (stderr, "rk_step_ac: i=%u is=%Lg\n", j, is[j]);
 #endif
 
-  // search algorithm bucle
+  // hill climbing algorithm bucle
 #if DEBUG_RK
-  fprintf (stderr, "rk_step_ac: search algorithm bucle\n");
+  fprintf (stderr, "rk_step_ac: hill climbing algorithm bucle\n");
 #endif
   memcpy (vo2, vo, nfree * sizeof (long double));
-  n = ac->nsearch;
+  n = ac->nclimbings;
   for (i = 0; i < n; ++i)
     {
 #if DEBUG_RK
@@ -1158,7 +1101,7 @@ rk_step_ac (RK * rk)            ///< RK struct.
               o2 = o;
               memcpy (vo2, ac->random_data, nfree * sizeof (long double));
             }
-          ac->random_data[j] = v - is[j];
+          ac->random_data[j] = fmaxl(0.L, v - is[j]);
           ac->method ((Optimize *) rk);
           o = ac->objective ((Optimize *) rk);
 #if DEBUG_RK
@@ -1173,10 +1116,13 @@ rk_step_ac (RK * rk)            ///< RK struct.
           ac->random_data[j] = v;
         }
 
-      // reduce intervals if no converging
+      // increase or reduce intervals if converging or not
       if (!k)
-        for (j = 0; j < nfree; ++j)
-          is[j] *= 0.5L;
+				f = 0.5L;
+			else
+				f = 1.2L;
+      for (j = 0; j < nfree; ++j)
+        is[j] *= f;
     }
 
   // update optimal values
@@ -1288,7 +1234,7 @@ rk_step_tb (RK * rk)            ///< RK struct.
 {
   Optimize *tb;
   long double *is, *vo;
-  long double o, v;
+  long double o, v, f;
   unsigned long long int ii, nrandom;
   unsigned int i, j, k, n, nfree;
 
@@ -1347,21 +1293,21 @@ rk_step_tb (RK * rk)            ///< RK struct.
         }
     }
 
-  // array of intervals to search around the optimal
+  // array of intervals to climb around the optimal
 #if DEBUG_RK
   fprintf (stderr,
-           "rk_step_tb: array of intervals to search around the optimal\n");
+           "rk_step_tb: array of intervals to climb around the optimal\n");
 #endif
   is = (long double *) alloca (nfree * sizeof (long double));
   for (j = 0; j < nfree; ++j)
-    is[j] = tb->interval0[j] * tb->search_factor;
+    is[j] = tb->interval0[j] * tb->climbing_factor;
 
-  // search algorithm bucle
+  // hill climbing algorithm bucle
 #if DEBUG_RK
-  fprintf (stderr, "rk_step_tb: search algorithm bucle\n");
+  fprintf (stderr, "rk_step_tb: hill climbing algorithm bucle\n");
 #endif
   memcpy (tb->random_data, tb->value_optimal, nfree * sizeof (long double));
-  n = tb->nsearch;
+  n = tb->nclimbings;
   for (i = 0; i < n; ++i)
     {
       memcpy (vo, tb->value_optimal, nfree * sizeof (long double));
@@ -1395,10 +1341,13 @@ rk_step_tb (RK * rk)            ///< RK struct.
           tb->random_data[j] = v;
         }
 
-      // reduce intervals if no converging
+      // increase or reduce intervals if converging or not
       if (!k)
-        for (j = 0; j < nfree; ++j)
-          is[j] *= 0.5L;
+				f = 0.5L;
+			else
+				f = 1.2L;
+      for (j = 0; j < nfree; ++j)
+        is[j] *= f;
     }
 #if DEBUG_RK
   fprintf (stderr, "rk_step_tb: end\n");
@@ -1563,8 +1512,9 @@ rk_select (RK * rk,             ///< RK struct.
            unsigned int nsteps, ///< steps number.
            unsigned int order)  ///< accuracy order.
 {
+	const char *message[] = { _("Bad order"), _("Bad steps number") };
   Optimize *tb, *ac;
-  unsigned int strong;
+  unsigned int strong, code;
 #if DEBUG_RK
   fprintf (stderr, "rk_select: start\n");
 #endif
@@ -1606,8 +1556,8 @@ rk_select (RK * rk,             ///< RK struct.
             }
           break;
         default:
-          printf ("Bad order\n");
-          return 0;
+          code = 0;
+          goto exit_on_error;
         }
       break;
     case 3:
@@ -1660,8 +1610,8 @@ rk_select (RK * rk,             ///< RK struct.
             }
           break;
         default:
-          printf ("Bad order\n");
-          return 0;
+          code = 0;
+          goto exit_on_error;
         }
       break;
     case 4:
@@ -1734,8 +1684,8 @@ rk_select (RK * rk,             ///< RK struct.
             }
           break;
         default:
-          printf ("Bad order\n");
-          return 0;
+          code = 0;
+          goto exit_on_error;
         }
       break;
     case 5:
@@ -1798,9 +1748,8 @@ rk_select (RK * rk,             ///< RK struct.
           tb->random_type = random_tb_5_4;
           if (rk->time_accuracy)
             {
-#if RK_PAIR
-              --tb->nfree;
-#endif
+							if (rk->pair)
+                --tb->nfree;
               tb->method = (OptimizeMethod) rk_tb_5_4t;
               tb->objective = (OptimizeObjective) rk_objective_tb_5_4t;
             }
@@ -1811,8 +1760,8 @@ rk_select (RK * rk,             ///< RK struct.
             }
           break;
         default:
-          printf ("Bad order\n");
-          return 0;
+          code = 0;
+          goto exit_on_error;
         }
       break;
     case 6:
@@ -1885,13 +1834,13 @@ rk_select (RK * rk,             ///< RK struct.
 			      }
           break;
         default:
-          printf ("Bad order\n");
-          return 0;
+          code = 0;
+          goto exit_on_error;
         }
       break;
     default:
-      printf ("Bad steps number\n");
-      return 0;
+      code = 1;
+      goto exit_on_error;
     }
   if (rk->time_accuracy)
     --tb->nfree;
@@ -1900,4 +1849,171 @@ rk_select (RK * rk,             ///< RK struct.
   fprintf (stderr, "rk_select: end\n");
 #endif
   return 1;
+
+exit_on_error:
+	error_message = g_strdup (message[code]);
+#if DEBUG_RK
+  fprintf (stderr, "rk_select: end\n");
+#endif
+  return 0;
+}
+
+/**
+ * Function to read the Runge-Kutta method data on a XML node.
+ *
+ * \return 1 on success, 0 on error.
+ */
+int
+rk_run (xmlNode * node, ///< XML node.
+		    gsl_rng ** rng) ///< array of gsl_rng structs.
+{
+  RK rk[nthreads];
+	char filename[32];
+  Optimize *tb, *ac;
+	gchar *buffer;
+	xmlChar *prop;
+	FILE *file;
+	long double *value_optimal, *value_optimal2;
+	long double optimal, optimal2;
+	int code;
+	unsigned int i, j, nsteps, order, nfree, nfree2;
+
+#if DEBUG_RK
+  fprintf (stderr, "rk_run: start\n");
+#endif
+
+	tb = rk->tb;
+  nsteps = xml_node_get_uint (node, XML_STEPS, &code);
+	if (code)
+	  {
+			error_message = g_strdup (_("Bad steps number"));
+			goto exit_on_error;
+		}
+  order = xml_node_get_uint (node, XML_ORDER, &code);
+	if (code)
+	  {
+			error_message = g_strdup (_("Bad order"));
+			goto exit_on_error;
+		}
+	prop = xmlGetProp (node, XML_STRONG);
+	if (!prop || !xmlStrcmp (prop, XML_NO))
+    rk->strong = 0;
+	else if (!xmlStrcmp (prop, XML_YES))
+    rk->strong = 1;
+	else
+	  {
+			error_message = g_strdup (_("Bad strong stability"));
+			goto exit_on_error;
+		}
+	xmlFree (prop);
+	prop = xmlGetProp (node, XML_PAIR);
+	if (!prop || !xmlStrcmp (prop, XML_NO))
+    rk->pair = 0;
+	else if (!xmlStrcmp (prop, XML_YES))
+    rk->pair = 1;
+	else
+	  {
+			error_message = g_strdup (_("Bad pair"));
+			goto exit_on_error;
+		}
+	xmlFree (prop);
+	prop = xmlGetProp (node, XML_TIME_ACCURACY);
+	if (!prop || !xmlStrcmp (prop, XML_NO))
+    rk->time_accuracy = 0;
+	else if (!xmlStrcmp (prop, XML_YES))
+    rk->time_accuracy = 1;
+	else
+	  {
+			error_message = g_strdup (_("Bad time accuracy"));
+			goto exit_on_error;
+		}
+	xmlFree (prop);
+	if (!rk_select (rk, nsteps, order))
+		goto exit_on_error;
+	if (!optimize_read (tb, node))
+		goto exit_on_error;
+  nfree = tb->nfree;
+  value_optimal
+    = (long double *) g_slice_alloc (nfree * sizeof (long double));
+  optimize_create (tb, &optimal, value_optimal);
+	if (rk->strong)
+	  {
+      ac = rk->ac0;
+			node = node->children;
+			if (!node)
+			  {
+					error_message = g_strdup (_("No a-c coefficients data"));
+					goto exit_on_error;
+				}
+			if (xmlStrcmp (node->name, XML_AC))
+			  {
+					error_message = g_strdup (_("Bad a-c coefficients XML node"));
+					goto exit_on_error;
+				}
+	    if (!optimize_read (ac, node))
+			  {
+					buffer = error_message;
+					error_message 
+						= g_strconcat (_("a-c coefficients"), ":\n", error_message, NULL);
+					g_free (buffer);
+		      goto exit_on_error;
+				}
+      nfree2 = ac->nfree;
+      value_optimal2
+        = (long double *) g_slice_alloc (nfree2 * sizeof (long double));
+      optimize_create (ac, &optimal2, value_optimal2);
+		}
+  for (i = 1; i < nthreads; ++i)
+    memcpy (rk + i, rk, sizeof (RK));
+  j = rank * nthreads;
+  for (i = 0; i < nthreads; ++i)
+    rk_init (rk + i, rng[j + i]);
+
+  // Method bucle
+  printf ("Optimize bucle\n");
+  rk_bucle_tb (rk);
+
+  // Print the optimal coefficients
+  printf ("Print the optimal coefficients\n");
+  memcpy (tb->random_data, tb->value_optimal, nfree * sizeof (long double));
+  tb->method (tb);
+	if (rk->strong)
+	  {
+      memcpy (ac->random_data, ac->value_optimal,
+              nfree2 * sizeof (long double));
+      memcpy (rk->ac, ac, sizeof (Optimize));
+      ac->method ((Optimize *) rk);
+		}
+  snprintf (filename, 32, "rk-%u-%u-%u-%u-%u.mc",
+			      nsteps, order, rk->time_accuracy, rk->pair, rk->strong);
+  file = fopen (filename, "w");
+  tb->print ((Optimize *) rk, file);
+  tb->print_maxima (file, nsteps, order);
+  fclose (file);
+
+#if PRINT_RANDOM
+  fclose (file_random2);
+#endif
+
+  // Free memory
+	if (rk->strong)
+    g_slice_free1 (nfree2 * sizeof (long double), value_optimal2);
+  for (i = 0; i < nthreads; ++i)
+    rk_delete (rk + i);
+  g_slice_free1 (nfree * sizeof (long double), value_optimal);
+
+
+#if DEBUG_RK
+  fprintf (stderr, "rk_run: end\n");
+#endif
+	return 1;
+
+exit_on_error:
+	buffer = error_message;
+	error_message = g_strconcat ("Runge-Kutta:\n", buffer, NULL);
+	g_free (buffer);
+#if DEBUG_RK
+  fprintf (stderr, "rk_run: end\n");
+#endif
+	return 0;
 }

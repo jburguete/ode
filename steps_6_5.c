@@ -35,7 +35,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <math.h>
 #include <float.h>
+#include <libxml/parser.h>
 #include <glib.h>
+#include <libintl.h>
 #include <gsl/gsl_rng.h>
 #include "config.h"
 #include "utils.h"

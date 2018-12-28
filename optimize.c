@@ -34,8 +34,11 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
+#include <float.h>
 #include <math.h>
+#include <libxml/parser.h>
 #include <glib.h>
+#include <libintl.h>
 #include <gsl/gsl_rng.h>
 #if HAVE_MPI
 #include <mpi.h>
@@ -79,7 +82,7 @@ void
 optimize_step (Optimize * optimize)     ///< Optimize struct.
 {
   long double *is, *vo, *vo2;
-  long double o, o2, v;
+  long double o, o2, v, f;
   unsigned long long int ii, nrandom;
   unsigned int i, j, k, n, nfree;
 
@@ -132,21 +135,21 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
         }
     }
 
-  // array of intervals to search around the optimal
+  // array of intervals to climb around the optimal
 #if DEBUG_OPTIMIZE
   fprintf (stderr,
-           "optimize_step: array of intervals to search around the optimal\n");
+           "optimize_step: array of intervals to climb around the optimal\n");
 #endif
   is = (long double *) alloca (nfree * sizeof (long double));
   for (j = 0; j < nfree; ++j)
-    is[j] = optimize->interval0[j] * optimize->search_factor;
+    is[j] = optimize->interval0[j] * optimize->climbing_factor;
 
-  // search algorithm bucle
+  // hill climbing algorithm bucle
 #if DEBUG_OPTIMIZE
-  fprintf (stderr, "optimize_step: search algorithm bucle\n");
+  fprintf (stderr, "optimize_step: hill climbing algorithm bucle\n");
 #endif
   memcpy (vo2, vo, nfree * sizeof (long double));
-  n = optimize->nsearch;
+  n = optimize->nclimbings;
   for (i = 0; i < n; ++i)
     {
       memcpy (optimize->random_data, vo, nfree * sizeof (long double));
@@ -162,7 +165,7 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
               o2 = o;
               memcpy (vo2, optimize->random_data, nfree * sizeof (long double));
             }
-          optimize->random_data[j] = v - is[j];
+          optimize->random_data[j] = fmaxl (0.L, v - is[j]);
           optimize->method (optimize);
           o = optimize->objective (optimize);
           if (o < o2)
@@ -174,10 +177,13 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
           optimize->random_data[j] = v;
         }
 
-      // reduce intervals if no converging
+      // increase or reduce intervals if converging or not
       if (!k)
-        for (j = 0; j < nfree; ++j)
-          is[j] *= 0.5L;
+				f = 0.5L;
+			else
+				f = 1.2L;
+      for (j = 0; j < nfree; ++j)
+        is[j] *= f;
     }
 
   // update optimal values
@@ -376,26 +382,81 @@ void
 optimize_create (Optimize * optimize,   ///< Optimize struct.
                  long double *optimal,
                  ///< pointer to the optimal objective function value.
-                 long double *value_optimal,
+                 long double *value_optimal)
                  ///< array of optimal freedom degree values.
-                 long double convergence_factor,        ///< convergence factor.
-                 long double search_factor,
-                 ///< factor to the coordinates search optimization algorithm.
-                 unsigned long long int nsimulations,
-///< number of total simulations on Monte-Carlo optimization algorithm.
-                 unsigned int nsearch,
-///< number of steps on coordinates search optimization algorithm.
-                 unsigned int niterations)      ///< iterations number.
 {
+	unsigned long long int nsimulations;
   unsigned int i, nfree;
+#if DEBUG_OPTIMIZE
+	fprintf (stderr, "optimize_create: start\n");
+#endif
   optimize->optimal = optimal;
   optimize->value_optimal = value_optimal;
-  optimize->convergence_factor = convergence_factor;
-  optimize->search_factor = search_factor;
   nfree = optimize->nfree;
-  for (optimize->nsimulations = nsimulations, i = 1; i < nfree; ++i)
+  for (nsimulations = optimize->nsimulations, i = 1; i < nfree; ++i)
     optimize->nsimulations *= nsimulations;
-  printf ("nsimulations=%Lu nfree=%u\n", optimize->nsimulations, nfree);
-  optimize->nsearch = nsearch * nfree;
-  optimize->niterations = niterations;
+  optimize->nclimbings *= nfree;
+#if DEBUG_OPTIMIZE
+  fprintf (stderr, "optimize_create nsimulations=%Lu nclimbings=%u nfree=%u\n",
+		 	     optimize->nsimulations, optimize->nclimbings, nfree);
+	fprintf (stderr, "optimize_create: end\n");
+#endif
+}
+
+/**
+ * Function to read the Optimize struct data on a XML node.
+ *
+ * \return 1 on success, 0 on error.
+ */
+int
+optimize_read (Optimize * optimize, ///< Optimize struct.
+		           xmlNode * node) ///< XML node.
+{
+	int code;
+#if DEBUG_OPTIMIZE
+	fprintf (stderr, "optimize_read: start\n");
+#endif
+	optimize->nsimulations = xml_node_get_uint (node, XML_NSIMULATIONS, &code);
+	if (code || !optimize->nsimulations)
+	  {
+			error_message = g_strdup (_("Bad simulations number"));
+			goto exit_on_error;
+		}
+	optimize->nclimbings
+	 	= xml_node_get_uint_with_default (node, XML_NCLIMBINGS, 0, &code);
+	if (code)
+	  {
+			error_message = g_strdup (_("Bad hill climbings number"));
+			goto exit_on_error;
+		}
+	optimize->niterations = xml_node_get_uint (node, XML_NITERATIONS, &code);
+	if (code || !optimize->niterations)
+	  {
+			error_message = g_strdup (_("Bad iterations number"));
+			goto exit_on_error;
+		}
+	optimize->convergence_factor
+		= xml_node_get_float (node, XML_CONVERGENCE_FACTOR, &code);
+	if (code || optimize->convergence_factor < LDBL_EPSILON)
+	  {
+			error_message = g_strdup (_("Bad convergence factor"));
+			goto exit_on_error;
+		}
+	optimize->climbing_factor
+		= xml_node_get_float (node, XML_CLIMBING_FACTOR, &code);
+	if (code || optimize->climbing_factor < LDBL_EPSILON)
+	  {
+			error_message = g_strdup (_("Bad climging factor"));
+			goto exit_on_error;
+		}
+#if DEBUG_OPTIMIZE
+	fprintf (stderr, "optimize_read: end\n");
+#endif
+	return 1;
+
+exit_on_error:
+#if DEBUG_OPTIMIZE
+	fprintf (stderr, "optimize_read: end\n");
+#endif
+	return 0;
 }

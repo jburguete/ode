@@ -37,6 +37,20 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define EPSILON 0
 #define OPTIMIZE_STEPS_11_6 0
 #define PRINT_RANDOM 0
-#define RK_PAIR 1
+
+#define XML_AC                 (const xmlChar *) "ac"
+#define XML_CLIMBING_FACTOR    (const xmlChar *) "climbing-factor"
+#define XML_CONVERGENCE_FACTOR (const xmlChar *) "convergence-factor"
+#define XML_NCLIMBINGS         (const xmlChar *) "nclimbings"
+#define XML_NITERATIONS        (const xmlChar *) "niterations"
+#define XML_NO                 (const xmlChar *) "no"
+#define XML_NSIMULATIONS       (const xmlChar *) "nsimulations"
+#define XML_ORDER              (const xmlChar *) "order"
+#define XML_PAIR               (const xmlChar *) "pair"
+#define XML_RUNGE_KUTTA        (const xmlChar *) "Runge-Kutta"
+#define XML_STEPS              (const xmlChar *) "steps"
+#define XML_STRONG             (const xmlChar *) "strong"
+#define XML_TIME_ACCURACY      (const xmlChar *) "time-accuracy"
+#define XML_YES                (const xmlChar *) "yes"
 
 #endif

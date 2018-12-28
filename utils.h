@@ -34,7 +34,20 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef UTILS__H
 #define UTILS__H 1
 
+#define _(x) (gettext(x)) ///< macro to translate messages.
+
 extern GMutex mutex[1];
+extern gchar *error_message;
+
+void show_error (const char *message);
+int xml_node_get_int (xmlNode * node, const xmlChar * prop, int *error_code);
+unsigned int
+xml_node_get_uint (xmlNode * node, const xmlChar * prop, int *error_code);
+unsigned int
+xml_node_get_uint_with_default (xmlNode * node, const xmlChar * prop, 
+		                            unsigned int default_value, int *error_code);
+long double
+xml_node_get_float (xmlNode * node, const xmlChar * prop, int *error_code);
 
 /**
  * Function to print the random variables on a file.

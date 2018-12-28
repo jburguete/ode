@@ -38,8 +38,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <alloca.h>
 #include <time.h>
 #include <unistd.h>
+#include <libxml/parser.h>
 #include <glib.h>
 #include <gsl/gsl_rng.h>
+#include <libintl.h>
 #if HAVE_MPI
 #include <mpi.h>
 #endif
@@ -223,12 +225,20 @@ enum
 {
   METHOD_TYPE_RUNGE_KUTTA = 1,  ///< Runge-Kutta method.
   METHOD_TYPE_STEPS = 2,        ///< multi-steps method.
-  METHOD_TYPE_RUNGE_KUTTA_SIMPLE = 3,   ///< simple stable Runge-Kutta method.
-  METHOD_TYPE_RUNGE_KUTTA_TIME = 4,
-  ///< Runge-Kutta method with extended accuracy in time.
-  METHOD_TYPE_RUNGE_KUTTA_TIME_SIMPLE = 5,
-  ///< simple stable Runge-Kutta method with extended accuracy in time.
 } MethodType;
+
+/**
+ * enum to define the program error code.
+ */
+enum
+{
+	ERROR_CODE_NARGS = 1, ///< bad command line arguments number.
+	ERROR_CODE_BAD_DOC = 2, ///< bad XML file.
+	ERROR_CODE_NO_XML_ROOT = 3, ///< no XML root node.	
+	ERROR_CODE_BAD_RK = 4, ///< bad Runge-Kutta method.
+	ERROR_CODE_BAD_STEPS = 5, ///< bad multi-steps method.
+	ERROR_CODE_UNKNOWN = 5, ///< unknown method.
+} ErrorCode;
 
 unsigned int nsteps;            ///< steps number.
 unsigned int order;             ///< accuracy order.
@@ -242,25 +252,22 @@ int
 main (int argn,                 ///< arguments number.
       char **argc)              ///< argument chains array.
 {
-  char buffer[32];
-  RK *rk;
-  Optimize *s, *tb, *ac;
+	xmlDoc *doc;
+	xmlNode *node;
   gsl_rng *rng0, **rng;
   FILE *file;
-  long double *value_optimal, *value_optimal2;
-  long double optimal, optimal2, convergence_factor, convergence_factor2,
-    search_factor, search_factor2;
   time_t d0;
   clock_t t0;
-  unsigned long long int nsimulations, nsimulations2;
   unsigned long int seed;
-  unsigned int i, j, k, type, niterations, niterations2, nsearch, nsearch2,
-    nfree, nfree2;
+  unsigned int i, j, k;
 
 #if HAVE_MPI
   // Init MPI
   MPI_Init (&argn, &argc);
 #endif
+
+	// Enabling spaces in XML files
+	xmlKeepBlanksDefault (0);
 
   // Number of processors
   nthreads = sysconf (_SC_NPROCESSORS_CONF);
@@ -289,53 +296,23 @@ main (int argn,                 ///< arguments number.
 
   // Select the numerical model
   printf ("Selecting method\n");
-  if ((argn != 10 && argn != 15)
-      || sscanf (argc[1], "%u", &type) != 1
-      || type < 1
-      || type > 5
-      || sscanf (argc[1], "%u", &type) != 1
-      || sscanf (argc[2], "%u", &nsteps) != 1
-      || sscanf (argc[3], "%u", &order) != 1
-      || sscanf (argc[4], "%u", &niterations) != 1
-      || sscanf (argc[5], "%Lu", &nsimulations) != 1
-      || sscanf (argc[6], "%u", &nsearch) != 1
-      || sscanf (argc[7], "%Lf", &convergence_factor) != 1
-      || sscanf (argc[8], "%Lf", &search_factor) != 1
-      || sscanf (argc[9], "%lu", &seed) != 1)
+  if (argn != 2)
     {
-      printf ("Usage is:\n"
-              "./ode 2 steps order niterations nsimulations nsearch "
-              "convergence_factor search_factor seed\n"
-              "or\n"
-              "./ode 1 steps order niterations nsimulations nsearch "
-              "convergence_factor search_factor seed niterations2 "
-              "nsimulations2 nsearch2 convergence_factor2 search_factor2\n");
-      return 1;
+      show_error (_("Usage is:\n./ode input_file"));
+      return ERROR_CODE_NARGS;
     }
-  if (type == 2 && argn != 10)
-    {
-      printf ("Bad steps parameters\n");
-      return 2;
-    }
-  if (type == 3 && argn != 10)
-    {
-      printf ("Bad RK parameters\n");
-      return 3;
-    }
-  if (type == 1 &&
-      (argn != 15
-       || sscanf (argc[10], "%u", &niterations2) != 1
-       || sscanf (argc[11], "%Lu", &nsimulations2) != 1
-       || sscanf (argc[12], "%u", &nsearch2) != 1
-       || sscanf (argc[13], "%Lf", &convergence_factor2) != 1
-       || sscanf (argc[14], "%Lf", &search_factor2) != 1))
-    {
-      printf ("Bad RK parameters\n");
-      return 4;
-    }
-
-
-  printf ("type=%u steps=%u order=%u\n", type, nsteps, order);
+	doc = xmlParseFile (argc[1]);
+	if (!doc)
+	  {
+			show_error (_("Unable to parse the input file"));
+			return ERROR_CODE_BAD_DOC;
+		}
+	node = xmlDocGetRootElement (doc);
+	if (!node)
+	  {
+			show_error (_("No XML root node"));
+			return ERROR_CODE_NO_XML_ROOT;
+		}
 
   // Init a random numbers generator per node and thread
   printf ("Initing random numbers\n");
@@ -354,170 +331,36 @@ main (int argn,                 ///< arguments number.
 #endif
 
   j = rank * nthreads;
-  switch (type)
+	if (!xmlStrcmp (node->name, XML_RUNGE_KUTTA))
     {
-    case METHOD_TYPE_RUNGE_KUTTA:
-    case METHOD_TYPE_RUNGE_KUTTA_TIME:
-
-#if PRINT_RANDOM
-      file_random2 = fopen ("random2", "w");
-#endif
-
-      // Create optimize data
-      rk = (RK *) alloca (nthreads * sizeof (RK));
-      rk->strong = 1;
-      if (type == METHOD_TYPE_RUNGE_KUTTA)
-        rk->time_accuracy = 0;
-      else
-        rk->time_accuracy = 1;
-      if (!rk_select (rk, nsteps, order))
-        return 4;
-      tb = rk->tb;
-      ac = rk->ac0;
-      nfree = tb->nfree;
-      value_optimal
-        = (long double *) g_slice_alloc (nfree * sizeof (long double));
-      nfree2 = ac->nfree;
-      value_optimal2
-        = (long double *) g_slice_alloc (nfree2 * sizeof (long double));
-      rk_create (rk, &optimal, value_optimal, &optimal2, value_optimal2,
-                 convergence_factor, convergence_factor2, search_factor,
-                 search_factor2, nsimulations, nsimulations2, nsearch, nsearch2,
-                 niterations, niterations2);
-      for (i = 1; i < nthreads; ++i)
-        memcpy (rk + i, rk, sizeof (RK));
-      for (i = 0; i < nthreads; ++i)
-        rk_init (rk + i, rng[j + i]);
-
-      // Method bucle
-      printf ("Optimize bucle\n");
-      rk_bucle_tb (rk);
-
-      // Print the optimal coefficients
-      printf ("Print the optimal coefficients\n");
-      memcpy (tb->random_data, tb->value_optimal, nfree * sizeof (long double));
-      tb->method (tb);
-      memcpy (ac->random_data, ac->value_optimal,
-              nfree2 * sizeof (long double));
-      memcpy (rk->ac, ac, sizeof (Optimize));
-      ac->method ((Optimize *) rk);
-      snprintf (buffer, 32, "rk-%u-%u.mc", nsteps, order);
-      file = fopen (buffer, "w");
-      tb->print ((Optimize *) rk, file);
-      tb->print_maxima (file, nsteps, order);
-      fclose (file);
-
-#if PRINT_RANDOM
-      fclose (file_random2);
-#endif
-
-      // Free memory
-      g_slice_free1 (nfree2 * sizeof (long double), value_optimal2);
-      for (i = 0; i < nthreads; ++i)
-        rk_delete (rk + i);
-      break;
-
-    case METHOD_TYPE_STEPS:
-
-      // Create optimize data
-      s = (Optimize *) alloca (nthreads * sizeof (Optimize));
-      if (!steps_select (s, nsteps, order))
-        return 2;
-      nfree = s->nfree;
-      value_optimal
-        = (long double *) g_slice_alloc (nfree * sizeof (long double));
-      optimize_create (s, &optimal, value_optimal, convergence_factor,
-                       search_factor, nsimulations, nsearch, niterations);
-      for (i = 1; i < nthreads; ++i)
-        memcpy (s + i, s, sizeof (Optimize));
-      for (i = 0; i < nthreads; ++i)
-        optimize_init (s + i, rng[j + i]);
-
-      // Method bucle
-      fprintf (stderr, "Optimize bucle\n");
-      optimize_bucle (s);
-
-      // Print the optimal coefficients
-      fprintf (stderr, "Print the optimal coefficients\n");
-      memcpy (s->random_data, s->value_optimal, nfree * sizeof (long double));
-      s->method (s);
-      optimal = s->objective (s);
-      snprintf (buffer, 32, "steps-%u-%u.mc", nsteps, order);
-      file = fopen (buffer, "w");
-      s->print (s, file);
-      s->print_maxima (file, nsteps, order);
-      fclose (file);
-
-      // Free memory
-      for (i = 0; i < nthreads; ++i)
-        optimize_delete (s + i);
-      break;
-
-    case METHOD_TYPE_RUNGE_KUTTA_SIMPLE:
-    case METHOD_TYPE_RUNGE_KUTTA_TIME_SIMPLE:
-
-#if PRINT_RANDOM
-      file_random2 = fopen ("random2", "w");
-#endif
-      // Create optimize data
-      rk = (RK *) alloca (nthreads * sizeof (RK));
-      rk->strong = 0;
-      if (type == METHOD_TYPE_RUNGE_KUTTA_SIMPLE)
-        rk->time_accuracy = 0;
-      else
-        rk->time_accuracy = 1;
-      if (!rk_select (rk, nsteps, order))
-        return 4;
-      tb = rk->tb;
-      nfree = tb->nfree;
-      value_optimal
-        = (long double *) g_slice_alloc (nfree * sizeof (long double));
-      rk_create_simple (rk, &optimal, value_optimal, convergence_factor,
-                        search_factor, nsimulations, nsearch, niterations);
-      for (i = 1; i < nthreads; ++i)
-        memcpy (rk + i, rk, sizeof (RK));
-      for (i = 0; i < nthreads; ++i)
-        rk_init (rk + i, rng[j + i]);
-
-      // Method bucle
-      printf ("Optimize bucle\n");
-      rk_bucle_tb (rk);
-
-      // Print the optimal coefficients
-      printf ("Print the optimal coefficients\n");
-      memcpy (tb->random_data, tb->value_optimal, nfree * sizeof (long double));
-      tb->method (tb);
-      snprintf (buffer, 32, "rk-%u-%u.mc", nsteps, order);
-      file = fopen (buffer, "w");
-      tb->print ((Optimize *) rk, file);
-      tb->print_maxima (file, nsteps, order);
-      fclose (file);
-
-#if PRINT_RANDOM
-      fclose (file_random2);
-#endif
-
-      // Free memory
-      for (i = 0; i < nthreads; ++i)
-        rk_delete (rk + i);
-
-      break;
-
-    default:
-      printf ("Unknown method type\n");
-      return 3;
+			if (!rk_run (node, rng))
+			  {
+					show_error (error_message);
+				  return ERROR_CODE_BAD_RK;
+				}
+		}
+	else if (!xmlStrcmp (node->name, XML_STEPS))
+	  {
+			if (!steps_run (node, rng))
+			  {
+					show_error (error_message);
+				  return ERROR_CODE_BAD_STEPS;
+				}
+		}
+	else
+	  {
+      show_error (_("Unknown method type"));
+      return ERROR_CODE_UNKNOWN;
     }
 
-  printf ("optimal=%.19Le cpu time=%lg real time=%lu\n",
-          optimal, (clock () - t0) / ((double) CLOCKS_PER_SEC),
-          time (NULL) - d0);
+  printf ("cpu time=%lg real time=%lu\n",
+          (clock () - t0) / ((double) CLOCKS_PER_SEC), time (NULL) - d0);
 
 #if PRINT_RANDOM
   fclose (file_random);
 #endif
 
   // Free memory
-  g_slice_free1 (nfree * sizeof (long double), value_optimal);
   j = nnodes * nthreads;
   for (i = 0; i < j; ++i)
     gsl_rng_free (rng[i]);

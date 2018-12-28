@@ -125,5 +125,6 @@ long double steps_objective_9 (Optimize * optimize);
 long double steps_objective_10 (Optimize * optimize);
 long double steps_objective_11 (Optimize * optimize);
 int steps_select (Optimize * optimize, unsigned int nsteps, unsigned int order);
+int steps_run (xmlNode * node, gsl_rng **rng);
 
 #endif
