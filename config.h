@@ -34,23 +34,29 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef CONFIG__H
 #define CONFIG__H 1
 
-#define EPSILON 0
+#define EPSILON 1
 #define OPTIMIZE_STEPS_11_6 0
-#define PRINT_RANDOM 0
 
 #define XML_AC                 (const xmlChar *) "ac"
 #define XML_CLIMBING_FACTOR    (const xmlChar *) "climbing-factor"
 #define XML_CONVERGENCE_FACTOR (const xmlChar *) "convergence-factor"
+#define XML_EXTREME            (const xmlChar *) "extreme"
+#define XML_INTERVAL           (const xmlChar *) "interval"
+#define XML_MINIMUM            (const xmlChar *) "minimum"
 #define XML_NCLIMBINGS         (const xmlChar *) "nclimbings"
 #define XML_NITERATIONS        (const xmlChar *) "niterations"
 #define XML_NO                 (const xmlChar *) "no"
 #define XML_NSIMULATIONS       (const xmlChar *) "nsimulations"
 #define XML_ORDER              (const xmlChar *) "order"
 #define XML_PAIR               (const xmlChar *) "pair"
+#define XML_RANDOM             (const xmlChar *) "random"
 #define XML_RUNGE_KUTTA        (const xmlChar *) "Runge-Kutta"
 #define XML_STEPS              (const xmlChar *) "steps"
 #define XML_STRONG             (const xmlChar *) "strong"
 #define XML_TIME_ACCURACY      (const xmlChar *) "time-accuracy"
+#define XML_TOP                (const xmlChar *) "top"
+#define XML_TYPE               (const xmlChar *) "type"
+#define XML_VARIABLE           (const xmlChar *) "variable"
 #define XML_YES                (const xmlChar *) "yes"
 
 #endif

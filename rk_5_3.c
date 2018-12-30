@@ -47,20 +47,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define DEBUG_RK_5_3 0          ///< macro to debug.
 
-///> array of minimum freedom degree values for the t-b coefficients of the 5
-///> steps 3rd order Runge-Kutta method.
-const long double minimum_tb_5_3[11]
-  = { 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L };
-
-///> array of minimum freedom degree intervals for the t-b coefficients of the 5
-///> steps 3rd order Runge-Kutta method.
-const long double interval_tb_5_3[11]
-  = { 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L };
-
-///> array of freedom degree random function types for the t-b coefficients of
-///> the 5 steps 3rd order Runge-Kutta method.
-const unsigned int random_tb_5_3[11] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
-
 /**
  * Function to print a maxima format file to check the accuracy order of a 5
  * steps 3rd order Runge-Kutta simple stable method.
@@ -94,7 +80,7 @@ rk_print_maxima_5_3 (FILE * file,       ///< file.
  * Function to obtain the coefficients of a 5 steps 3rd order Runge-Kutta 
  * method.
  */
-void
+int
 rk_tb_5_3 (Optimize * optimize) ///< Optimize struct.
 {
   long double A[3], B[3], C[3], D[3];
@@ -137,13 +123,16 @@ rk_tb_5_3 (Optimize * optimize) ///< Optimize struct.
 #if DEBUG_RK_5_3
   fprintf (stderr, "rk_tb_5_3: end\n");
 #endif
+  if (isnan (b51 (tb)) || isnan (b52 (tb)) || isnan (b53 (tb)))
+		return 0;
+	return 1;
 }
 
 /**
  * Function to obtain the coefficients of a 5 steps 3rd order, 4th order in
  * equations depending only in time, Runge-Kutta method.
  */
-void
+int
 rk_tb_5_3t (Optimize * optimize)        ///< Optimize struct.
 {
   long double A[4], B[4], C[4], D[4], E[4];
@@ -193,6 +182,10 @@ rk_tb_5_3t (Optimize * optimize)        ///< Optimize struct.
 #if DEBUG_RK_5_3
   fprintf (stderr, "rk_tb_5_3t: end\n");
 #endif
+  if (isnan (b51 (tb)) || isnan (b52 (tb)) || isnan (b53 (tb))
+      || isnan (b54 (tb)))
+		return 0;
+	return 1;
 }
 
 /**
@@ -210,11 +203,6 @@ rk_objective_tb_5_3 (RK * rk)   ///< RK struct.
   fprintf (stderr, "rk_objective_tb_5_3: start\n");
 #endif
   tb = rk->tb->coefficient;
-  if (isnan (b51 (tb)) || isnan (b52 (tb)) || isnan (b53 (tb)))
-    {
-      o = INFINITY;
-      goto end;
-    }
   o = fminl (0.L, b20 (tb));
   if (b30 (tb) < 0.L)
     o += b30 (tb);
@@ -263,12 +251,6 @@ rk_objective_tb_5_3t (RK * rk)  ///< RK struct.
   fprintf (stderr, "rk_objective_tb_5_3t: start\n");
 #endif
   tb = rk->tb->coefficient;
-  if (isnan (b51 (tb)) || isnan (b52 (tb)) || isnan (b53 (tb))
-      || isnan (b54 (tb)))
-    {
-      o = INFINITY;
-      goto end;
-    }
   o = fminl (0.L, b20 (tb));
   if (b30 (tb) < 0.L)
     o += b30 (tb);

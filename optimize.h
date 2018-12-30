@@ -45,7 +45,7 @@ struct _Optimize
   ///< pointer to the function to print the results data.
   void (*print_maxima) (FILE * file, unsigned int nsteps, unsigned int order);
   ///< pointer to the function to print the maxima format data.
-  void (*method) (Optimize * optimize);
+  int (*method) (Optimize * optimize);
   ///< pointer to the function to calculate the method variables.
   long double (*objective) (Optimize * optimize);
   ///< pointer to the function to calculate the objective function.
@@ -61,13 +61,13 @@ struct _Optimize
   ///< pointer to the array of minimum values of the freedom degrees.
   long double *interval;
   ///< pointer to the array of intervals of the freedom degrees.
-  const long double *minimum0;
+  long double *minimum0;
   ///< pointer to the initial array of minimum values of the freedom degrees.
-  const long double *interval0;
+  long double *interval0;
   ///< pointer to the initial array of intervals of the freedom degrees.
   long double *optimal;
   ///< pointer to the optimal objective function value.
-  const unsigned int *random_type;
+  unsigned int *random_type;
   ///< pointer the the array of random generation types for the freedom degrees.
   void *data;
   ///< pointer to additional method data.
@@ -86,7 +86,7 @@ struct _Optimize
   unsigned int type;            ///< method type.
 };
 
-typedef void (*OptimizeMethod) (Optimize * optimize);
+typedef int (*OptimizeMethod) (Optimize * optimize);
 typedef long double (*OptimizeObjective) (Optimize * optimize);
 typedef void (*OptimizePrint) (Optimize * optimize, FILE * file);
 

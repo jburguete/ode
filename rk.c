@@ -62,73 +62,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define DEBUG_RK 0              ///< macro to debug.
 
-///> array of minimum freedom degree values for the a-c coefficients of the 2
-///> steps Runge-Kutta methods.
-const long double minimum_ac_rk_2[1] = { 0.L };
-
-///> array of minimum freedom degree intervals for the a-c coefficients of the 2
-///> steps Runge-Kutta methods.
-const long double interval_ac_rk_2[1] = { 2.L };
-
-///> array of freedom degree random function types for the a-c coefficients of
-///> the 2 steps Runge-Kutta methods.
-const unsigned int random_ac_rk_2[1] = { 0 };
-
-///> array of minimum freedom degree values for the a-c coefficients of the 3
-///> steps Runge-Kutta methods.
-const long double minimum_ac_rk_3[3] = { 0.L, 0.L, 0.L };
-
-///> array of minimum freedom degree intervals for the a-c coefficients of the 3
-///> steps Runge-Kutta methods.
-const long double interval_ac_rk_3[3] = { 2.L, 2.L, 2.L };
-
-///> array of freedom degree random function types for the a-c coefficients of
-///> the 3 steps Runge-Kutta methods.
-const unsigned int random_ac_rk_3[3] = { 0, 0, 0 };
-
-///> array of minimum freedom degree values for the a-c coefficients of the 4
-///> steps Runge-Kutta methods.
-const long double minimum_ac_rk_4[6] = { 0.L, 0.L, 0.L, 0.L, 0.L, 0.L };
-
-///> array of minimum freedom degree intervals for the a-c coefficients of the 4
-///> steps Runge-Kutta methods.
-const long double interval_ac_rk_4[6] = { 2.L, 2.L, 2.L, 2.L, 2.L, 2.L };
-
-///> array of freedom degree random function types for the a-c coefficients of
-///> the 4 steps Runge-Kutta methods.
-const unsigned int random_ac_rk_4[6] = { 0, 0, 0, 0, 0, 0 };
-
-///> array of minimum freedom degree values for the a-c coefficients of the 5
-///> steps Runge-Kutta methods.
-const long double minimum_ac_rk_5[10]
-  = { 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L };
-
-///> array of minimum freedom degree intervals for the a-c coefficients of the 5
-///> steps Runge-Kutta methods.
-const long double interval_ac_rk_5[10]
-  = { 2.L, 2.L, 2.L, 2.L, 2.L, 2.L, 2.L, 2.L, 2.L, 2.L };
-
-///> array of freedom degree random function types for the a-c coefficients of
-///> the 5 steps Runge-Kutta methods.
-const unsigned int random_ac_rk_5[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-///> array of minimum freedom degree values for the a-c coefficients of the 6
-///> steps Runge-Kutta methods.
-const long double minimum_ac_rk_6[15]
-  =
-  { 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L };
-
-///> array of minimum freedom degree intervals for the a-c coefficients of the 6
-///> steps Runge-Kutta methods.
-const long double interval_ac_rk_6[15]
-  =
-  { 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L };
-
-///> array of freedom degree random function types for the a-c coefficients of
-///> the 6 steps Runge-Kutta methods.
-const unsigned int random_ac_rk_6[15] =
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
 /**
  * Function to print the 2nd step t-b Runge-Kutta coefficients.
  */
@@ -212,7 +145,7 @@ rk_print_tb_6 (long double *tb, ///< array of t-b Runge-Kutta coefficients.
 /**
  * Function to print in a maxima file the 2nd step Runge-Kutta coefficients.
  */
-void
+static void
 rk_print_2 (RK * rk,            ///< RK struct.
             FILE * file)        ///< file.
 {
@@ -234,7 +167,7 @@ rk_print_2 (RK * rk,            ///< RK struct.
 /**
  * Function to print in a maxima file the 3rd step Runge-Kutta coefficients.
  */
-void
+static void
 rk_print_3 (RK * rk,            ///< RK struct.
             FILE * file)        ///< file.
 {
@@ -259,7 +192,7 @@ rk_print_3 (RK * rk,            ///< RK struct.
 /**
  * Function to print in a maxima file the 4th step Runge-Kutta coefficients.
  */
-void
+static void
 rk_print_4 (RK * rk,            ///< RK struct.
             FILE * file)        ///< file.
 {
@@ -287,7 +220,7 @@ rk_print_4 (RK * rk,            ///< RK struct.
 /**
  * Function to print in a maxima file the 5th step Runge-Kutta coefficients.
  */
-void
+static void
 rk_print_5 (RK * rk,            ///< RK struct.
             FILE * file)        ///< file.
 {
@@ -318,7 +251,7 @@ rk_print_5 (RK * rk,            ///< RK struct.
 /**
  * Function to print in a maxima file the 6th step Runge-Kutta coefficients.
  */
-void
+static void
 rk_print_6 (RK * rk,            ///< RK struct.
             FILE * file)        ///< file.
 {
@@ -422,7 +355,7 @@ rk_print_maxima_6 (FILE * file) ///< file.
  * Function to get \f$a_{ij}\f$ and \f$c_{ij}\f$ coefficients of the Runge-Kutta
  * 2nd step.
  */
-void
+static int
 rk_ac_2 (RK * rk)               ///< RK struct.
 {
   long double *tb, *ac, *r;
@@ -443,13 +376,16 @@ rk_ac_2 (RK * rk)               ///< RK struct.
   fprintf (stderr, "rk_ac_2: a21=%Lg c21=%Lg\n", a21 (ac), c21 (ac));
   fprintf (stderr, "rk_ac_2: end\n");
 #endif
+	if (isnan (c20 (ac)) || isnan (a21 (ac)))
+		return 0;
+	return 1;
 }
 
 /**
  * Function to get \f$a_{ij}\f$ and \f$c_{ij}\f$ coefficients of the Runge-Kutta
  * 3rd step.
  */
-void
+static int
 rk_ac_3 (RK * rk)               ///< RK struct.
 {
   long double *tb, *ac, *r;
@@ -457,7 +393,13 @@ rk_ac_3 (RK * rk)               ///< RK struct.
 #if DEBUG_RK
   fprintf (stderr, "rk_ac_3: start\n");
 #endif
-  rk_ac_2 (rk);
+  if (!rk_ac_2 (rk))
+	  {
+#if DEBUG_RK
+      fprintf (stderr, "rk_ac_3: end\n");
+#endif
+			return 0;
+		}
   tb = rk->tb->coefficient;
   ac = rk->ac->coefficient;
   r = rk->ac->random_data;
@@ -475,13 +417,16 @@ rk_ac_3 (RK * rk)               ///< RK struct.
   fprintf (stderr, "rk_ac_3: a32=%Lg c32=%Lg\n", a32 (ac), c32 (ac));
   fprintf (stderr, "rk_ac_3: end\n");
 #endif
+	if (isnan (c30 (ac)) || isnan (a31 (ac)) || isnan (a32 (ac)))
+		return 0;
+	return 1;
 }
 
 /**
  * Function to get \f$a_{ij}\f$ and \f$c_{ij}\f$ coefficients of the Runge-Kutta
  * 4th step.
  */
-void
+static int
 rk_ac_4 (RK * rk)               ///< RK struct.
 {
   long double *tb, *ac, *r;
@@ -489,7 +434,13 @@ rk_ac_4 (RK * rk)               ///< RK struct.
 #if DEBUG_RK
   fprintf (stderr, "rk_ac_4: start\n");
 #endif
-  rk_ac_3 (rk);
+  if (!rk_ac_3 (rk))
+	  {
+#if DEBUG_RK
+      fprintf (stderr, "rk_ac_4: end\n");
+#endif
+			return 0;
+		}
   tb = rk->tb->coefficient;
   ac = rk->ac->coefficient;
   r = rk->ac->random_data;
@@ -512,13 +463,17 @@ rk_ac_4 (RK * rk)               ///< RK struct.
   fprintf (stderr, "rk_ac_4: a43=%Lg c43=%Lg\n", a43 (ac), c43 (ac));
   fprintf (stderr, "rk_ac_4: end\n");
 #endif
+	if (isnan (c40 (ac)) || isnan (a41 (ac)) || isnan (a42 (ac))
+			|| isnan (a43 (ac)))
+		return 0;
+	return 1;
 }
 
 /**
  * Function to get \f$a_{ij}\f$ and \f$c_{ij}\f$ coefficients of the Runge-Kutta
  * 5th step.
  */
-void
+static int
 rk_ac_5 (RK * rk)               ///< RK struct.
 {
   long double *tb, *ac, *r;
@@ -526,7 +481,13 @@ rk_ac_5 (RK * rk)               ///< RK struct.
 #if DEBUG_RK
   fprintf (stderr, "rk_ac_5: start\n");
 #endif
-  rk_ac_4 (rk);
+  if (!rk_ac_4 (rk))
+	  {
+#if DEBUG_RK
+      fprintf (stderr, "rk_ac_5: end\n");
+#endif
+			return 0;
+		}
   tb = rk->tb->coefficient;
   ac = rk->ac->coefficient;
   r = rk->ac->random_data;
@@ -554,13 +515,17 @@ rk_ac_5 (RK * rk)               ///< RK struct.
   fprintf (stderr, "rk_ac_5: a54=%Lg c54=%Lg\n", a54 (ac), c54 (ac));
   fprintf (stderr, "rk_ac_5: end\n");
 #endif
+	if (isnan (c50 (ac)) || isnan (a51 (ac)) || isnan (a52 (ac))
+			|| isnan (a53 (ac)) || isnan (a54 (ac)))
+		return 0;
+	return 1;
 }
 
 /**
  * Function to get \f$a_{ij}\f$ and \f$c_{ij}\f$ coefficients of the Runge-Kutta
  * 6th step.
  */
-void
+static int
 rk_ac_6 (RK * rk)               ///< RK struct.
 {
   long double *tb, *ac, *r;
@@ -568,7 +533,13 @@ rk_ac_6 (RK * rk)               ///< RK struct.
 #if DEBUG_RK
   fprintf (stderr, "rk_ac_6: start\n");
 #endif
-  rk_ac_5 (rk);
+  if (!rk_ac_5 (rk))
+	  {
+#if DEBUG_RK
+      fprintf (stderr, "rk_ac_6: end\n");
+#endif
+			return 0;
+		}
   tb = rk->tb->coefficient;
   ac = rk->ac->coefficient;
   r = rk->ac->random_data;
@@ -601,6 +572,10 @@ rk_ac_6 (RK * rk)               ///< RK struct.
   fprintf (stderr, "rk_ac_6: a65=%Lg c65=%Lg\n", a65 (ac), c65 (ac));
   fprintf (stderr, "rk_ac_6: end\n");
 #endif
+	if (isnan (c60 (ac)) || isnan (a61 (ac)) || isnan (a62 (ac))
+			|| isnan (a63 (ac)) || isnan (a64 (ac)) || isnan (a65 (ac)))
+		return 0;
+	return 1;
 }
 
 /**
@@ -608,7 +583,7 @@ rk_ac_6 (RK * rk)               ///< RK struct.
  *
  * \return objective function value.
  */
-long double
+static long double
 rk_objective_ac_2 (RK * rk)     ///< RK struct.
 {
   long double *tb, *ac;
@@ -648,7 +623,7 @@ end:
  *
  * \return objective function value.
  */
-long double
+static long double
 rk_objective_ac_3 (RK * rk)     ///< RK struct.
 {
   long double *tb, *ac;
@@ -700,7 +675,7 @@ end:
  *
  * \return objective function value.
  */
-long double
+static long double
 rk_objective_ac_4 (RK * rk)     ///< RK struct.
 {
   long double *tb, *ac;
@@ -768,7 +743,7 @@ end:
  *
  * \return objective function value.
  */
-long double
+static long double
 rk_objective_ac_5 (RK * rk)     ///< RK struct.
 {
   long double *tb, *ac;
@@ -856,7 +831,7 @@ end:
  *
  * \return objective function value.
  */
-long double
+static long double
 rk_objective_ac_6 (RK * rk)     ///< RK struct.
 {
   long double *tb, *ac;
@@ -966,7 +941,7 @@ end:
 /**
  * Function to init required variables on a RK struct data.
  */
-void
+static inline void
 rk_init (RK * rk,               ///< RK struct.
          gsl_rng * rng)         ///< GSL pseudo-random number generator struct.
 {
@@ -978,7 +953,7 @@ rk_init (RK * rk,               ///< RK struct.
 /**
  * Function to free the memory allocated by a RK struct.
  */
-void
+static inline void
 rk_delete (RK * rk)             ///< RK struct.
 {
   if (rk->strong)
@@ -990,7 +965,7 @@ rk_delete (RK * rk)             ///< RK struct.
  * Function to perform every optimization step for the a-c Runge-Kutta 
  * coefficients.
  */
-void
+static inline void
 rk_step_ac (RK * rk)            ///< RK struct.
 {
   Optimize *tb, *ac;
@@ -1010,7 +985,7 @@ rk_step_ac (RK * rk)            ///< RK struct.
   tb = rk->tb;
   ac = rk->ac;
   nfree = ac->nfree;
-  o2 = *ac->optimal;
+  o2 = INFINITY;
   vo = (long double *) alloca (nfree * sizeof (long double));
   vo2 = (long double *) alloca (nfree * sizeof (long double));
   memcpy (vo, ac->value_optimal, nfree * sizeof (long double));
@@ -1018,8 +993,8 @@ rk_step_ac (RK * rk)            ///< RK struct.
   // Monte-Carlo algorithm
 #if DEBUG_RK
   fprintf (stderr, "rk_step_ac: Monte-Carlo algorithm\n");
-  fprintf (stderr, "rk_step_ac: nsimulations=%Lu nsearch=%u\n",
-           ac->nsimulations, ac->nsearch);
+  fprintf (stderr, "rk_step_ac: nsimulations=%Lu nclimbings=%u nfree=%u\n",
+           ac->nsimulations, ac->nclimbings, ac->nfree);
 #endif
   nsimulations = ac->nsimulations;
   for (ii = 0L; ii < nsimulations; ++ii)
@@ -1030,23 +1005,15 @@ rk_step_ac (RK * rk)            ///< RK struct.
       fprintf (stderr, "rk_step_ac: random freedom degrees\n");
 #endif
       optimize_generate_random (ac);
-      if (file_variables)
-        {
-          print_variables (tb->random_data, tb->nfree, file_variables);
-          print_variables (ac->random_data, nfree, file_variables);
-        }
 
       // method coefficients
 #if DEBUG_RK
       fprintf (stderr, "rk_step_ac: method coefficients\n");
 #endif
-      ac->method ((Optimize *) rk);
-
-      // objective function
-#if DEBUG_RK
-      fprintf (stderr, "rk_step_ac: objective function\n");
-#endif
-      o = ac->objective ((Optimize *) rk);
+      if (!ac->method ((Optimize *) rk))
+				o = INFINITY;
+			else
+        o = ac->objective ((Optimize *) rk);
 #if DEBUG_RK
       fprintf (stderr, "rk_step_ac: objective=%Lg o2=%Lg\n", o, o2);
 #endif
@@ -1056,15 +1023,21 @@ rk_step_ac (RK * rk)            ///< RK struct.
           memcpy (vo, ac->random_data, nfree * sizeof (long double));
         }
       if (file_variables)
-        fprintf (file_variables, "%.19Le\n", o);
+        {
+					g_mutex_lock (mutex);
+          print_variables (tb->random_data, tb->nfree, file_variables);
+          print_variables (ac->random_data, nfree, file_variables);
+          fprintf (file_variables, "%.19Le\n", o);
+					g_mutex_unlock (mutex);
+        }
     }
 
-  // array of intervals to search around the optimal
+  // array of intervals to climb around the optimal
 #if DEBUG_RK
   fprintf (stderr,
-           "rk_step_ac: array of intervals to search around the optimal\n");
-  fprintf (stderr, "rk_step_ac: nsearch=%u search_factor=%Lg\n",
-           ac->nsearch, ac->search_factor);
+           "rk_step_ac: array of intervals to climb around the optimal\n");
+  fprintf (stderr, "rk_step_ac: nclimbings=%u climbing_factor=%Lg\n",
+           ac->nclimbings, ac->climbing_factor);
 #endif
   is = (long double *) alloca (nfree * sizeof (long double));
   for (j = 0; j < nfree; ++j)
@@ -1091,17 +1064,14 @@ rk_step_ac (RK * rk)            ///< RK struct.
         {
           v = vo[j];
           ac->random_data[j] = v + is[j];
-          if (file_variables)
-            {
-              print_variables (tb->random_data, tb->nfree, file_variables);
-              print_variables (ac->random_data, nfree, file_variables);
-            }
 #if DEBUG_RK
           fprintf (stderr, "rk_step_ac: j=%u random=%Lg\n", j,
                    ac->random_data[j]);
 #endif
-          ac->method ((Optimize *) rk);
-          o = ac->objective ((Optimize *) rk);
+          if (!ac->method ((Optimize *) rk))
+				    o = INFINITY;
+			    else
+            o = ac->objective ((Optimize *) rk);
 #if DEBUG_RK
           fprintf (stderr, "rk_step_ac: k=%u objective=%Lg o2=%Lg\n", k, o, o2);
 #endif
@@ -1112,15 +1082,18 @@ rk_step_ac (RK * rk)            ///< RK struct.
               memcpy (vo2, ac->random_data, nfree * sizeof (long double));
             }
           if (file_variables)
-            fprintf (file_variables, "%.19Le\n", o);
-          ac->random_data[j] = fmaxl (0.L, v - is[j]);
-          if (file_variables)
             {
+							g_mutex_lock (mutex);
               print_variables (tb->random_data, tb->nfree, file_variables);
               print_variables (ac->random_data, nfree, file_variables);
+              fprintf (file_variables, "%.19Le\n", o);
+							g_mutex_unlock (mutex);
             }
-          ac->method ((Optimize *) rk);
-          o = ac->objective ((Optimize *) rk);
+          ac->random_data[j] = fmaxl (0.L, v - is[j]);
+          if (!ac->method ((Optimize *) rk))
+				    o = INFINITY;
+			    else
+            o = ac->objective ((Optimize *) rk);
 #if DEBUG_RK
           fprintf (stderr, "rk_step_ac: k=%u objective=%Lg o2=%Lg\n", k, o, o2);
 #endif
@@ -1131,9 +1104,18 @@ rk_step_ac (RK * rk)            ///< RK struct.
               memcpy (vo2, ac->random_data, nfree * sizeof (long double));
             }
           if (file_variables)
-            fprintf (file_variables, "%.19Le\n", o);
+            {
+							g_mutex_lock (mutex);
+              print_variables (tb->random_data, tb->nfree, file_variables);
+              print_variables (ac->random_data, nfree, file_variables);
+              fprintf (file_variables, "%.19Le\n", o);
+							g_mutex_unlock (mutex);
+            }
           ac->random_data[j] = v;
         }
+
+      // update optimal values
+      memcpy (vo, vo2, nfree * sizeof (long double));
 
       // increase or reduce intervals if converging or not
       if (!k)
@@ -1204,14 +1186,14 @@ rk_bucle_ac (RK * rk)           ///< RK struct.
 #if DEBUG_RK
   fprintf (stderr, "rk_bucle_ac: iterate\n");
 #endif
-  for (i = 0; i < tb->niterations; ++i)
+  for (i = 0; i < ac->niterations; ++i)
     {
 
       // Optimization step
       rk_step_ac (rk);
 
       // Updating coefficient intervals to converge
-      optimize_converge (tb);
+      optimize_converge (ac);
 
       // Iterate
 #if DEBUG_RK
@@ -1248,7 +1230,7 @@ rk_bucle_ac (RK * rk)           ///< RK struct.
  * Function to perform every optimization step for the t-b Runge-Kutta 
  * coefficients.
  */
-void
+static inline void
 rk_step_tb (RK * rk)            ///< RK struct.
 {
   Optimize *tb;
@@ -1273,8 +1255,8 @@ rk_step_tb (RK * rk)            ///< RK struct.
   // Monte-Carlo algorithm
 #if DEBUG_RK
   fprintf (stderr, "rk_step_tb: Monte-Carlo algorithm\n");
-  fprintf (stderr, "rk_step_tb: nrandom=%Lu nsearch=%u\n",
-           tb->nrandom, tb->nsearch);
+  fprintf (stderr, "rk_step_tb: nrandom=%Lu nclimbings=%u\n",
+           tb->nrandom, tb->nclimbings);
 #endif
   nrandom = tb->nrandom;
   for (ii = 0L; ii < nrandom; ++ii)
@@ -1285,20 +1267,15 @@ rk_step_tb (RK * rk)            ///< RK struct.
       fprintf (stderr, "rk_step_tb: random freedom degrees\n");
 #endif
       optimize_generate_random (tb);
-      if (b)
-        print_variables (tb->random_data, nfree, file_variables);
 
       // method coefficients
 #if DEBUG_RK
       fprintf (stderr, "rk_step_tb: method coefficients\n");
 #endif
-      tb->method (tb);
-
-      // objective function
-#if DEBUG_RK
-      fprintf (stderr, "rk_step_tb: objective function\n");
-#endif
-      o = tb->objective (tb);
+      if (!tb->method (tb))
+				o = INFINITY;
+			else
+        o = tb->objective (tb);
       if (o < *tb->optimal)
         {
           g_mutex_lock (mutex);
@@ -1308,7 +1285,12 @@ rk_step_tb (RK * rk)            ///< RK struct.
           g_mutex_unlock (mutex);
         }
       if (b)
-        fprintf (file_variables, "%.19Le\n", o);
+			  {
+          g_mutex_lock (mutex);
+          print_variables (tb->random_data, nfree, file_variables);
+          fprintf (file_variables, "%.19Le\n", o);
+          g_mutex_unlock (mutex);
+				}
     }
 
   // array of intervals to climb around the optimal
@@ -1333,10 +1315,10 @@ rk_step_tb (RK * rk)            ///< RK struct.
         {
           v = vo[j];
           tb->random_data[j] = v + is[j];
-          if (b)
-            print_variables (tb->random_data, nfree, file_variables);
-          tb->method (tb);
-          o = tb->objective (tb);
+					if (!tb->method (tb))
+						o = INFINITY;
+					else
+            o = tb->objective (tb);
           if (o < *tb->optimal)
             {
               k = 1;
@@ -1347,12 +1329,17 @@ rk_step_tb (RK * rk)            ///< RK struct.
               g_mutex_unlock (mutex);
             }
           if (b)
-            fprintf (file_variables, "%.19Le\n", o);
+			      {
+              g_mutex_lock (mutex);
+              print_variables (tb->random_data, nfree, file_variables);
+              fprintf (file_variables, "%.19Le\n", o);
+              g_mutex_unlock (mutex);
+				    }
           tb->random_data[j] = fmaxl (0.L, v - is[j]);
-          if (b)
-            print_variables (tb->random_data, nfree, file_variables);
-          tb->method (tb);
-          o = tb->objective (tb);
+					if (!tb->method (tb))
+						o = INFINITY;
+					else
+            o = tb->objective (tb);
           if (o < *tb->optimal)
             {
               k = 1;
@@ -1363,7 +1350,12 @@ rk_step_tb (RK * rk)            ///< RK struct.
               g_mutex_unlock (mutex);
             }
           if (b)
-            fprintf (file_variables, "%.19Le\n", o);
+			      {
+              g_mutex_lock (mutex);
+              print_variables (tb->random_data, nfree, file_variables);
+              fprintf (file_variables, "%.19Le\n", o);
+              g_mutex_unlock (mutex);
+				    }
           tb->random_data[j] = v;
         }
 
@@ -1383,7 +1375,7 @@ rk_step_tb (RK * rk)            ///< RK struct.
 /**
  * Function to do the optimization bucle.
  */
-void
+static inline void
 rk_bucle_tb (RK * rk)           ///< RK struct.
 {
   GThread *thread[nthreads];
@@ -1533,7 +1525,7 @@ rk_bucle_tb (RK * rk)           ///< RK struct.
  *
  * \return 1 on success, 0 on error.
  */
-int
+static inline int
 rk_select (RK * rk,             ///< RK struct.
            unsigned int nsteps, ///< steps number.
            unsigned int order)  ///< accuracy order.
@@ -1547,18 +1539,12 @@ rk_select (RK * rk,             ///< RK struct.
   strong = rk->strong;
   tb = rk->tb;
   tb->size = nsteps * (nsteps + 3) / 2 - 1;
-  ac = rk->ac0;
-  ac->size = nsteps * (nsteps + 1) - 2;
-  ac->nfree = nsteps * (nsteps - 1) / 2;
+	if (rk->pair)
+		tb->size += nsteps - 1;
   switch (nsteps)
     {
     case 2:
       tb->print = (OptimizePrint) rk_print_2;
-      ac->minimum0 = minimum_ac_rk_2;
-      ac->interval0 = interval_ac_rk_2;
-      ac->random_type = random_ac_rk_2;
-      ac->method = (OptimizeMethod) rk_ac_2;
-      ac->objective = (OptimizeObjective) rk_objective_ac_2;
       switch (order)
         {
         case 2:
@@ -1567,17 +1553,14 @@ rk_select (RK * rk,             ///< RK struct.
             tb->print_maxima = rk_print_maxima_2_2;
           else
             tb->print_maxima = tb_print_maxima_2_2;
-          tb->minimum0 = minimum_tb_2_2;
-          tb->interval0 = interval_tb_2_2;
-          tb->random_type = random_tb_2_2;
           if (rk->time_accuracy)
             {
-              tb->method = (OptimizeMethod) rk_tb_2_2t;
+              tb->method = rk_tb_2_2t;
               tb->objective = (OptimizeObjective) rk_objective_tb_2_2t;
             }
           else
             {
-              tb->method = (OptimizeMethod) rk_tb_2_2;
+              tb->method = rk_tb_2_2;
               tb->objective = (OptimizeObjective) rk_objective_tb_2_2;
             }
           break;
@@ -1588,11 +1571,6 @@ rk_select (RK * rk,             ///< RK struct.
       break;
     case 3:
       tb->print = (OptimizePrint) rk_print_3;
-      ac->minimum0 = minimum_ac_rk_3;
-      ac->interval0 = interval_ac_rk_3;
-      ac->random_type = random_ac_rk_3;
-      ac->method = (OptimizeMethod) rk_ac_3;
-      ac->objective = (OptimizeObjective) rk_objective_ac_3;
       switch (order)
         {
         case 2:
@@ -1601,17 +1579,14 @@ rk_select (RK * rk,             ///< RK struct.
             tb->print_maxima = rk_print_maxima_3_2;
           else
             tb->print_maxima = tb_print_maxima_3_2;
-          tb->minimum0 = minimum_tb_3_2;
-          tb->interval0 = interval_tb_3_2;
-          tb->random_type = random_tb_3_2;
           if (rk->time_accuracy)
             {
-              tb->method = (OptimizeMethod) rk_tb_3_2t;
+              tb->method = rk_tb_3_2t;
               tb->objective = (OptimizeObjective) rk_objective_tb_3_2t;
             }
           else
             {
-              tb->method = (OptimizeMethod) rk_tb_3_2;
+              tb->method = rk_tb_3_2;
               tb->objective = (OptimizeObjective) rk_objective_tb_3_2;
             }
           break;
@@ -1621,17 +1596,14 @@ rk_select (RK * rk,             ///< RK struct.
             tb->print_maxima = rk_print_maxima_3_3;
           else
             tb->print_maxima = tb_print_maxima_3_3;
-          tb->minimum0 = minimum_tb_3_3;
-          tb->interval0 = interval_tb_3_3;
-          tb->random_type = random_tb_3_3;
           if (rk->time_accuracy)
             {
-              tb->method = (OptimizeMethod) rk_tb_3_3t;
+              tb->method = rk_tb_3_3t;
               tb->objective = (OptimizeObjective) rk_objective_tb_3_3t;
             }
           else
             {
-              tb->method = (OptimizeMethod) rk_tb_3_3;
+              tb->method = rk_tb_3_3;
               tb->objective = (OptimizeObjective) rk_objective_tb_3_3;
             }
           break;
@@ -1642,11 +1614,6 @@ rk_select (RK * rk,             ///< RK struct.
       break;
     case 4:
       tb->print = (OptimizePrint) rk_print_4;
-      ac->minimum0 = minimum_ac_rk_4;
-      ac->interval0 = interval_ac_rk_4;
-      ac->random_type = random_ac_rk_4;
-      ac->method = (OptimizeMethod) rk_ac_4;
-      ac->objective = (OptimizeObjective) rk_objective_ac_4;
       switch (order)
         {
         case 2:
@@ -1655,17 +1622,14 @@ rk_select (RK * rk,             ///< RK struct.
             tb->print_maxima = rk_print_maxima_4_2;
           else
             tb->print_maxima = tb_print_maxima_4_2;
-          tb->minimum0 = minimum_tb_4_2;
-          tb->interval0 = interval_tb_4_2;
-          tb->random_type = random_tb_4_2;
           if (rk->time_accuracy)
             {
-              tb->method = (OptimizeMethod) rk_tb_4_2t;
+              tb->method = rk_tb_4_2t;
               tb->objective = (OptimizeObjective) rk_objective_tb_4_2t;
             }
           else
             {
-              tb->method = (OptimizeMethod) rk_tb_4_2;
+              tb->method = rk_tb_4_2;
               tb->objective = (OptimizeObjective) rk_objective_tb_4_2;
             }
           break;
@@ -1675,17 +1639,14 @@ rk_select (RK * rk,             ///< RK struct.
             tb->print_maxima = rk_print_maxima_4_3;
           else
             tb->print_maxima = tb_print_maxima_4_3;
-          tb->minimum0 = minimum_tb_4_3;
-          tb->interval0 = interval_tb_4_3;
-          tb->random_type = random_tb_4_3;
           if (rk->time_accuracy)
             {
-              tb->method = (OptimizeMethod) rk_tb_4_3t;
+              tb->method = rk_tb_4_3t;
               tb->objective = (OptimizeObjective) rk_objective_tb_4_3t;
             }
           else
             {
-              tb->method = (OptimizeMethod) rk_tb_4_3;
+              tb->method = rk_tb_4_3;
               tb->objective = (OptimizeObjective) rk_objective_tb_4_3;
             }
           break;
@@ -1695,17 +1656,14 @@ rk_select (RK * rk,             ///< RK struct.
             tb->print_maxima = rk_print_maxima_4_4;
           else
             tb->print_maxima = tb_print_maxima_4_4;
-          tb->minimum0 = minimum_tb_4_4;
-          tb->interval0 = interval_tb_4_4;
-          tb->random_type = random_tb_4_4;
           if (rk->time_accuracy)
             {
-              tb->method = (OptimizeMethod) rk_tb_4_4t;
+              tb->method = rk_tb_4_4t;
               tb->objective = (OptimizeObjective) rk_objective_tb_4_4t;
             }
           else
             {
-              tb->method = (OptimizeMethod) rk_tb_4_4;
+              tb->method = rk_tb_4_4;
               tb->objective = (OptimizeObjective) rk_objective_tb_4_4;
             }
           break;
@@ -1716,11 +1674,6 @@ rk_select (RK * rk,             ///< RK struct.
       break;
     case 5:
       tb->print = (OptimizePrint) rk_print_5;
-      ac->minimum0 = minimum_ac_rk_5;
-      ac->interval0 = interval_ac_rk_5;
-      ac->random_type = random_ac_rk_5;
-      ac->method = (OptimizeMethod) rk_ac_5;
-      ac->objective = (OptimizeObjective) rk_objective_ac_5;
       switch (order)
         {
         case 2:
@@ -1729,17 +1682,14 @@ rk_select (RK * rk,             ///< RK struct.
             tb->print_maxima = rk_print_maxima_5_2;
           else
             tb->print_maxima = tb_print_maxima_5_2;
-          tb->minimum0 = minimum_tb_5_2;
-          tb->interval0 = interval_tb_5_2;
-          tb->random_type = random_tb_5_2;
           if (rk->time_accuracy)
             {
-              tb->method = (OptimizeMethod) rk_tb_5_2t;
+              tb->method = rk_tb_5_2t;
               tb->objective = (OptimizeObjective) rk_objective_tb_5_2t;
             }
           else
             {
-              tb->method = (OptimizeMethod) rk_tb_5_2;
+              tb->method = rk_tb_5_2;
               tb->objective = (OptimizeObjective) rk_objective_tb_5_2;
             }
           break;
@@ -1749,17 +1699,14 @@ rk_select (RK * rk,             ///< RK struct.
             tb->print_maxima = rk_print_maxima_5_3;
           else
             tb->print_maxima = tb_print_maxima_5_3;
-          tb->minimum0 = minimum_tb_5_3;
-          tb->interval0 = interval_tb_5_3;
-          tb->random_type = random_tb_5_3;
           if (rk->time_accuracy)
             {
-              tb->method = (OptimizeMethod) rk_tb_5_3t;
+              tb->method = rk_tb_5_3t;
               tb->objective = (OptimizeObjective) rk_objective_tb_5_3t;
             }
           else
             {
-              tb->method = (OptimizeMethod) rk_tb_5_3;
+              tb->method = rk_tb_5_3;
               tb->objective = (OptimizeObjective) rk_objective_tb_5_3;
             }
           break;
@@ -1769,19 +1716,16 @@ rk_select (RK * rk,             ///< RK struct.
             tb->print_maxima = rk_print_maxima_5_4;
           else
             tb->print_maxima = tb_print_maxima_5_4;
-          tb->minimum0 = minimum_tb_5_4;
-          tb->interval0 = interval_tb_5_4;
-          tb->random_type = random_tb_5_4;
           if (rk->time_accuracy)
             {
               if (rk->pair)
                 --tb->nfree;
-              tb->method = (OptimizeMethod) rk_tb_5_4t;
+              tb->method = rk_tb_5_4t;
               tb->objective = (OptimizeObjective) rk_objective_tb_5_4t;
             }
           else
             {
-              tb->method = (OptimizeMethod) rk_tb_5_4;
+              tb->method = rk_tb_5_4;
               tb->objective = (OptimizeObjective) rk_objective_tb_5_4;
             }
           break;
@@ -1792,11 +1736,6 @@ rk_select (RK * rk,             ///< RK struct.
       break;
     case 6:
       tb->print = (OptimizePrint) rk_print_6;
-      ac->minimum0 = minimum_ac_rk_6;
-      ac->interval0 = interval_ac_rk_6;
-      ac->random_type = random_ac_rk_6;
-      ac->method = (OptimizeMethod) rk_ac_6;
-      ac->objective = (OptimizeObjective) rk_objective_ac_6;
       switch (order)
         {
         case 2:
@@ -1805,17 +1744,14 @@ rk_select (RK * rk,             ///< RK struct.
             tb->print_maxima = rk_print_maxima_6_2;
           else
             tb->print_maxima = tb_print_maxima_6_2;
-          tb->minimum0 = minimum_tb_6_2;
-          tb->interval0 = interval_tb_6_2;
-          tb->random_type = random_tb_6_2;
           if (rk->time_accuracy)
             {
-              tb->method = (OptimizeMethod) rk_tb_6_2t;
+              tb->method = rk_tb_6_2t;
               tb->objective = (OptimizeObjective) rk_objective_tb_6_2t;
             }
           else
             {
-              tb->method = (OptimizeMethod) rk_tb_6_2;
+              tb->method = rk_tb_6_2;
               tb->objective = (OptimizeObjective) rk_objective_tb_6_2;
             }
           break;
@@ -1825,17 +1761,14 @@ rk_select (RK * rk,             ///< RK struct.
             tb->print_maxima = rk_print_maxima_6_3;
           else
             tb->print_maxima = tb_print_maxima_6_3;
-          tb->minimum0 = minimum_tb_6_3;
-          tb->interval0 = interval_tb_6_3;
-          tb->random_type = random_tb_6_3;
           if (rk->time_accuracy)
             {
-              tb->method = (OptimizeMethod) rk_tb_6_3t;
+              tb->method = rk_tb_6_3t;
               tb->objective = (OptimizeObjective) rk_objective_tb_6_3t;
             }
           else
             {
-              tb->method = (OptimizeMethod) rk_tb_6_3;
+              tb->method = rk_tb_6_3;
               tb->objective = (OptimizeObjective) rk_objective_tb_6_3;
             }
           break;
@@ -1845,17 +1778,14 @@ rk_select (RK * rk,             ///< RK struct.
             tb->print_maxima = rk_print_maxima_6_4;
           else
             tb->print_maxima = tb_print_maxima_6_4;
-          tb->minimum0 = minimum_tb_6_4;
-          tb->interval0 = interval_tb_6_4;
-          tb->random_type = random_tb_6_4;
           if (rk->time_accuracy)
             {
-              tb->method = (OptimizeMethod) rk_tb_6_4t;
+              tb->method = rk_tb_6_4t;
               tb->objective = (OptimizeObjective) rk_objective_tb_6_4t;
             }
           else
             {
-              tb->method = (OptimizeMethod) rk_tb_6_4;
+              tb->method = rk_tb_6_4;
               tb->objective = (OptimizeObjective) rk_objective_tb_6_4;
             }
           break;
@@ -1870,6 +1800,50 @@ rk_select (RK * rk,             ///< RK struct.
     }
   if (rk->time_accuracy)
     --tb->nfree;
+  tb->minimum0 
+		= (long double *) g_slice_alloc (tb->nfree * sizeof (long double));
+  tb->interval0
+		= (long double *) g_slice_alloc (tb->nfree * sizeof (long double));
+  tb->random_type
+		= (unsigned int *) g_slice_alloc (tb->nfree * sizeof (unsigned int));
+	if (rk->strong)
+	  {
+      ac = rk->ac0;
+      ac->size = nsteps * (nsteps + 1) - 2;
+      ac->nfree = nsteps * (nsteps - 1) / 2;
+      ac->minimum0 
+    		= (long double *) g_slice_alloc (ac->nfree * sizeof (long double));
+      ac->interval0
+    		= (long double *) g_slice_alloc (ac->nfree * sizeof (long double));
+      ac->random_type
+    		= (unsigned int *) g_slice_alloc (ac->nfree * sizeof (unsigned int));
+      switch (nsteps)
+        {
+        case 2:
+          ac->method = (OptimizeMethod) rk_ac_2;
+          ac->objective = (OptimizeObjective) rk_objective_ac_2;
+          break;
+        case 3:
+          ac->method = (OptimizeMethod) rk_ac_3;
+          ac->objective = (OptimizeObjective) rk_objective_ac_3;
+          break;
+        case 4:
+          ac->method = (OptimizeMethod) rk_ac_4;
+          ac->objective = (OptimizeObjective) rk_objective_ac_4;
+          break;
+        case 5:
+          ac->method = (OptimizeMethod) rk_ac_5;
+          ac->objective = (OptimizeObjective) rk_objective_ac_5;
+          break;
+        case 6:
+          ac->method = (OptimizeMethod) rk_ac_6;
+          ac->objective = (OptimizeObjective) rk_objective_ac_6;
+          break;
+        default:
+          code = 1;
+          goto exit_on_error;
+        }
+		}
 
 #if DEBUG_RK
   fprintf (stderr, "rk_select: end\n");
@@ -1961,10 +1935,13 @@ rk_run (xmlNode * node,         ///< XML node.
   nfree = tb->nfree;
   value_optimal = (long double *) g_slice_alloc (nfree * sizeof (long double));
   optimize_create (tb, &optimal, value_optimal);
+  node = node->children;
+	for (i = 0; i < nfree; ++i, node = node->next)
+	  if (!read_variable (node, tb->minimum0, tb->interval0, tb->random_type, i))
+			goto exit_on_error;
   if (rk->strong)
     {
       ac = rk->ac0;
-      node = node->children;
       if (!node)
         {
           error_message = g_strdup (_("No a-c coefficients data"));
@@ -1987,6 +1964,13 @@ rk_run (xmlNode * node,         ///< XML node.
       value_optimal2
         = (long double *) g_slice_alloc (nfree2 * sizeof (long double));
       optimize_create (ac, &optimal2, value_optimal2);
+	    for (i = 0; i < nfree2; ++i)
+			  {
+					node = node->next;
+          if (!read_variable (node, ac->minimum0, ac->interval0,
+							                ac->random_type, i))
+			      goto exit_on_error;
+				}
     }
   for (i = 1; i < nthreads; ++i)
     memcpy (rk + i, rk, sizeof (RK));
@@ -2001,13 +1985,13 @@ rk_run (xmlNode * node,         ///< XML node.
   // Print the optimal coefficients
   printf ("Print the optimal coefficients\n");
   memcpy (tb->random_data, tb->value_optimal, nfree * sizeof (long double));
-  tb->method (tb);
+  code = tb->method (tb);
   if (rk->strong)
     {
       memcpy (ac->random_data, ac->value_optimal,
               nfree2 * sizeof (long double));
       memcpy (rk->ac, ac, sizeof (Optimize));
-      ac->method ((Optimize *) rk);
+      code = ac->method ((Optimize *) rk);
     }
   snprintf (filename, 32, "rk-%u-%u-%u-%u-%u.mc",
             nsteps, order, rk->time_accuracy, rk->pair, rk->strong);
@@ -2018,9 +2002,17 @@ rk_run (xmlNode * node,         ///< XML node.
 
   // Free memory
   if (rk->strong)
-    g_slice_free1 (nfree2 * sizeof (long double), value_optimal2);
+	  {
+			g_slice_free1 (nfree2 * sizeof (unsigned int), ac->random_type);
+      g_slice_free1 (nfree2 * sizeof (long double), ac->interval0);
+      g_slice_free1 (nfree2 * sizeof (long double), ac->minimum0);
+      g_slice_free1 (nfree2 * sizeof (long double), value_optimal2);
+		}
   for (i = 0; i < nthreads; ++i)
     rk_delete (rk + i);
+  g_slice_free1 (nfree * sizeof (unsigned int), tb->random_type);
+  g_slice_free1 (nfree * sizeof (long double), tb->interval0);
+  g_slice_free1 (nfree * sizeof (long double), tb->minimum0);
   g_slice_free1 (nfree * sizeof (long double), value_optimal);
 
 

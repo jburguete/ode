@@ -46,18 +46,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define DEBUG_RK_2_2 0          ///< macro to debug.
 
-///> array of minimum freedom degree values for the t-b coefficients of the 2
-///> steps 2nd order Runge-Kutta method.
-const long double minimum_tb_2_2[1] = { 0.5L };
-
-///> array of minimum freedom degree intervals for the t-b coefficients of the 2
-///> steps 2nd order Runge-Kutta method.
-const long double interval_tb_2_2[1] = { 0.5L };
-
-///> array of freedom degree random function types for the t-b coefficients of
-///> the 2 steps 2nd order Runge-Kutta method.
-const unsigned int random_tb_2_2[1] = { 2 };
-
 /**
  * Function to print a maxima format file to check the accuracy order of a 2
  * steps 2nd order Runge-Kutta simple stable method.
@@ -91,7 +79,7 @@ rk_print_maxima_2_2 (FILE * file,       ///< file.
  * Function to obtain the coefficients of a 2 steps 2nd order Runge-Kutta 
  * method.
  */
-void
+int
 rk_tb_2_2 (Optimize * optimize) ///< Optimize struct.
 {
   long double *tb, *r;
@@ -108,13 +96,14 @@ rk_tb_2_2 (Optimize * optimize) ///< Optimize struct.
   rk_print_tb_2 (tb, "rk_tb_2_2", stderr);
   fprintf (stderr, "rk_tb_2_2: end\n");
 #endif
+	return 1;
 }
 
 /**
  * Function to obtain the coefficients of a 2 steps 2nd order, 3rd order in
  * equations depending only in time, Runge-Kutta method.
  */
-void
+int
 rk_tb_2_2t (Optimize * optimize)        ///< Optimize struct.
 {
   long double *tb;
@@ -130,6 +119,7 @@ rk_tb_2_2t (Optimize * optimize)        ///< Optimize struct.
   rk_print_tb_2 (tb, "rk_tb_2_2t", stderr);
   fprintf (stderr, "rk_tb_2_2t: end\n");
 #endif
+	return 1;
 }
 
 /**

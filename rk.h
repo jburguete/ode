@@ -63,17 +63,26 @@ typedef struct
 #define b30(x) x[5]             ///< b30 Runge-Kutta coefficient.
 #define b31(x) x[6]             ///< b31 Runge-Kutta coefficient.
 #define b32(x) x[7]             ///< b32 Runge-Kutta coefficient.
+#define e30(x) x[8]             ///< e30 Runge-Kutta pair coefficient.
+#define e31(x) x[9]             ///< e31 Runge-Kutta pair coefficient.
 #define t4(x) x[8]              ///< t4 Runge-Kutta coefficient.
 #define b40(x) x[9]             ///< b40 Runge-Kutta coefficient.
 #define b41(x) x[10]            ///< b41 Runge-Kutta coefficient.
 #define b42(x) x[11]            ///< b42 Runge-Kutta coefficient.
 #define b43(x) x[12]            ///< b43 Runge-Kutta coefficient.
+#define e40(x) x[13]            ///< e40 Runge-Kutta pair coefficient.
+#define e41(x) x[14]            ///< e41 Runge-Kutta pair coefficient.
+#define e42(x) x[15]            ///< e42 Runge-Kutta pair coefficient.
 #define t5(x) x[13]             ///< t5 Runge-Kutta coefficient.
 #define b50(x) x[14]            ///< b50 Runge-Kutta coefficient.
 #define b51(x) x[15]            ///< b51 Runge-Kutta coefficient.
 #define b52(x) x[16]            ///< b52 Runge-Kutta coefficient.
 #define b53(x) x[17]            ///< b53 Runge-Kutta coefficient.
 #define b54(x) x[18]            ///< b53 Runge-Kutta coefficient.
+#define e50(x) x[19]            ///< e50 Runge-Kutta pair coefficient.
+#define e51(x) x[20]            ///< e51 Runge-Kutta pair coefficient.
+#define e52(x) x[21]            ///< e52 Runge-Kutta pair coefficient.
+#define e53(x) x[22]            ///< e53 Runge-Kutta pair coefficient.
 #define t6(x) x[19]             ///< t6 Runge-Kutta coefficient.
 #define b60(x) x[20]            ///< b60 Runge-Kutta coefficient.
 #define b61(x) x[21]            ///< b61 Runge-Kutta coefficient.
@@ -81,6 +90,11 @@ typedef struct
 #define b63(x) x[23]            ///< b63 Runge-Kutta coefficient.
 #define b64(x) x[24]            ///< b64 Runge-Kutta coefficient.
 #define b65(x) x[25]            ///< b65 Runge-Kutta coefficient.
+#define e60(x) x[26]            ///< e60 Runge-Kutta pair coefficient.
+#define e61(x) x[27]            ///< e61 Runge-Kutta pair coefficient.
+#define e62(x) x[28]            ///< e62 Runge-Kutta pair coefficient.
+#define e63(x) x[29]            ///< e63 Runge-Kutta pair coefficient.
+#define e64(x) x[30]            ///< e64 Runge-Kutta pair coefficient.
 #define a20(x) x[0]             ///< a20 Runge-Kutta coefficient.
 #define a21(x) x[1]             ///< a21 Runge-Kutta coefficient.
 #define c20(x) x[2]             ///< c20 Runge-Kutta coefficient.
@@ -122,54 +136,17 @@ typedef struct
 #define c64(x) x[38]            ///< c64 Runge-Kutta coefficient.
 #define c65(x) x[39]            ///< c65 Runge-Kutta coefficient.
 
-extern const long double minimum_ac_rk_2[1];
-extern const long double interval_ac_rk_2[1];
-extern const unsigned int random_ac_rk_2[1];
-extern const long double minimum_ac_rk_3[3];
-extern const long double interval_ac_rk_3[3];
-extern const unsigned int random_ac_rk_3[3];
-extern const long double minimum_ac_rk_4[6];
-extern const long double interval_ac_rk_4[6];
-extern const unsigned int random_ac_rk_4[6];
-extern const long double minimum_ac_rk_5[10];
-extern const long double interval_ac_rk_5[10];
-extern const unsigned int random_ac_rk_5[10];
-extern const long double minimum_ac_rk_6[15];
-extern const long double interval_ac_rk_6[15];
-extern const unsigned int random_ac_rk_6[15];
-
 void rk_print_tb_2 (long double *tb, char *label, FILE * file);
 void rk_print_tb_3 (long double *tb, char *label, FILE * file);
 void rk_print_tb_4 (long double *tb, char *label, FILE * file);
 void rk_print_tb_5 (long double *tb, char *label, FILE * file);
 void rk_print_tb_6 (long double *tb, char *label, FILE * file);
-void rk_print_2 (RK * rk, FILE * file);
-void rk_print_3 (RK * rk, FILE * file);
-void rk_print_4 (RK * rk, FILE * file);
-void rk_print_5 (RK * rk, FILE * file);
-void rk_print_6 (RK * rk, FILE * file);
 void rk_print_maxima_2 (FILE * file);
 void rk_print_maxima_3 (FILE * file);
 void rk_print_maxima_4 (FILE * file);
 void rk_print_maxima_5 (FILE * file);
 void rk_print_maxima_6 (FILE * file);
-void rk_ac_2 (RK * rk);
-void rk_ac_3 (RK * rk);
-void rk_ac_4 (RK * rk);
-void rk_ac_5 (RK * rk);
-void rk_ac_6 (RK * rk);
-long double rk_objective_ac_2 (RK * rk);
-long double rk_objective_ac_3 (RK * rk);
-long double rk_objective_ac_4 (RK * rk);
-long double rk_objective_ac_5 (RK * rk);
-long double rk_objective_ac_6 (RK * rk);
-void rk_init (RK * rk, gsl_rng * rng);
-void rk_delete (RK * rk);
-void rk_step_ac (RK * rk);
 void rk_bucle_ac (RK * rk);
-void rk_step_tb (RK * rk);
-void rk_bucle_tb (RK * rk);
-int rk_select (RK * rk, unsigned int nsteps, unsigned int order);
 int rk_run (xmlNode * node, gsl_rng ** rng);
 
 /**
@@ -219,6 +196,36 @@ rk_b_6 (long double *tb)        ///< array of Runge-Kutta coefficients.
 {
   rk_b_5 (tb);
   b60 (tb) = t6 (tb) - b61 (tb) - b62 (tb) - b63 (tb) - b64 (tb) - b65 (tb);
+}
+
+/**
+ * Function to get \f$\hat{b}_{40}\f$ coefficient of the 4 steps Runge-Kutta
+ * pairs.
+ */
+static inline void
+rk_e_4 (long double *tb)        ///< array of Runge-Kutta coefficients.
+{
+  e40 (tb) = 1.L - e41 (tb) - e42 (tb);
+}
+
+/**
+ * Function to get \f$\hat{b}_{50}\f$ coefficient of the 5 steps Runge-Kutta
+ * pairs.
+ */
+static inline void
+rk_e_5 (long double *tb)        ///< array of Runge-Kutta coefficients.
+{
+  e50 (tb) = 1.L - e51 (tb) - e52 (tb) - e53 (tb);
+}
+
+/**
+ * Function to get \f$\hat{b}_{60}\f$ coefficient of the 6 steps Runge-Kutta
+ * pairs.
+ */
+static inline void
+rk_e_6 (long double *tb)        ///< array of Runge-Kutta coefficients.
+{
+  e60 (tb) = 1.L - e61 (tb) - e62 (tb) - e63 (tb) - e64 (tb);
 }
 
 /**

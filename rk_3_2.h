@@ -34,14 +34,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef RK_3_2__H
 #define RK_3_2__H 1
 
-extern const long double minimum_tb_3_2[4];
-extern const long double interval_tb_3_2[4];
-extern const unsigned int random_tb_3_2[4];
-
 void tb_print_maxima_3_2 (FILE * file, unsigned int nsteps, unsigned int order);
 void rk_print_maxima_3_2 (FILE * file, unsigned int nsteps, unsigned int order);
-void rk_tb_3_2 (Optimize * optimize);
-void rk_tb_3_2t (Optimize * optimize);
+int rk_tb_3_2 (Optimize * optimize);
+int rk_tb_3_2t (Optimize * optimize);
 long double rk_objective_tb_3_2 (RK * rk);
 long double rk_objective_tb_3_2t (RK * rk);
 

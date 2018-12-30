@@ -1,2 +1,6 @@
 <?xml version="1.0"?>
-<Runge-Kutta steps="3" order="2" nsimulations="10" nclimbings="64" niterations="32" convergence-factor="0.2" climbing-factor="0.1" time-accuracy="yes"/>
+<Runge-Kutta steps="3" order="2" nsimulations="100" nclimbings="64" niterations="12" convergence-factor="0.02" climbing-factor="0.1" time-accuracy="yes">
+	<variable minimum="0" interval="1" type="top"/>
+	<variable minimum="0" interval="1" type="top"/>
+	<variable minimum="0" interval="1" type="top"/>
+</Runge-Kutta>

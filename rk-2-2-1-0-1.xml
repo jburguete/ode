@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
-<Runge-Kutta steps="2" order="2" nsimulations="100" nclimbings="64" niterations="32" convergence-factor="0.02" climbing-factor="0.1" time-accuracy="yes" strong="yes">
-	<ac nsimulations="100" nclimbings="64" niterations="32" convergence-factor="0.002" climbing-factor="0.1"/>
+<Runge-Kutta steps="2" order="2" nsimulations="1" nclimbings="0" niterations="1" convergence-factor="1" climbing-factor="1" time-accuracy="yes" strong="yes">
+	<ac nsimulations="1000000" nclimbings="64" niterations="4" convergence-factor="2e-6" climbing-factor="0.1"/>
+	<variable minimum="0" interval="3" type="random"/>
 </Runge-Kutta>

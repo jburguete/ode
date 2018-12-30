@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<steps steps="5" order="3" nsimulations="16" nclimbings="64" niterations="22" convergence-factor="0.125" climbing-factor="0.1">
+	<variable minimum="0" interval="3" type="random"/>
+	<variable minimum="0" interval="3" type="extreme"/>
+	<variable minimum="0" interval="3" type="extreme"/>
+	<variable minimum="0" interval="3" type="extreme"/>
+	<variable minimum="0" interval="3" type="extreme"/>
+	<variable minimum="0" interval="1" type="random"/>
+</steps>

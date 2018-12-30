@@ -48,6 +48,8 @@ xml_node_get_uint_with_default (xmlNode * node, const xmlChar * prop,
                                 unsigned int default_value, int *error_code);
 long double
 xml_node_get_float (xmlNode * node, const xmlChar * prop, int *error_code);
+int read_variable (xmlNode * node, long double *minimum, long double *interval,
+                   unsigned int *type, unsigned int n);
 
 /**
  * Function to print the random variables on a file.
@@ -58,10 +60,8 @@ print_variables (long double *r,        ///< random variables.
                  FILE * file)   ///< file.
 {
   unsigned int i;
-  g_mutex_lock (mutex);
   for (i = 0; i < nfree; ++i)
     fprintf (file, "%.19Le ", r[i]);
-  g_mutex_unlock (mutex);
 }
 
 /**

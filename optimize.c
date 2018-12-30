@@ -110,27 +110,27 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
       fprintf (stderr, "optimize_step: random freedom degrees\n");
 #endif
       optimize_generate_random (optimize);
-      if (file_variables)
-        print_variables (optimize->random_data, nfree, file_variables);
 
       // method coefficients
 #if DEBUG_OPTIMIZE
       fprintf (stderr, "optimize_step: method coefficients\n");
 #endif
-      optimize->method (optimize);
-
-      // objective function
-#if DEBUG_OPTIMIZE
-      fprintf (stderr, "optimize_step: objective function\n");
-#endif
-      o = optimize->objective (optimize);
+      if (!optimize->method (optimize))
+				o = INFINITY;
+			else
+        o = optimize->objective (optimize);
       if (o < o2)
         {
           o2 = o;
           memcpy (vo, optimize->random_data, nfree * sizeof (long double));
         }
       if (file_variables)
-        fprintf (file_variables, "%.19Le\n", o);
+			  {
+					g_mutex_lock (mutex);
+          print_variables (optimize->random_data, nfree, file_variables);
+          fprintf (file_variables, "%.19Le\n", o);
+					g_mutex_unlock (mutex);
+				}
     }
 
   // array of intervals to climb around the optimal
@@ -155,8 +155,10 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
         {
           v = vo[j];
           optimize->random_data[j] = v + is[j];
-          optimize->method (optimize);
-          o = optimize->objective (optimize);
+					if (!optimize->method (optimize))
+						o = INFINITY;
+					else
+            o = optimize->objective (optimize);
           if (o < o2)
             {
               k = 1;
@@ -164,8 +166,10 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
               memcpy (vo2, optimize->random_data, nfree * sizeof (long double));
             }
           optimize->random_data[j] = fmaxl (0.L, v - is[j]);
-          optimize->method (optimize);
-          o = optimize->objective (optimize);
+					if (!optimize->method (optimize))
+						o = INFINITY;
+					else
+            o = optimize->objective (optimize);
           if (o < o2)
             {
               k = 1;
@@ -174,6 +178,9 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
             }
           optimize->random_data[j] = v;
         }
+
+      // update optimal values
+      memcpy (vo, vo2, nfree * sizeof (long double));
 
       // increase or reduce intervals if converging or not
       if (!k)

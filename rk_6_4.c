@@ -47,21 +47,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define DEBUG_RK_6_4 0          ///< macro to debug.
 
-///> array of minimum freedom degree values for the t-b coefficients of the 6
-///> steps 4th order Runge-Kutta method.
-const long double minimum_tb_6_4[13] 
-= { 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L };
-
-///> array of minimum freedom degree intervals for the t-b coefficients of the 6
-///> steps 4th order Runge-Kutta method.
-const long double interval_tb_6_4[13] 
-= { 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L };
-
-///> array of freedom degree random function types for the t-b coefficients of
-///> the 6 steps 4th order Runge-Kutta method.
-const unsigned int random_tb_6_4[13] 
-= { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
-
 /**
  * Function to print a maxima format file to check the accuracy order of a 6
  * steps 4th order Runge-Kutta method.
@@ -101,7 +86,7 @@ rk_print_maxima_6_4 (FILE * file,       ///< file.
  * Function to obtain the coefficients of a 6 steps 4th order Runge-Kutta 
  * method.
  */
-void
+int
 rk_tb_6_4 (Optimize * optimize) ///< Optimize struct.
 {
   long double A[4], B[4], C[4], D[4], E[4];
@@ -183,13 +168,18 @@ rk_tb_6_4 (Optimize * optimize) ///< Optimize struct.
 #if DEBUG_RK_6_4
   fprintf (stderr, "rk_tb_6_4: end\n");
 #endif
+  if (isnan (b51 (tb)) || isnan (b52 (tb)) || isnan (b53 (tb))
+      || isnan (b61 (tb)) || isnan (b62 (tb)) || isnan (b63 (tb))
+      || isnan (b64 (tb)))
+		return 0;
+	return 1;
 }
 
 /**
  * Function to obtain the coefficients of a 6 steps 4th order, 5th order in
  * equations depending only on time, Runge-Kutta method.
  */
-void
+int
 rk_tb_6_4t (Optimize * optimize) ///< Optimize struct.
 {
   long double A[4], B[4], C[4], D[4], E[4];
@@ -274,6 +264,15 @@ rk_tb_6_4t (Optimize * optimize) ///< Optimize struct.
 	rk_print_tb_6 (tb, "rk_tb_6_4t", stderr);
   fprintf (stderr, "rk_tb_6_4t: end\n");
 #endif
+#if RK_PAIR
+  if (isnan (e51) || isnan (e52) || isnan (e53)) 
+		return 0;
+#endif
+  if (isnan (b41 (tb)) || isnan (b42 (tb)) || isnan (b43 (tb)) || 
+			isnan (b32 (tb)) || isnan (b21 (tb)) || isnan (b51 (tb)) || 
+			isnan (b52 (tb)) || isnan (b53 (tb)) || isnan (b54 (tb)))
+		return 0;
+	return 1;
 }
 
 /**
@@ -291,13 +290,6 @@ rk_objective_tb_6_4 (RK * rk)   ///< RK struct.
   fprintf (stderr, "rk_objective_tb_5_4: start\n");
 #endif
   tb = rk->tb->coefficient;
-  if (isnan (b51 (tb)) || isnan (b52 (tb)) || isnan (b53 (tb))
-      || isnan (b61 (tb)) || isnan (b62 (tb)) || isnan (b63 (tb))
-      || isnan (b64 (tb)))
-    {
-      o = INFINITY;
-      goto end;
-    }
   o = fminl (0.L, b20 (tb));
   if (b30 (tb) < 0.L)
     o += b30 (tb);
@@ -365,26 +357,6 @@ rk_objective_tb_6_4t (RK * rk)   ///< RK struct.
 #if DEBUG_RK_5_4
 	rk_print_tb_5 (tb, "rk_objective_tb_5_4t", stderr);
 #endif
-#if RK_PAIR
-  e53 = (0.25L - 1.L / 3.L * t1 (tb) - (1.L / 3.L - 0.5L * t1 (tb) )* t2 (tb))
-		/ (t3 (tb) * (t3 (tb) - t2 (tb)) * (t3 (tb) - t1 (tb)));
-  e52 = (1.L / 3.L - 0.5L * t1 (tb) - t3 (tb) * (t3 (tb) - t1 (tb)) * e53)
-		/ (t2 (tb) * (t2 (tb) - t1 (tb)));
-  e51 = (0.5L - t2 (tb) * e52 - t3 (tb) * e53) / t1 (tb);
-	e50 = 1.L - e51 - e52 - e53;
-  if (isnan (e51) || isnan (e52) || isnan (e53)) 
-    {
-      o = INFINITY;
-      goto end;
-    }
-#endif
-  if (isnan (b21 (tb)) || isnan (b32 (tb)) || isnan (b41 (tb)) || 
-			isnan (b42 (tb)) || isnan (b43 (tb)) || isnan (b51 (tb)) || 
-			isnan (b52 (tb)) || isnan (b53 (tb)) || isnan (b54 (tb)))
-    {
-      o = INFINITY;
-      goto end;
-    }
   o = fminl (0.L, b20 (tb));
   if (b21 (tb) < 0.L)
     o += b21 (tb);
@@ -411,6 +383,12 @@ rk_objective_tb_6_4t (RK * rk)   ///< RK struct.
   if (b54 (tb) < 0.L)
     o += b54 (tb);
 #if RK_PAIR
+  e53 = (0.25L - 1.L / 3.L * t1 (tb) - (1.L / 3.L - 0.5L * t1 (tb) )* t2 (tb))
+		/ (t3 (tb) * (t3 (tb) - t2 (tb)) * (t3 (tb) - t1 (tb)));
+  e52 = (1.L / 3.L - 0.5L * t1 (tb) - t3 (tb) * (t3 (tb) - t1 (tb)) * e53)
+		/ (t2 (tb) * (t2 (tb) - t1 (tb)));
+  e51 = (0.5L - t2 (tb) * e52 - t3 (tb) * e53) / t1 (tb);
+	e50 = 1.L - e51 - e52 - e53;
   if (e50 < 0.L)
     o += e50;
   if (e51 < 0.L)

@@ -46,25 +46,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define DEBUG_RK_6_2 0          ///< macro to debug.
 
-///> array of minimum freedom degree values for the t-b coefficients of the 6
-///> steps 2nd order Runge-Kutta method.
-const long double minimum_tb_6_2[19]
-  = { 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L, 0.L,
-  0.L, 0.L, 0.L, 0.L
-};
-
-///> array of minimum freedom degree intervals for the t-b coefficients of the 6
-///> steps 2nd order Runge-Kutta method.
-const long double interval_tb_6_2[19]
-  = { 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L, 1.L,
-  1.L, 1.L, 1.L, 1.L
-};
-
-///> array of freedom degree random function types for the t-b coefficients of
-///> the 6 steps 2nd order Runge-Kutta method.
-const unsigned int random_tb_6_2[19]
-  = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
-
 /**
  * Function to print a maxima format file to check the accuracy order of a 6
  * steps 2nd order Runge-Kutta method.
@@ -98,7 +79,7 @@ rk_print_maxima_6_2 (FILE * file,       ///< file.
  * Function to obtain the coefficients of a 6 steps 2nd order Runge-Kutta 
  * method.
  */
-void
+int
 rk_tb_6_2 (Optimize * optimize) ///< Optimize struct.
 {
   long double *tb, *r;
@@ -134,13 +115,16 @@ rk_tb_6_2 (Optimize * optimize) ///< Optimize struct.
 	rk_print_tb_6 (tb, "rk_tb_6_2", stderr);
   fprintf (stderr, "rk_tb_6_2: end\n");
 #endif
+	if (isnan (b61 (tb)))
+		return 0;
+	return 1;
 }
 
 /**
  * Function to obtain the coefficients of a 6 steps 2nd order, 3rd order in
  * equations depending only in time, Runge-Kutta method.
  */
-void
+int
 rk_tb_6_2t (Optimize * optimize)        ///< Optimize struct.
 {
   long double *tb, *r;
@@ -180,6 +164,9 @@ rk_tb_6_2t (Optimize * optimize)        ///< Optimize struct.
 	rk_print_tb_6 (tb, "rk_tb_6_2t", stderr);
   fprintf (stderr, "rk_tb_6_2t: end\n");
 #endif
+	if (isnan (b65 (tb)) || isnan (b64 (tb)))
+		return 0;
+	return 1;
 }
 
 /**
@@ -197,11 +184,6 @@ rk_objective_tb_6_2 (RK * rk)   ///< RK struct.
   fprintf (stderr, "rk_objective_tb_6_2: start\n");
 #endif
   tb = rk->tb->coefficient;
-	if (isnan (b61 (tb)))
-	  {
-			o = INFINITY;
-			goto end;
-		}
   o = fminl (0.L, b20 (tb));
   if (b30 (tb) < 0.L)
     o += b30 (tb);
@@ -254,11 +236,6 @@ rk_objective_tb_6_2t (RK * rk)   ///< RK struct.
 #if DEBUG_RK_6_2
 	rk_print_tb_6 (tb, "rk_objective_tb_6_2t", stderr);
 #endif
-	if (isnan (b64 (tb)) || isnan (b64 (tb)))
-	  {
-			o = INFINITY;
-			goto end;
-		}
   o = fminl (0.L, b20 (tb));
   if (b30 (tb) < 0.L)
     o += b30 (tb);
