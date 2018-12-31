@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<steps steps="7" order="2" nsimulations="2" nclimbings="2" niterations="2" convergence-factor="0.5" climbing-factor="0.1">
+	<variable minimum="0" interval="1.33" type="random"/>
+	<variable minimum="0" interval="1.33" type="extreme"/>
+	<variable minimum="0" interval="1.33" type="extreme"/>
+	<variable minimum="0" interval="1.33" type="extreme"/>
+	<variable minimum="0" interval="1.33" type="extreme"/>
+	<variable minimum="0" interval="1.33" type="extreme"/>
+	<variable minimum="0" interval="1.33" type="extreme"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+</steps>

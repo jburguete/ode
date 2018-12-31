@@ -34,6 +34,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #define _GNU_SOURCE
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 #include <libxml/parser.h>
 #include <glib.h>
