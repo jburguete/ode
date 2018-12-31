@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<steps steps="5" order="2" nsimulations="10" nclimbings="64" niterations="28" convergence-factor="0.2" climbing-factor="0.1">
+<steps steps="5" order="2" nsimulations="8" nclimbings="64" niterations="32" convergence-factor="0.25" climbing-factor="0.1">
 	<variable minimum="0" interval="1.5" type="random"/>
 	<variable minimum="0" interval="1.5" type="extreme"/>
 	<variable minimum="0" interval="1.5" type="extreme"/>

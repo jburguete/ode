@@ -109,8 +109,8 @@ rk_tb_5_2 (Optimize * optimize) ///< Optimize struct.
   fprintf (stderr, "rk_tb_5_2: end\n");
 #endif
   if (isnan (b54 (tb)))
-		return 0;
-	return 1;
+    return 0;
+  return 1;
 }
 
 /**
@@ -150,8 +150,8 @@ rk_tb_5_2t (Optimize * optimize)        ///< Optimize struct.
   fprintf (stderr, "rk_tb_5_2t: end\n");
 #endif
   if (isnan (b54 (tb)) || isnan (b53 (tb)))
-		return 0;
-	return 1;
+    return 0;
+  return 1;
 }
 
 /**

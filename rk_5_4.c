@@ -150,8 +150,8 @@ rk_tb_5_4 (Optimize * optimize) ///< Optimize struct.
   if (isnan (b41 (tb)) || isnan (b42 (tb)) || isnan (b43 (tb))
       || isnan (b51 (tb)) || isnan (b52 (tb)) || isnan (b53 (tb))
       || isnan (b54 (tb)))
-		return 0;
-	return 1;
+    return 0;
+  return 1;
 }
 
 /**
@@ -159,7 +159,7 @@ rk_tb_5_4 (Optimize * optimize) ///< Optimize struct.
  * equations depending only on time, Runge-Kutta method.
  */
 int
-rk_tb_5_4t (Optimize * optimize) ///< Optimize struct.
+rk_tb_5_4t (Optimize * optimize)        ///< Optimize struct.
 {
   long double A[4], B[4], C[4], D[4], E[4];
   long double *tb, *r;
@@ -173,7 +173,7 @@ rk_tb_5_4t (Optimize * optimize) ///< Optimize struct.
   t2 (tb) = r[1];
   t3 (tb) = r[2];
   t4 (tb) = r[3];
-	b31 (tb) = r[4];
+  b31 (tb) = r[4];
   b21 (tb) = r[5];
   A[0] = t1 (tb);
   B[0] = t2 (tb);
@@ -200,10 +200,10 @@ rk_tb_5_4t (Optimize * optimize) ///< Optimize struct.
   b53 (tb) = E[2];
   b52 (tb) = E[1];
   b51 (tb) = E[0];
-	b32 (tb) = (1.L / 6.L * t4 (tb) - 0.125L 
-			        - t1 (tb) * (b52 (tb) * b21 (tb) * (t4 (tb) - t2 (tb))
-			                     + b53 (tb) * b31 (tb) * (t4 (tb) - t3 (tb))))
-		/ (b53 (tb) * t2 (tb) * (t4 (tb) - t3 (tb)));
+  b32 (tb) = (1.L / 6.L * t4 (tb) - 0.125L
+              - t1 (tb) * (b52 (tb) * b21 (tb) * (t4 (tb) - t2 (tb))
+                           + b53 (tb) * b31 (tb) * (t4 (tb) - t3 (tb))))
+    / (b53 (tb) * t2 (tb) * (t4 (tb) - t3 (tb)));
   A[0] = t1 (tb);
   B[0] = t2 (tb);
   C[0] = t3 (tb);
@@ -224,14 +224,14 @@ rk_tb_5_4t (Optimize * optimize) ///< Optimize struct.
   b41 (tb) = D[0] / b54 (tb);
   rk_b_5 (tb);
 #if DEBUG_RK_5_4
-	rk_print_tb_5 (tb, "rk_tb_5_4t", stderr);
+  rk_print_tb_5 (tb, "rk_tb_5_4t", stderr);
   fprintf (stderr, "rk_tb_5_4t: end\n");
 #endif
-  if (isnan (b41 (tb)) || isnan (b42 (tb)) || isnan (b43 (tb)) 
-			|| isnan (b32 (tb)) || isnan (b51 (tb)) || isnan (b52 (tb))
-		 	|| isnan (b53 (tb)) || isnan (b54 (tb)))
-		return 0;
-	return 1;
+  if (isnan (b41 (tb)) || isnan (b42 (tb)) || isnan (b43 (tb))
+      || isnan (b32 (tb)) || isnan (b51 (tb)) || isnan (b52 (tb))
+      || isnan (b53 (tb)) || isnan (b54 (tb)))
+    return 0;
+  return 1;
 }
 
 /**
@@ -239,7 +239,7 @@ rk_tb_5_4t (Optimize * optimize) ///< Optimize struct.
  * in equations depending only on time, Runge-Kutta pair.
  */
 int
-rk_tb_5_4tp (Optimize * optimize) ///< Optimize struct.
+rk_tb_5_4tp (Optimize * optimize)       ///< Optimize struct.
 {
   long double A[4], B[4], C[4], D[4], E[4];
   long double *tb, *r;
@@ -253,7 +253,7 @@ rk_tb_5_4tp (Optimize * optimize) ///< Optimize struct.
   t2 (tb) = r[1];
   t3 (tb) = r[2];
   t4 (tb) = r[3];
-	b31 (tb) = r[4];
+  b31 (tb) = r[4];
   A[0] = t1 (tb);
   B[0] = t2 (tb);
   C[0] = t3 (tb);
@@ -279,21 +279,21 @@ rk_tb_5_4tp (Optimize * optimize) ///< Optimize struct.
   b53 (tb) = E[2];
   b52 (tb) = E[1];
   b51 (tb) = E[0];
-  e53 (tb) = (0.25L - 1.L / 3.L * t1 (tb) 
-			        - (1.L / 3.L - 0.5L * t1 (tb)) * t2 (tb))
-		/ (t3 (tb) * (t3 (tb) - t2 (tb)) * (t3 (tb) - t1 (tb)));
-  e52 (tb) = (1.L / 3.L - 0.5L * t1 (tb) 
-			        - t3 (tb) * (t3 (tb) - t1 (tb)) * e53 (tb))
-		/ (t2 (tb) * (t2 (tb) - t1 (tb)));
+  e53 (tb) = (0.25L - 1.L / 3.L * t1 (tb)
+              - (1.L / 3.L - 0.5L * t1 (tb)) * t2 (tb))
+    / (t3 (tb) * (t3 (tb) - t2 (tb)) * (t3 (tb) - t1 (tb)));
+  e52 (tb) = (1.L / 3.L - 0.5L * t1 (tb)
+              - t3 (tb) * (t3 (tb) - t1 (tb)) * e53 (tb))
+    / (t2 (tb) * (t2 (tb) - t1 (tb)));
   e51 (tb) = (0.5L - t2 (tb) * e52 (tb) - t3 (tb) * e53 (tb)) / t1 (tb);
-	b21 (tb) = (1.L / 6.L * b53 (tb) * (t4 (tb) - t3 (tb)) 
-				      + e53 (tb) * (0.125L - 1.L / 6.L * t4 (tb)))
-		/ (t1 (tb) * (e52 (tb) * b53 (tb) * (t4 (tb) - t3 (tb)) 
-				          - e53 (tb) * b52 (tb) * (t4 (tb) - t2 (tb))));
-	b32 (tb) = (1.L / 6.L * t4 (tb) - 0.125L 
-			        - t1 (tb) * (b52 (tb) * b21 (tb) * (t4 (tb) - t2 (tb))
-			                     + b53 (tb) * b31 (tb) * (t4 (tb) - t3 (tb))))
-		/ (b53 (tb) * t2 (tb) * (t4 (tb) - t3 (tb)));
+  b21 (tb) = (1.L / 6.L * b53 (tb) * (t4 (tb) - t3 (tb))
+              + e53 (tb) * (0.125L - 1.L / 6.L * t4 (tb)))
+    / (t1 (tb) * (e52 (tb) * b53 (tb) * (t4 (tb) - t3 (tb))
+                  - e53 (tb) * b52 (tb) * (t4 (tb) - t2 (tb))));
+  b32 (tb) = (1.L / 6.L * t4 (tb) - 0.125L
+              - t1 (tb) * (b52 (tb) * b21 (tb) * (t4 (tb) - t2 (tb))
+                           + b53 (tb) * b31 (tb) * (t4 (tb) - t3 (tb))))
+    / (b53 (tb) * t2 (tb) * (t4 (tb) - t3 (tb)));
   A[0] = t1 (tb);
   B[0] = t2 (tb);
   C[0] = t3 (tb);
@@ -315,15 +315,15 @@ rk_tb_5_4tp (Optimize * optimize) ///< Optimize struct.
   rk_b_5 (tb);
   rk_e_5 (tb);
 #if DEBUG_RK_5_4
-	rk_print_tb_5 (tb, "rk_tb_5_4t", stderr);
+  rk_print_tb_5 (tb, "rk_tb_5_4t", stderr);
   fprintf (stderr, "rk_tb_5_4t: end\n");
 #endif
-  if (isnan (b41 (tb)) || isnan (b42 (tb)) || isnan (b43 (tb)) 
-			|| isnan (b32 (tb)) || isnan (b21 (tb)) || isnan (e51 (tb)) 
-			|| isnan (e52 (tb)) || isnan (e53 (tb)) || isnan (b51 (tb))
-	 	  || isnan (b52 (tb)) || isnan (b53 (tb)) || isnan (b54 (tb)))
-		return 0;
-	return 1;
+  if (isnan (b41 (tb)) || isnan (b42 (tb)) || isnan (b43 (tb))
+      || isnan (b32 (tb)) || isnan (b21 (tb)) || isnan (e51 (tb))
+      || isnan (e52 (tb)) || isnan (e53 (tb)) || isnan (b51 (tb))
+      || isnan (b52 (tb)) || isnan (b53 (tb)) || isnan (b54 (tb)))
+    return 0;
+  return 1;
 }
 
 /**
@@ -389,7 +389,7 @@ end:
  * \return objective function value.
  */
 long double
-rk_objective_tb_5_4t (RK * rk)   ///< RK struct.
+rk_objective_tb_5_4t (RK * rk)  ///< RK struct.
 {
   long double *tb;
   long double o;
@@ -398,7 +398,7 @@ rk_objective_tb_5_4t (RK * rk)   ///< RK struct.
 #endif
   tb = rk->tb->coefficient;
 #if DEBUG_RK_5_4
-	rk_print_tb_5 (tb, "rk_objective_tb_5_4t", stderr);
+  rk_print_tb_5 (tb, "rk_objective_tb_5_4t", stderr);
 #endif
   o = fminl (0.L, b20 (tb));
   if (b21 (tb) < 0.L)
@@ -452,7 +452,7 @@ end:
  * \return objective function value.
  */
 long double
-rk_objective_tb_5_4tp (RK * rk)   ///< RK struct.
+rk_objective_tb_5_4tp (RK * rk) ///< RK struct.
 {
   long double *tb;
   long double o;
@@ -461,7 +461,7 @@ rk_objective_tb_5_4tp (RK * rk)   ///< RK struct.
 #endif
   tb = rk->tb->coefficient;
 #if DEBUG_RK_5_4
-	rk_print_tb_5 (tb, "rk_objective_tb_5_4tp", stderr);
+  rk_print_tb_5 (tb, "rk_objective_tb_5_4tp", stderr);
 #endif
   o = fminl (0.L, b20 (tb));
   if (b21 (tb) < 0.L)

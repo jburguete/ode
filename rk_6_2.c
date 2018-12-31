@@ -112,12 +112,12 @@ rk_tb_6_2 (Optimize * optimize) ///< Optimize struct.
               - b64 (tb) * t4 (tb) - b65 (tb) * t5 (tb)) / t1 (tb);
   rk_b_6 (tb);
 #if DEBUG_RK_6_2
-	rk_print_tb_6 (tb, "rk_tb_6_2", stderr);
+  rk_print_tb_6 (tb, "rk_tb_6_2", stderr);
   fprintf (stderr, "rk_tb_6_2: end\n");
 #endif
-	if (isnan (b61 (tb)))
-		return 0;
-	return 1;
+  if (isnan (b61 (tb)))
+    return 0;
+  return 1;
 }
 
 /**
@@ -161,12 +161,12 @@ rk_tb_6_2t (Optimize * optimize)        ///< Optimize struct.
               - b63 (tb) * t3 (tb) - b64 (tb) * t4 (tb)) / t5 (tb);
   rk_b_6 (tb);
 #if DEBUG_RK_6_2
-	rk_print_tb_6 (tb, "rk_tb_6_2t", stderr);
+  rk_print_tb_6 (tb, "rk_tb_6_2t", stderr);
   fprintf (stderr, "rk_tb_6_2t: end\n");
 #endif
-	if (isnan (b65 (tb)) || isnan (b64 (tb)))
-		return 0;
-	return 1;
+  if (isnan (b65 (tb)) || isnan (b64 (tb)))
+    return 0;
+  return 1;
 }
 
 /**
@@ -225,7 +225,7 @@ end:
  * \return objective function value.
  */
 long double
-rk_objective_tb_6_2t (RK * rk)   ///< RK struct.
+rk_objective_tb_6_2t (RK * rk)  ///< RK struct.
 {
   long double *tb;
   long double o;
@@ -234,7 +234,7 @@ rk_objective_tb_6_2t (RK * rk)   ///< RK struct.
 #endif
   tb = rk->tb->coefficient;
 #if DEBUG_RK_6_2
-	rk_print_tb_6 (tb, "rk_objective_tb_6_2t", stderr);
+  rk_print_tb_6 (tb, "rk_objective_tb_6_2t", stderr);
 #endif
   o = fminl (0.L, b20 (tb));
   if (b30 (tb) < 0.L)

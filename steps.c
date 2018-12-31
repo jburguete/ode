@@ -134,10 +134,10 @@ steps_3_2 (Optimize * optimize) ///< Optimize struct.
   solve_2 (A, B, C);
   a2 (x) = C[1];
   a1 (x) = C[0];
-  a0 (x) = 1.L - a1 (x) - a2 (x);
-  if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)))
+  if (isnan (a1 (x)) || isnan (a2 (x)))
     return 0;
-	return 1;
+  a0 (x) = 1.L - a1 (x) - a2 (x);
+  return 1;
 }
 
 /**
@@ -157,12 +157,18 @@ steps_3_3 (Optimize * optimize) ///< Optimize struct.
   A1 = -1.L + 3.L * c1 (x);
   B1 = -8.L + 12.L * c2 (x);
   a2 (x) = (A0 - A1) / (A0 * B1 - A1 * B0);
-  a1 (x) = (1.L - B0 * a2 (x)) / A0;
-  a0 (x) = 1.L - a1 (x) - a2 (x);
-  c0 (x) = (1.L + a1 (x) * (1.L - c1 (x)) + a2 (x) * (2.L - c2 (x))) / a0 (x);
-  if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (c0 (x)))
+  if (isnan (a2 (x)))
     return 0;
-	return 1;
+  a1 (x) = (1.L - B0 * a2 (x)) / A0;
+  if (isnan (a1 (x)))
+    return 0;
+  a0 (x) = 1.L - a1 (x) - a2 (x);
+  if (isnan (a0 (x)))
+    return 0;
+  c0 (x) = (1.L + a1 (x) * (1.L - c1 (x)) + a2 (x) * (2.L - c2 (x))) / a0 (x);
+  if (isnan (c0 (x)))
+    return 0;
+  return 1;
 }
 
 /**
@@ -189,10 +195,10 @@ steps_4_2 (Optimize * optimize) ///< Optimize struct.
   solve_2 (A, B, C);
   a2 (x) = C[1];
   a1 (x) = C[0];
-  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x);
-  if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)))
+  if (isnan (a1 (x)) || isnan (a2 (x)))
     return 0;
-	return 1;
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x);
+  return 1;
 }
 
 /**
@@ -211,7 +217,48 @@ steps_4_3 (Optimize * optimize) ///< Optimize struct.
   c3 (x) = r[3];
   A[0] = -1.L + c1 (x) - c0 (x);
   B[0] = -2.L + c2 (x) - c0 (x);
-  C[0] = -3.l + c3 (x) - c0 (x);
+  C[0] = -3.L + c3 (x) - c0 (x);
+  D[0] = 1.L - c0 (x);
+  A[1] = 1.L - 2.L * c1 (x);
+  B[1] = 4.L - 4.L * c2 (x);
+  C[1] = 9.L - 6.L * c3 (x);
+  D[1] = 1.L;
+  A[2] = -1.L + 3.L * c1 (x);
+  B[2] = -8.L + 12.L * c2 (x);
+  C[2] = -27.L + 27.L * c3 (x);
+  D[2] = 1.L;
+  solve_3 (A, B, C, D);
+  a3 (x) = D[2];
+  a2 (x) = D[1];
+  a1 (x) = D[0];
+  if (isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x)))
+    return 0;
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 4 steps 4th order multi-steps method.
+ */
+static int
+steps_4_4 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[3], B[3], C[3], D[3];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  c0 (x) = r[0];
+  c1 (x) = r[1];
+  c2 (x) = r[2];
+  c3 (x) = ((60.L + 32.L * c0 (x) - 72.L * c1 (x)) * c2 (x)
+            - (60.L + 72.L * c1 (x)) * c0 (x) - 72.L)
+    / (((72.L * c0 (x) - 165.L) * c1 (x) + 120.L * c0 (x) + 197.L) * c2 (x)
+       + (18.L - 135.L * c0 (x)) * c1 (x) - 117.L * c0 (x) - 150.L);
+  if (isnan (c3 (x)))
+    return 0;
+  A[0] = -1.L + c1 (x) - c0 (x);
+  B[0] = -2.L + c2 (x) - c0 (x);
+  C[0] = -3.L + c3 (x) - c0 (x);
   D[0] = 1.L - c0 (x);
   A[1] = 1.L - 2.L * c1 (x);
   B[1] = 4.L - 4.L * c2 (x);
@@ -228,7 +275,7 @@ steps_4_3 (Optimize * optimize) ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -261,7 +308,7 @@ steps_5_2 (Optimize * optimize) ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -299,7 +346,7 @@ steps_5_3 (Optimize * optimize) ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -344,9 +391,9 @@ steps_5_4 (Optimize * optimize) ///< Optimize struct.
   a1 (x) = E[0];
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)))
+      || isnan (a4 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -382,7 +429,7 @@ steps_6_2 (Optimize * optimize) ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -424,7 +471,7 @@ steps_6_3 (Optimize * optimize) ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -471,9 +518,9 @@ steps_6_4 (Optimize * optimize) ///< Optimize struct.
   a1 (x) = E[0];
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)))
+      || isnan (a4 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -530,9 +577,9 @@ steps_6_5 (Optimize * optimize) ///< Optimize struct.
   a1 (x) = F[0];
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)) || isnan (a5 (x)))
+      || isnan (a4 (x)) || isnan (a5 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -572,7 +619,7 @@ steps_7_2 (Optimize * optimize) ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -617,7 +664,7 @@ steps_7_3 (Optimize * optimize) ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -670,9 +717,9 @@ steps_7_4 (Optimize * optimize) ///< Optimize struct.
   a1 (x) = E[0];
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)))
+      || isnan (a4 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -731,9 +778,9 @@ steps_7_5 (Optimize * optimize) ///< Optimize struct.
   a1 (x) = F[0];
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)) || isnan (a5 (x)))
+      || isnan (a4 (x)) || isnan (a5 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -776,7 +823,7 @@ steps_8_2 (Optimize * optimize) ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -826,7 +873,7 @@ steps_8_3 (Optimize * optimize) ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -881,9 +928,9 @@ steps_8_4 (Optimize * optimize) ///< Optimize struct.
   a1 (x) = E[0];
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)))
+      || isnan (a4 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -949,9 +996,9 @@ steps_8_5 (Optimize * optimize) ///< Optimize struct.
   a1 (x) = F[0];
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)) || isnan (a5 (x)))
+      || isnan (a4 (x)) || isnan (a5 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -1024,9 +1071,9 @@ steps_8_6 (Optimize * optimize) ///< Optimize struct.
   a1 (x) = G[0];
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)) || isnan (a5 (x)) || isnan (a6 (x)))
+      || isnan (a4 (x)) || isnan (a5 (x)) || isnan (a6 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -1073,7 +1120,7 @@ steps_9_2 (Optimize * optimize) ///< Optimize struct.
     - a8 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -1127,7 +1174,7 @@ steps_9_3 (Optimize * optimize) ///< Optimize struct.
     - a8 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -1189,9 +1236,9 @@ steps_9_4 (Optimize * optimize) ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
     - a8 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)))
+      || isnan (a4 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -1261,9 +1308,9 @@ steps_9_5 (Optimize * optimize) ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
     - a8 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)) || isnan (a5 (x)))
+      || isnan (a4 (x)) || isnan (a5 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -1344,9 +1391,9 @@ steps_9_6 (Optimize * optimize) ///< Optimize struct.
   a1 (x) = G[0];
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)) || isnan (a5 (x)) || isnan (a6 (x)))
+      || isnan (a4 (x)) || isnan (a5 (x)) || isnan (a6 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -1397,7 +1444,7 @@ steps_10_2 (Optimize * optimize)        ///< Optimize struct.
     - a8 (x) - a9 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -1454,7 +1501,7 @@ steps_10_3 (Optimize * optimize)        ///< Optimize struct.
     - a8 (x) - a9 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -1520,9 +1567,9 @@ steps_10_4 (Optimize * optimize)        ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
     - a8 (x) - a9 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)))
+      || isnan (a4 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -1598,9 +1645,9 @@ steps_10_5 (Optimize * optimize)        ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
     - a8 (x) - a9 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)) || isnan (a5 (x)))
+      || isnan (a4 (x)) || isnan (a5 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -1686,9 +1733,9 @@ steps_10_6 (Optimize * optimize)        ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
     - a8 (x) - a9 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)) || isnan (a5 (x)) || isnan (a6 (x)))
+      || isnan (a4 (x)) || isnan (a5 (x)) || isnan (a6 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -1742,7 +1789,7 @@ steps_11_2 (Optimize * optimize)        ///< Optimize struct.
     - a8 (x) - a9 (x) - a10 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -1804,7 +1851,7 @@ steps_11_3 (Optimize * optimize)        ///< Optimize struct.
     - a8 (x) - a9 (x) - a10 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -1875,9 +1922,9 @@ steps_11_4 (Optimize * optimize)        ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
     - a8 (x) - a9 (x) - a10 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)))
+      || isnan (a4 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -1960,9 +2007,9 @@ steps_11_5 (Optimize * optimize)        ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
     - a8 (x) - a9 (x) - a10 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)) || isnan (a5 (x)))
+      || isnan (a4 (x)) || isnan (a5 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -2122,9 +2169,9 @@ steps_11_6 (Optimize * optimize)        ///< Optimize struct.
   a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
     - a8 (x) - a9 (x) - a10 (x);
   if (isnan (a0 (x)) || isnan (a1 (x)) || isnan (a2 (x)) || isnan (a3 (x))
-			|| isnan (a4 (x)) || isnan (a5 (x)) || isnan (a6 (x)))
+      || isnan (a4 (x)) || isnan (a5 (x)) || isnan (a6 (x)))
     return 0;
-	return 1;
+  return 1;
 }
 
 /**
@@ -2863,6 +2910,9 @@ steps_select (Optimize * optimize,      ///< Optimize struct.
           break;
         case 3:
           optimize->method = steps_4_3;
+          break;
+        case 4:
+          optimize->method = steps_4_4;
           break;
         default:
           code = 0;

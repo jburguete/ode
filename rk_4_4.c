@@ -110,11 +110,11 @@ rk_tb_4_4 (Optimize * optimize) ///< Optimize struct.
 #if DEBUG_RK_4_4
   fprintf (stderr, "rk_tb_4_4: end\n");
 #endif
-  if (isnan (b21 (tb)) || isnan (b32 (tb)) || isnan (b31 (tb)) 
-			|| isnan (b41 (tb)) || isnan (b43 (tb)) || isnan (b42 (tb))
-			|| isnan (t3 (tb)))
-		return 0;
-	return 1;
+  if (isnan (b21 (tb)) || isnan (b32 (tb)) || isnan (b31 (tb))
+      || isnan (b41 (tb)) || isnan (b43 (tb)) || isnan (b42 (tb))
+      || isnan (t3 (tb)))
+    return 0;
+  return 1;
 }
 
 /**
@@ -151,10 +151,10 @@ rk_tb_4_4t (Optimize * optimize)        ///< Optimize struct.
   fprintf (stderr, "rk_tb_4_4t: end\n");
 #endif
   if (isnan (b21 (tb)) || isnan (b32 (tb)) || isnan (b31 (tb))
-		 	|| isnan (b41 (tb)) || isnan (b43 (tb)) || isnan (b42 (tb))
-		 	|| isnan (t2 (tb)) || isnan (t3 (tb)))
-		return 0;
-	return 1;
+      || isnan (b41 (tb)) || isnan (b43 (tb)) || isnan (b42 (tb))
+      || isnan (t2 (tb)) || isnan (t3 (tb)))
+    return 0;
+  return 1;
 }
 
 /**

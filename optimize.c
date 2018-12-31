@@ -78,7 +78,7 @@ optimize_print_random (Optimize * optimize,     ///< Optimize struct.
 void
 optimize_step (Optimize * optimize)     ///< Optimize struct.
 {
-  long double *is, *vo, *vo2;
+  long double *is, *vo, *vo2, *random;
   long double o, o2, v, f;
   unsigned long long int ii, nrandom;
   unsigned int i, j, k, n, nfree;
@@ -101,6 +101,7 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
 #if DEBUG_OPTIMIZE
   fprintf (stderr, "optimize_step: Monte-Carlo algorithm\n");
 #endif
+  random = optimize->random_data;
   nrandom = optimize->nrandom;
   for (ii = 0; ii < nrandom; ++ii)
     {
@@ -116,21 +117,21 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
       fprintf (stderr, "optimize_step: method coefficients\n");
 #endif
       if (!optimize->method (optimize))
-				o = INFINITY;
-			else
+        o = INFINITY;
+      else
         o = optimize->objective (optimize);
       if (o < o2)
         {
           o2 = o;
-          memcpy (vo, optimize->random_data, nfree * sizeof (long double));
+          memcpy (vo, random, nfree * sizeof (long double));
         }
       if (file_variables)
-			  {
-					g_mutex_lock (mutex);
-          print_variables (optimize->random_data, nfree, file_variables);
+        {
+          g_mutex_lock (mutex);
+          print_variables (random, nfree, file_variables);
           fprintf (file_variables, "%.19Le\n", o);
-					g_mutex_unlock (mutex);
-				}
+          g_mutex_unlock (mutex);
+        }
     }
 
   // array of intervals to climb around the optimal
@@ -150,33 +151,47 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
   n = optimize->nclimbings;
   for (i = 0; i < n; ++i)
     {
-      memcpy (optimize->random_data, vo, nfree * sizeof (long double));
+      memcpy (random, vo, nfree * sizeof (long double));
       for (j = k = 0; j < nfree; ++j)
         {
           v = vo[j];
-          optimize->random_data[j] = v + is[j];
-					if (!optimize->method (optimize))
-						o = INFINITY;
-					else
+          random[j] = v + is[j];
+          if (!optimize->method (optimize))
+            o = INFINITY;
+          else
             o = optimize->objective (optimize);
           if (o < o2)
             {
               k = 1;
               o2 = o;
-              memcpy (vo2, optimize->random_data, nfree * sizeof (long double));
+              memcpy (vo2, random, nfree * sizeof (long double));
             }
-          optimize->random_data[j] = fmaxl (0.L, v - is[j]);
-					if (!optimize->method (optimize))
-						o = INFINITY;
-					else
+          if (file_variables)
+            {
+              g_mutex_lock (mutex);
+              print_variables (random, nfree, file_variables);
+              fprintf (file_variables, "%.19Le\n", o);
+              g_mutex_unlock (mutex);
+            }
+          random[j] = fmaxl (0.L, v - is[j]);
+          if (!optimize->method (optimize))
+            o = INFINITY;
+          else
             o = optimize->objective (optimize);
           if (o < o2)
             {
               k = 1;
               o2 = o;
-              memcpy (vo2, optimize->random_data, nfree * sizeof (long double));
+              memcpy (vo2, random, nfree * sizeof (long double));
             }
-          optimize->random_data[j] = v;
+          if (file_variables)
+            {
+              g_mutex_lock (mutex);
+              print_variables (random, nfree, file_variables);
+              fprintf (file_variables, "%.19Le\n", o);
+              g_mutex_unlock (mutex);
+            }
+          random[j] = v;
         }
 
       // update optimal values

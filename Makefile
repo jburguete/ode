@@ -52,7 +52,7 @@ libs = -lm `pkg-config --libs libxml-2.0 glib-2.0 gthread-2.0 gsl`
 
 all: ode ode.pdf
 
-ode: $(gcdafiles)
+ode: $(ofiles)
 	$(ccuse) $(ofiles) $(libs) -o ode
 
 utils.o: utils.gcda

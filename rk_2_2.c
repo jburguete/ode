@@ -96,7 +96,7 @@ rk_tb_2_2 (Optimize * optimize) ///< Optimize struct.
   rk_print_tb_2 (tb, "rk_tb_2_2", stderr);
   fprintf (stderr, "rk_tb_2_2: end\n");
 #endif
-	return 1;
+  return 1;
 }
 
 /**
@@ -119,7 +119,7 @@ rk_tb_2_2t (Optimize * optimize)        ///< Optimize struct.
   rk_print_tb_2 (tb, "rk_tb_2_2t", stderr);
   fprintf (stderr, "rk_tb_2_2t: end\n");
 #endif
-	return 1;
+  return 1;
 }
 
 /**

@@ -376,9 +376,9 @@ rk_ac_2 (RK * rk)               ///< RK struct.
   fprintf (stderr, "rk_ac_2: a21=%Lg c21=%Lg\n", a21 (ac), c21 (ac));
   fprintf (stderr, "rk_ac_2: end\n");
 #endif
-	if (isnan (c20 (ac)) || isnan (a21 (ac)))
-		return 0;
-	return 1;
+  if (isnan (c20 (ac)) || isnan (a21 (ac)))
+    return 0;
+  return 1;
 }
 
 /**
@@ -394,12 +394,12 @@ rk_ac_3 (RK * rk)               ///< RK struct.
   fprintf (stderr, "rk_ac_3: start\n");
 #endif
   if (!rk_ac_2 (rk))
-	  {
+    {
 #if DEBUG_RK
       fprintf (stderr, "rk_ac_3: end\n");
 #endif
-			return 0;
-		}
+      return 0;
+    }
   tb = rk->tb->coefficient;
   ac = rk->ac->coefficient;
   r = rk->ac->random_data;
@@ -417,9 +417,9 @@ rk_ac_3 (RK * rk)               ///< RK struct.
   fprintf (stderr, "rk_ac_3: a32=%Lg c32=%Lg\n", a32 (ac), c32 (ac));
   fprintf (stderr, "rk_ac_3: end\n");
 #endif
-	if (isnan (c30 (ac)) || isnan (a31 (ac)) || isnan (a32 (ac)))
-		return 0;
-	return 1;
+  if (isnan (c30 (ac)) || isnan (a31 (ac)) || isnan (a32 (ac)))
+    return 0;
+  return 1;
 }
 
 /**
@@ -435,12 +435,12 @@ rk_ac_4 (RK * rk)               ///< RK struct.
   fprintf (stderr, "rk_ac_4: start\n");
 #endif
   if (!rk_ac_3 (rk))
-	  {
+    {
 #if DEBUG_RK
       fprintf (stderr, "rk_ac_4: end\n");
 #endif
-			return 0;
-		}
+      return 0;
+    }
   tb = rk->tb->coefficient;
   ac = rk->ac->coefficient;
   r = rk->ac->random_data;
@@ -463,10 +463,10 @@ rk_ac_4 (RK * rk)               ///< RK struct.
   fprintf (stderr, "rk_ac_4: a43=%Lg c43=%Lg\n", a43 (ac), c43 (ac));
   fprintf (stderr, "rk_ac_4: end\n");
 #endif
-	if (isnan (c40 (ac)) || isnan (a41 (ac)) || isnan (a42 (ac))
-			|| isnan (a43 (ac)))
-		return 0;
-	return 1;
+  if (isnan (c40 (ac)) || isnan (a41 (ac)) || isnan (a42 (ac))
+      || isnan (a43 (ac)))
+    return 0;
+  return 1;
 }
 
 /**
@@ -482,12 +482,12 @@ rk_ac_5 (RK * rk)               ///< RK struct.
   fprintf (stderr, "rk_ac_5: start\n");
 #endif
   if (!rk_ac_4 (rk))
-	  {
+    {
 #if DEBUG_RK
       fprintf (stderr, "rk_ac_5: end\n");
 #endif
-			return 0;
-		}
+      return 0;
+    }
   tb = rk->tb->coefficient;
   ac = rk->ac->coefficient;
   r = rk->ac->random_data;
@@ -515,10 +515,10 @@ rk_ac_5 (RK * rk)               ///< RK struct.
   fprintf (stderr, "rk_ac_5: a54=%Lg c54=%Lg\n", a54 (ac), c54 (ac));
   fprintf (stderr, "rk_ac_5: end\n");
 #endif
-	if (isnan (c50 (ac)) || isnan (a51 (ac)) || isnan (a52 (ac))
-			|| isnan (a53 (ac)) || isnan (a54 (ac)))
-		return 0;
-	return 1;
+  if (isnan (c50 (ac)) || isnan (a51 (ac)) || isnan (a52 (ac))
+      || isnan (a53 (ac)) || isnan (a54 (ac)))
+    return 0;
+  return 1;
 }
 
 /**
@@ -534,12 +534,12 @@ rk_ac_6 (RK * rk)               ///< RK struct.
   fprintf (stderr, "rk_ac_6: start\n");
 #endif
   if (!rk_ac_5 (rk))
-	  {
+    {
 #if DEBUG_RK
       fprintf (stderr, "rk_ac_6: end\n");
 #endif
-			return 0;
-		}
+      return 0;
+    }
   tb = rk->tb->coefficient;
   ac = rk->ac->coefficient;
   r = rk->ac->random_data;
@@ -572,10 +572,10 @@ rk_ac_6 (RK * rk)               ///< RK struct.
   fprintf (stderr, "rk_ac_6: a65=%Lg c65=%Lg\n", a65 (ac), c65 (ac));
   fprintf (stderr, "rk_ac_6: end\n");
 #endif
-	if (isnan (c60 (ac)) || isnan (a61 (ac)) || isnan (a62 (ac))
-			|| isnan (a63 (ac)) || isnan (a64 (ac)) || isnan (a65 (ac)))
-		return 0;
-	return 1;
+  if (isnan (c60 (ac)) || isnan (a61 (ac)) || isnan (a62 (ac))
+      || isnan (a63 (ac)) || isnan (a64 (ac)) || isnan (a65 (ac)))
+    return 0;
+  return 1;
 }
 
 /**
@@ -1011,8 +1011,8 @@ rk_step_ac (RK * rk)            ///< RK struct.
       fprintf (stderr, "rk_step_ac: method coefficients\n");
 #endif
       if (!ac->method ((Optimize *) rk))
-				o = INFINITY;
-			else
+        o = INFINITY;
+      else
         o = ac->objective ((Optimize *) rk);
 #if DEBUG_RK
       fprintf (stderr, "rk_step_ac: objective=%Lg o2=%Lg\n", o, o2);
@@ -1024,11 +1024,11 @@ rk_step_ac (RK * rk)            ///< RK struct.
         }
       if (file_variables)
         {
-					g_mutex_lock (mutex);
+          g_mutex_lock (mutex);
           print_variables (tb->random_data, tb->nfree, file_variables);
           print_variables (ac->random_data, nfree, file_variables);
           fprintf (file_variables, "%.19Le\n", o);
-					g_mutex_unlock (mutex);
+          g_mutex_unlock (mutex);
         }
     }
 
@@ -1069,8 +1069,8 @@ rk_step_ac (RK * rk)            ///< RK struct.
                    ac->random_data[j]);
 #endif
           if (!ac->method ((Optimize *) rk))
-				    o = INFINITY;
-			    else
+            o = INFINITY;
+          else
             o = ac->objective ((Optimize *) rk);
 #if DEBUG_RK
           fprintf (stderr, "rk_step_ac: k=%u objective=%Lg o2=%Lg\n", k, o, o2);
@@ -1083,16 +1083,16 @@ rk_step_ac (RK * rk)            ///< RK struct.
             }
           if (file_variables)
             {
-							g_mutex_lock (mutex);
+              g_mutex_lock (mutex);
               print_variables (tb->random_data, tb->nfree, file_variables);
               print_variables (ac->random_data, nfree, file_variables);
               fprintf (file_variables, "%.19Le\n", o);
-							g_mutex_unlock (mutex);
+              g_mutex_unlock (mutex);
             }
           ac->random_data[j] = fmaxl (0.L, v - is[j]);
           if (!ac->method ((Optimize *) rk))
-				    o = INFINITY;
-			    else
+            o = INFINITY;
+          else
             o = ac->objective ((Optimize *) rk);
 #if DEBUG_RK
           fprintf (stderr, "rk_step_ac: k=%u objective=%Lg o2=%Lg\n", k, o, o2);
@@ -1105,11 +1105,11 @@ rk_step_ac (RK * rk)            ///< RK struct.
             }
           if (file_variables)
             {
-							g_mutex_lock (mutex);
+              g_mutex_lock (mutex);
               print_variables (tb->random_data, tb->nfree, file_variables);
               print_variables (ac->random_data, nfree, file_variables);
               fprintf (file_variables, "%.19Le\n", o);
-							g_mutex_unlock (mutex);
+              g_mutex_unlock (mutex);
             }
           ac->random_data[j] = v;
         }
@@ -1273,8 +1273,8 @@ rk_step_tb (RK * rk)            ///< RK struct.
       fprintf (stderr, "rk_step_tb: method coefficients\n");
 #endif
       if (!tb->method (tb))
-				o = INFINITY;
-			else
+        o = INFINITY;
+      else
         o = tb->objective (tb);
       if (o < *tb->optimal)
         {
@@ -1285,12 +1285,12 @@ rk_step_tb (RK * rk)            ///< RK struct.
           g_mutex_unlock (mutex);
         }
       if (b)
-			  {
+        {
           g_mutex_lock (mutex);
           print_variables (tb->random_data, nfree, file_variables);
           fprintf (file_variables, "%.19Le\n", o);
           g_mutex_unlock (mutex);
-				}
+        }
     }
 
   // array of intervals to climb around the optimal
@@ -1315,9 +1315,9 @@ rk_step_tb (RK * rk)            ///< RK struct.
         {
           v = vo[j];
           tb->random_data[j] = v + is[j];
-					if (!tb->method (tb))
-						o = INFINITY;
-					else
+          if (!tb->method (tb))
+            o = INFINITY;
+          else
             o = tb->objective (tb);
           if (o < *tb->optimal)
             {
@@ -1329,16 +1329,16 @@ rk_step_tb (RK * rk)            ///< RK struct.
               g_mutex_unlock (mutex);
             }
           if (b)
-			      {
+            {
               g_mutex_lock (mutex);
               print_variables (tb->random_data, nfree, file_variables);
               fprintf (file_variables, "%.19Le\n", o);
               g_mutex_unlock (mutex);
-				    }
+            }
           tb->random_data[j] = fmaxl (0.L, v - is[j]);
-					if (!tb->method (tb))
-						o = INFINITY;
-					else
+          if (!tb->method (tb))
+            o = INFINITY;
+          else
             o = tb->objective (tb);
           if (o < *tb->optimal)
             {
@@ -1350,12 +1350,12 @@ rk_step_tb (RK * rk)            ///< RK struct.
               g_mutex_unlock (mutex);
             }
           if (b)
-			      {
+            {
               g_mutex_lock (mutex);
               print_variables (tb->random_data, nfree, file_variables);
               fprintf (file_variables, "%.19Le\n", o);
               g_mutex_unlock (mutex);
-				    }
+            }
           tb->random_data[j] = v;
         }
 
@@ -1539,8 +1539,8 @@ rk_select (RK * rk,             ///< RK struct.
   strong = rk->strong;
   tb = rk->tb;
   tb->size = nsteps * (nsteps + 3) / 2 - 1;
-	if (rk->pair)
-		tb->size += nsteps - 1;
+  if (rk->pair)
+    tb->size += nsteps - 1;
   switch (nsteps)
     {
     case 2:
@@ -1800,23 +1800,23 @@ rk_select (RK * rk,             ///< RK struct.
     }
   if (rk->time_accuracy)
     --tb->nfree;
-  tb->minimum0 
-		= (long double *) g_slice_alloc (tb->nfree * sizeof (long double));
+  tb->minimum0
+    = (long double *) g_slice_alloc (tb->nfree * sizeof (long double));
   tb->interval0
-		= (long double *) g_slice_alloc (tb->nfree * sizeof (long double));
+    = (long double *) g_slice_alloc (tb->nfree * sizeof (long double));
   tb->random_type
-		= (unsigned int *) g_slice_alloc (tb->nfree * sizeof (unsigned int));
-	if (rk->strong)
-	  {
+    = (unsigned int *) g_slice_alloc (tb->nfree * sizeof (unsigned int));
+  if (rk->strong)
+    {
       ac = rk->ac0;
       ac->size = nsteps * (nsteps + 1) - 2;
       ac->nfree = nsteps * (nsteps - 1) / 2;
-      ac->minimum0 
-    		= (long double *) g_slice_alloc (ac->nfree * sizeof (long double));
+      ac->minimum0
+        = (long double *) g_slice_alloc (ac->nfree * sizeof (long double));
       ac->interval0
-    		= (long double *) g_slice_alloc (ac->nfree * sizeof (long double));
+        = (long double *) g_slice_alloc (ac->nfree * sizeof (long double));
       ac->random_type
-    		= (unsigned int *) g_slice_alloc (ac->nfree * sizeof (unsigned int));
+        = (unsigned int *) g_slice_alloc (ac->nfree * sizeof (unsigned int));
       switch (nsteps)
         {
         case 2:
@@ -1843,7 +1843,7 @@ rk_select (RK * rk,             ///< RK struct.
           code = 1;
           goto exit_on_error;
         }
-		}
+    }
 
 #if DEBUG_RK
   fprintf (stderr, "rk_select: end\n");
@@ -1936,9 +1936,9 @@ rk_run (xmlNode * node,         ///< XML node.
   value_optimal = (long double *) g_slice_alloc (nfree * sizeof (long double));
   optimize_create (tb, &optimal, value_optimal);
   node = node->children;
-	for (i = 0; i < nfree; ++i, node = node->next)
-	  if (!read_variable (node, tb->minimum0, tb->interval0, tb->random_type, i))
-			goto exit_on_error;
+  for (i = 0; i < nfree; ++i, node = node->next)
+    if (!read_variable (node, tb->minimum0, tb->interval0, tb->random_type, i))
+      goto exit_on_error;
   if (rk->strong)
     {
       ac = rk->ac0;
@@ -1964,13 +1964,13 @@ rk_run (xmlNode * node,         ///< XML node.
       value_optimal2
         = (long double *) g_slice_alloc (nfree2 * sizeof (long double));
       optimize_create (ac, &optimal2, value_optimal2);
-	    for (i = 0; i < nfree2; ++i)
-			  {
-					node = node->next;
+      for (i = 0; i < nfree2; ++i)
+        {
+          node = node->next;
           if (!read_variable (node, ac->minimum0, ac->interval0,
-							                ac->random_type, i))
-			      goto exit_on_error;
-				}
+                              ac->random_type, i))
+            goto exit_on_error;
+        }
     }
   for (i = 1; i < nthreads; ++i)
     memcpy (rk + i, rk, sizeof (RK));
@@ -2002,12 +2002,12 @@ rk_run (xmlNode * node,         ///< XML node.
 
   // Free memory
   if (rk->strong)
-	  {
-			g_slice_free1 (nfree2 * sizeof (unsigned int), ac->random_type);
+    {
+      g_slice_free1 (nfree2 * sizeof (unsigned int), ac->random_type);
       g_slice_free1 (nfree2 * sizeof (long double), ac->interval0);
       g_slice_free1 (nfree2 * sizeof (long double), ac->minimum0);
       g_slice_free1 (nfree2 * sizeof (long double), value_optimal2);
-		}
+    }
   for (i = 0; i < nthreads; ++i)
     rk_delete (rk + i);
   g_slice_free1 (nfree * sizeof (unsigned int), tb->random_type);

@@ -118,8 +118,8 @@ rk_tb_6_3 (Optimize * optimize) ///< Optimize struct.
   C[2] = b31 (tb) * t1 (tb) + b32 (tb) * t2 (tb);
   D[2] = 1.L / 6.L - b64 (tb) * (b41 (tb) * t1 (tb) + b42 (tb) * t2 (tb)
                                  + b43 (tb) * t3 (tb))
-   - b65 (tb) * (b51 (tb) * t1 (tb) + b52 (tb) * t2 (tb)
-                 + b53 (tb) * t3 (tb) + b54 (tb) * t4 (tb));
+    - b65 (tb) * (b51 (tb) * t1 (tb) + b52 (tb) * t2 (tb)
+                  + b53 (tb) * t3 (tb) + b54 (tb) * t4 (tb));
   solve_3 (A, B, C, D);
   b63 (tb) = D[2];
   b62 (tb) = D[1];
@@ -129,8 +129,8 @@ rk_tb_6_3 (Optimize * optimize) ///< Optimize struct.
   fprintf (stderr, "rk_tb_6_3: end\n");
 #endif
   if (isnan (b61 (tb)) || isnan (b62 (tb)) || isnan (b63 (tb)))
-		return 0;
-	return 1;
+    return 0;
+  return 1;
 }
 
 /**
@@ -196,8 +196,8 @@ rk_tb_6_3t (Optimize * optimize)        ///< Optimize struct.
 #endif
   if (isnan (b61 (tb)) || isnan (b62 (tb)) || isnan (b63 (tb))
       || isnan (b64 (tb)))
-		return 0;
-	return 1;
+    return 0;
+  return 1;
 }
 
 /**
@@ -236,10 +236,10 @@ rk_objective_tb_6_3 (RK * rk)   ///< RK struct.
       goto end;
     }
   o = 30.L
-    + fmaxl (1.L, 
-				     fmaxl (t1 (tb), 
-							      fmaxl (t2 (tb),
-											     fmaxl (t3 (tb), fmaxl (t4 (tb), t5 (tb))))));
+    + fmaxl (1.L,
+             fmaxl (t1 (tb),
+                    fmaxl (t2 (tb),
+                           fmaxl (t3 (tb), fmaxl (t4 (tb), t5 (tb))))));
   if (rk->strong)
     {
       rk_bucle_ac (rk);
@@ -291,10 +291,10 @@ rk_objective_tb_6_3t (RK * rk)  ///< RK struct.
       goto end;
     }
   o = 30.L
-    + fmaxl (1.L, 
-				     fmaxl (t1 (tb), 
-							      fmaxl (t2 (tb),
-											     fmaxl (t3 (tb), fmaxl (t4 (tb), t5 (tb))))));
+    + fmaxl (1.L,
+             fmaxl (t1 (tb),
+                    fmaxl (t2 (tb),
+                           fmaxl (t3 (tb), fmaxl (t4 (tb), t5 (tb))))));
   if (rk->strong)
     {
       rk_bucle_ac (rk);
