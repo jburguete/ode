@@ -1004,7 +1004,7 @@ rk_step_ac (RK * rk)            ///< RK struct.
 #if DEBUG_RK
       fprintf (stderr, "rk_step_ac: random freedom degrees\n");
 #endif
-      optimize_generate_random (ac);
+      optimize_generate_freedom (ac, ii);
 
       // method coefficients
 #if DEBUG_RK
@@ -1266,7 +1266,7 @@ rk_step_tb (RK * rk)            ///< RK struct.
 #if DEBUG_RK
       fprintf (stderr, "rk_step_tb: random freedom degrees\n");
 #endif
-      optimize_generate_random (tb);
+      optimize_generate_freedom (tb, ii);
 
       // method coefficients
 #if DEBUG_RK

@@ -203,6 +203,10 @@ read_variable (xmlNode * node,  ///< XML node.
     type[n] = RANDOM_TYPE_EXTREME;
   else if (!xmlStrcmp (prop, XML_TOP))
     type[n] = RANDOM_TYPE_TOP;
+  else if (!xmlStrcmp (prop, XML_REGULAR))
+    type[n] = RANDOM_TYPE_REGULAR;
+  else if (!xmlStrcmp (prop, XML_ORTHOGONAL))
+    type[n] = RANDOM_TYPE_ORTHOGONAL;
   else
     {
       xmlFree (prop);

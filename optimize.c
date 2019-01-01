@@ -110,7 +110,7 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
 #if DEBUG_OPTIMIZE
       fprintf (stderr, "optimize_step: random freedom degrees\n");
 #endif
-      optimize_generate_random (optimize);
+      optimize_generate_freedom (optimize, ii);
 
       // method coefficients
 #if DEBUG_OPTIMIZE
@@ -413,7 +413,8 @@ optimize_create (Optimize * optimize,   ///< Optimize struct.
   optimize->optimal = optimal;
   optimize->value_optimal = value_optimal;
   nfree = optimize->nfree;
-  for (nsimulations = optimize->nsimulations, i = 1; i < nfree; ++i)
+  optimize->nsimulations = nsimulations = optimize->nvariable;
+  for (i = 1; i < nfree; ++i)
     optimize->nsimulations *= nsimulations;
   optimize->nclimbings *= nfree;
 #if DEBUG_OPTIMIZE
@@ -436,8 +437,8 @@ optimize_read (Optimize * optimize,     ///< Optimize struct.
 #if DEBUG_OPTIMIZE
   fprintf (stderr, "optimize_read: start\n");
 #endif
-  optimize->nsimulations = xml_node_get_uint (node, XML_NSIMULATIONS, &code);
-  if (code || !optimize->nsimulations)
+  optimize->nvariable = xml_node_get_uint (node, XML_NSIMULATIONS, &code);
+  if (code || !optimize->nvariable)
     {
       error_message = g_strdup (_("Bad simulations number"));
       goto exit_on_error;

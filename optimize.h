@@ -74,8 +74,10 @@ struct _Optimize
   long double convergence_factor;       ///< convergence factor.
   long double climbing_factor;
   ///< factor to the coordinates hill climbing optimization algorithm.
+  unsigned int nvariable;
+  ///< number of total simulations per variable on optimization algorithm.
   unsigned long long int nsimulations;
-  ///< number of total simulations on Monte-Carlo optimization algorithm.
+  ///< number of total simulations on optimization algorithm.
   unsigned long long int nrandom;
   ///< number of simulations per thread on Monte-Carlo optimization algorithm.
   unsigned int nclimbings;
@@ -108,18 +110,21 @@ int optimize_read (Optimize * optimize, xmlNode * node);
  * Function to generate the freedom degree values.
  */
 static inline void
-optimize_generate_random (Optimize * optimize)  ///< Optimize struct.
+optimize_generate_freedom (Optimize * optimize, ///< Optimize struct.
+                           unsigned long long int ns)   ///< simulation number.
 {
   gsl_rng *rng;
   long double *data, *minimum, *interval;
+  unsigned long long int j;
   const unsigned int *type;
-  unsigned int i, n;
+  unsigned int i, k, n;
   n = optimize->nfree;
   data = optimize->random_data;
   minimum = optimize->minimum;
   interval = optimize->interval;
   type = optimize->random_type;
   rng = optimize->rng;
+  j = ns;
   for (i = 0; i < n; ++i)
     switch (type[i])
       {
@@ -132,8 +137,19 @@ optimize_generate_random (Optimize * optimize)  ///< Optimize struct.
       case RANDOM_TYPE_EXTREME:
         data[i] = minimum[i] + interval[i] * random_extreme (rng);
         break;
-      default:
+      case RANDOM_TYPE_TOP:
         data[i] = minimum[i] + interval[i] * random_one (rng);
+        break;
+      case RANDOM_TYPE_REGULAR:
+        k = j % optimize->nvariable;
+        j /= optimize->nvariable;
+        data[i] = minimum[i] + interval[i] * k / (optimize->nvariable - 1);
+        break;
+      default:
+        k = j % optimize->nvariable;
+        j /= optimize->nvariable;
+        data[i] = minimum[i]
+          + interval[i] * (k + gsl_rng_uniform (rng)) / optimize->nvariable;
       }
 }
 

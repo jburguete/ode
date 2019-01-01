@@ -42,7 +42,9 @@ enum RandomType
   RANDOM_TYPE_UNIFORM = 0,      ///< uniform behaviour.
   RANDOM_TYPE_BOTTOM = 1,       ///< bottom higher probability.
   RANDOM_TYPE_EXTREME = 2,      ///< extreme values higher probability.
-  RANDOM_TYPE_TOP = 3           ///< top higher probability.
+  RANDOM_TYPE_TOP = 3,          ///< top higher probability.
+  RANDOM_TYPE_REGULAR = 4,      ///< regular systematic sweep.
+  RANDOM_TYPE_ORTHOGONAL = 5    ///< orthogonal sampling.
 };
 
 extern GMutex mutex[1];
