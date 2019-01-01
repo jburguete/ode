@@ -233,7 +233,7 @@ solve_5 (long double *A,
          long double *D,
          ///< Fourth matrix column modified by the algorithm.
          long double *E,
-         ///< Fifh matrix column modified by the algorithm.
+         ///< Fifth matrix column modified by the algorithm.
          long double *F)
  ///< Sixth matrix column modified by the algorithm to contain the solutions.
 {
@@ -278,7 +278,7 @@ solve_6 (long double *A,
          long double *D,
          ///< Fourth matrix column modified by the algorithm.
          long double *E,
-         ///< Fifh matrix column modified by the algorithm.
+         ///< Fifth matrix column modified by the algorithm.
          long double *F,
          ///< Sixth matrix column modified by the algorithm.
          long double *G)
@@ -320,6 +320,78 @@ solve_6 (long double *A,
 #if EPSILON
   if (fabsl (G[0]) < LDBL_EPSILON)
     G[0] = 0.L;
+#endif
+}
+
+/**
+ * Function to solve a system of six linear equations.
+ */
+static inline void
+solve_7 (long double *A,
+         ///< First matrix column modified by the algorithm:
+         long double *B,
+         ///< Second matrix column modified by the algorithm.
+         long double *C,
+         ///< Third matrix column modified by the algorithm.
+         long double *D,
+         ///< Fourth matrix column modified by the algorithm.
+         long double *E,
+         ///< Fifth matrix column modified by the algorithm.
+         long double *F,
+         ///< Sixth matrix column modified by the algorithm.
+         long double *G,
+         ///< Seventh matrix column modified by the algorithm.
+         long double *H)
+ ///< Eighth matrix column modified by the algorithm to contain the solutions.
+{
+  B[1] = A[0] * B[1] - A[1] * B[0];
+  C[1] = A[0] * C[1] - A[1] * C[0];
+  D[1] = A[0] * D[1] - A[1] * D[0];
+  E[1] = A[0] * E[1] - A[1] * E[0];
+  F[1] = A[0] * F[1] - A[1] * F[0];
+  G[1] = A[0] * G[1] - A[1] * G[0];
+  H[1] = A[0] * H[1] - A[1] * H[0];
+  B[2] = A[0] * B[2] - A[2] * B[0];
+  C[2] = A[0] * C[2] - A[2] * C[0];
+  D[2] = A[0] * D[2] - A[2] * D[0];
+  E[2] = A[0] * E[2] - A[2] * E[0];
+  F[2] = A[0] * F[2] - A[2] * F[0];
+  G[2] = A[0] * G[2] - A[2] * G[0];
+  H[2] = A[0] * H[2] - A[2] * H[0];
+  B[3] = A[0] * B[3] - A[3] * B[0];
+  C[3] = A[0] * C[3] - A[3] * C[0];
+  D[3] = A[0] * D[3] - A[3] * D[0];
+  E[3] = A[0] * E[3] - A[3] * E[0];
+  F[3] = A[0] * F[3] - A[3] * F[0];
+  G[3] = A[0] * G[3] - A[3] * G[0];
+  H[3] = A[0] * H[3] - A[3] * H[0];
+  B[4] = A[0] * B[4] - A[4] * B[0];
+  C[4] = A[0] * C[4] - A[4] * C[0];
+  D[4] = A[0] * D[4] - A[4] * D[0];
+  E[4] = A[0] * E[4] - A[4] * E[0];
+  F[4] = A[0] * F[4] - A[4] * F[0];
+  G[4] = A[0] * G[4] - A[4] * G[0];
+  H[4] = A[0] * H[4] - A[4] * H[0];
+  B[5] = A[0] * B[5] - A[5] * B[0];
+  C[5] = A[0] * C[5] - A[5] * C[0];
+  D[5] = A[0] * D[5] - A[5] * D[0];
+  E[5] = A[0] * E[5] - A[5] * E[0];
+  F[5] = A[0] * F[5] - A[5] * F[0];
+  G[5] = A[0] * G[5] - A[5] * G[0];
+  H[5] = A[0] * H[5] - A[5] * H[0];
+  B[6] = A[0] * B[6] - A[6] * B[0];
+  C[6] = A[0] * C[6] - A[6] * C[0];
+  D[6] = A[0] * D[6] - A[6] * D[0];
+  E[6] = A[0] * E[6] - A[6] * E[0];
+  F[6] = A[0] * F[6] - A[6] * F[0];
+  G[6] = A[0] * G[6] - A[6] * G[0];
+  H[6] = A[0] * H[6] - A[6] * H[0];
+  solve_6 (B + 1, C + 1, D + 1, E + 1, F + 1, G + 1, H + 1);
+  H[0] = (H[0] - B[0] * H[1] - C[0] * H[2] - D[0] * H[3] - E[0] * H[4]
+          - F[0] * H[5] - G[0] * H[6]) / A[0];
+#if EPSILON
+  if (fabsl (H[0]) < LDBL_EPSILON)
+    H[0] = 0.L;
 #endif
 }
 

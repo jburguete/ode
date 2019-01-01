@@ -664,6 +664,362 @@ steps_6_6 (Optimize * optimize) ///< Optimize struct.
 }
 
 /**
+ * Function to get the coefficients on a 7 steps 2nd order multi-steps method.
+ */
+static int
+steps_7_2 (Optimize * optimize) ///< Optimize struct.
+{
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  b6 (x) = r[6];
+  b5 (x) = r[7];
+  b4 (x) = r[8];
+  b3 (x) = r[9];
+  b2 (x) = r[10];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x);
+  b1 (x)
+    = 0.5L * (a1 (x) + 4.L * (a2 (x) - b2 (x)) + 9.L * a3 (x) + 16.L * a4 (x)
+              + 25.L * a5 (x) + 36.L * a6 (x) - 6.L * b3 (x) - 8.L * b4 (x)
+              - 10.L * b5 (x) - 12.L * b6 (x) - 1.L);
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) - b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x)
+    - b6 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 7 steps 3th order multi-steps method.
+ */
+static int
+steps_7_3 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[2], B[2], C[2];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  b6 (x) = r[6];
+  b5 (x) = r[7];
+  b4 (x) = r[8];
+  b3 (x) = r[9];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * a4 (x)
+    + 25.L * a5 (x) + 36.L * a6 (x) - 6.L * b3 (x) - 8.L * b4 (x)
+    - 10.L * b5 (x) - 12.L * b6 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * (a3 (x) - b3 (x)) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) - 48.L * b4 (x) - 75.L * b5 (x)
+    - 108.L * b6 (x);
+  solve_2 (A, B, C);
+  b2 (x) = C[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = C[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) - b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x)
+    - b6 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 7 steps 4th order multi-steps method.
+ */
+static int
+steps_7_4 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[3], B[3], C[3], D[3];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  b6 (x) = r[6];
+  b5 (x) = r[7];
+  b4 (x) = r[8];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * a4 (x)
+    + 25.L * a5 (x) + 36.L * a6 (x) - 8.L * b4 (x) - 10.L * b5 (x)
+    - 12.L * b6 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) - 48.L * b4 (x) - 75.L * b5 (x)
+    - 108.L * b6 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x)
+    + 256.L * (a4 (x) - b4 (x)) + 625.L * a5 (x) + 1296.L * a6 (x)
+    - 500.L * b5 (x) - 864.L * b6 (x);
+  solve_3 (A, B, C, D);
+  b3 (x) = D[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = D[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = D[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) - b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x)
+    - b6 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 7 steps 5th order multi-steps method.
+ */
+static int
+steps_7_5 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[4], B[4], C[4], D[4], E[4];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  b6 (x) = r[6];
+  b5 (x) = r[7];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = 8.L;
+  E[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * a4 (x)
+    + 25.L * a5 (x) + 36.L * a6 (x) - 10.L * b5 (x) - 12.L * b6 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 48.L;
+  E[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) - 75.L * b5 (x) - 108.L * b6 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = 256.L;
+  E[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x) + 256.L * a4 (x)
+    + 625.L * a5 (x) + 1296.L * a6 (x) - 500.L * b5 (x) - 864.L * b6 (x);
+  A[3] = 5.L;
+  B[3] = 80.L;
+  C[3] = 405.L;
+  D[3] = 1280.L;
+  E[3] = 1.L + a1 (x) + 32.L * a2 (x) + 243.L * a3 (x) + 1024.L * a4 (x)
+    + 3125.L * (a5 (x) - b5 (x)) + 7776.L * a6 (x) - 6480.L * b6 (x);
+  solve_4 (A, B, C, D, E);
+  b4 (x) = E[3];
+  if (isnan (b4 (x)))
+    return 0;
+  b3 (x) = E[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = E[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = E[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) - b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x)
+    - b6 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 7 steps 6th order multi-steps method.
+ */
+static int
+steps_7_6 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[5], B[5], C[5], D[5], E[5], F[5];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  b6 (x) = r[6];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = 8.L;
+  E[0] = 10.L;
+  F[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * a4 (x)
+    + 25.L * a5 (x) + 36.L * a6 (x) - 12.L * b6 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 48.L;
+  E[1] = 75.L;
+  F[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) - 108.L * b6 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = 256.L;
+  E[2] = 500.L;
+  F[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x) + 256.L * a4 (x)
+    + 625.L * a5 (x) + 1296.L * a6 (x) - 864.L * b6 (x);
+  A[3] = 5.L;
+  B[3] = 80.L;
+  C[3] = 405.L;
+  D[3] = 1280.L;
+  E[3] = 3125.L;
+  F[3] = 1.L + a1 (x) + 32.L * a2 (x) + 243.L * a3 (x) + 1024.L * a4 (x)
+    + 3125.L * a5 (x) + 7776.L * a6 (x) - 6480.L * b6 (x);
+  A[4] = 6.L;
+  B[4] = 192.L;
+  C[4] = 1458.L;
+  D[4] = 6144.L;
+  E[4] = 18750.L;
+  F[4] = -1.L + a1 (x) + 64.L * a2 (x) + 729.L * a3 (x) + 4096.L * a4 (x)
+    + 15625.L * a5 (x) + 46656.L * (a6 (x) - b6 (x));
+  solve_5 (A, B, C, D, E, F);
+  b5 (x) = F[4];
+  if (isnan (b5 (x)))
+    return 0;
+  b4 (x) = F[3];
+  if (isnan (b4 (x)))
+    return 0;
+  b3 (x) = F[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = F[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = F[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) - b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x)
+    - b6 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 7 steps 7th order multi-steps method.
+ */
+static int
+steps_7_7 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[6], B[6], C[6], D[6], E[6], F[6], G[6];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = 8.L;
+  E[0] = 10.L;
+  F[0] = 12.L;
+  G[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * a4 (x)
+    + 25.L * a5 (x) + 36.L * a6 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 48.L;
+  E[1] = 75.L;
+  F[1] = 108.L;
+  G[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = 256.L;
+  E[2] = 500.L;
+  F[2] = 864.L;
+  G[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x) + 256.L * a4 (x)
+    + 625.L * a5 (x) + 1296.L * a6 (x);
+  A[3] = 5.L;
+  B[3] = 80.L;
+  C[3] = 405.L;
+  D[3] = 1280.L;
+  E[3] = 3125.L;
+  F[3] = 6480.L;
+  G[3] = 1.L + a1 (x) + 32.L * a2 (x) + 243.L * a3 (x) + 1024.L * a4 (x)
+    + 3125.L * a5 (x) + 7776.L * a6 (x);
+  A[4] = 6.L;
+  B[4] = 192.L;
+  C[4] = 1458.L;
+  D[4] = 6144.L;
+  E[4] = 18750.L;
+  F[4] = 46656.L;
+  G[4] = -1.L + a1 (x) + 64.L * a2 (x) + 729.L * a3 (x) + 4096.L * a4 (x)
+    + 15625.L * a5 (x) + 46656.L * a6 (x);
+  A[5] = 7.L;
+  B[5] = 448.L;
+  C[5] = 5103.L;
+  D[5] = 28672.L;
+  E[5] = 109375.L;
+  F[5] = 326592.L;
+  G[5] = 1.L + a1 (x) + 128.L * a2 (x) + 2187.L * a3 (x) + 16384.L * a4 (x)
+    + 78125.L * a5 (x) + 279936.L * a6 (x);
+  solve_6 (A, B, C, D, E, F, G);
+  b6 (x) = G[5];
+  if (isnan (b6 (x)))
+    return 0;
+  b5 (x) = G[4];
+  if (isnan (b5 (x)))
+    return 0;
+  b4 (x) = G[3];
+  if (isnan (b4 (x)))
+    return 0;
+  b3 (x) = G[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = G[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = G[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) - b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x)
+    - b6 (x);
+  return 1;
+}
+
+/**
  * Function to print a maxima format file to check the accuracy order of a
  * multi-steps method.
  */
@@ -1449,7 +1805,6 @@ steps_select (Optimize * optimize,      ///< Optimize struct.
           goto exit_on_error;
         }
       break;
-/*
     case 7:
       optimize->print = steps_print_7;
       optimize->objective = steps_objective_7;
@@ -1467,11 +1822,18 @@ steps_select (Optimize * optimize,      ///< Optimize struct.
         case 5:
           optimize->method = steps_7_5;
           break;
+        case 6:
+          optimize->method = steps_7_6;
+          break;
+        case 7:
+          optimize->method = steps_7_7;
+          break;
         default:
           code = 0;
           goto exit_on_error;
         }
       break;
+/*
     case 8:
       optimize->print = steps_print_8;
       optimize->objective = steps_objective_8;
