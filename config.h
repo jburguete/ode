@@ -38,6 +38,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define OPTIMIZE_STEPS_11_6 0
 
 #define XML_AC                 (const xmlChar *) "ac"
+#define XML_BOTTOM             (const xmlChar *) "bottom"
 #define XML_CLIMBING_FACTOR    (const xmlChar *) "climbing-factor"
 #define XML_CONVERGENCE_FACTOR (const xmlChar *) "convergence-factor"
 #define XML_EXTREME            (const xmlChar *) "extreme"

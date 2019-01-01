@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<steps steps="4" order="3" nsimulations="32" nclimbings="64" niterations="16" convergence-factor="0.0625" climbing-factor="0.1">
-	<variable minimum="0" interval="4" type="random"/>
-	<variable minimum="0" interval="4" type="extreme"/>
-	<variable minimum="0" interval="4" type="extreme"/>
-	<variable minimum="0" interval="4" type="extreme"/>
+<steps steps="4" order="3" nsimulations="80" nclimbings="64" niterations="13" convergence-factor="0.025" climbing-factor="0.1">
+	<variable minimum="0" interval="1" type="bottom"/>
+	<variable minimum="0" interval="1" type="bottom"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="4" type="bottom"/>
 </steps>

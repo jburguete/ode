@@ -123,11 +123,14 @@ optimize_generate_random (Optimize * optimize)  ///< Optimize struct.
   for (i = 0; i < n; ++i)
     switch (type[i])
       {
-      case 0:
+      case RANDOM_TYPE_UNIFORM:
         data[i] = minimum[i] + interval[i] * gsl_rng_uniform (rng);
         break;
-      case 1:
+      case RANDOM_TYPE_BOTTOM:
         data[i] = minimum[i] + interval[i] * random_zero (rng);
+        break;
+      case RANDOM_TYPE_EXTREME:
+        data[i] = minimum[i] + interval[i] * random_extreme (rng);
         break;
       default:
         data[i] = minimum[i] + interval[i] * random_one (rng);

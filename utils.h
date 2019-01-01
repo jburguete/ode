@@ -36,6 +36,15 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define _(x) (gettext(x))       ///< macro to translate messages.
 
+///> enumeration to define the random numbers generation behaviour.
+enum RandomType
+{
+  RANDOM_TYPE_UNIFORM = 0,      ///< uniform behaviour.
+  RANDOM_TYPE_BOTTOM = 1,       ///< bottom higher probability.
+  RANDOM_TYPE_EXTREME = 2,      ///< extreme values higher probability.
+  RANDOM_TYPE_TOP = 3           ///< top higher probability.
+};
+
 extern GMutex mutex[1];
 extern gchar *error_message;
 
@@ -65,13 +74,29 @@ print_variables (long double *r,        ///< random variables.
 }
 
 /**
- * Function to calculate a random number between [0,1] being 0 and 1 the fifty
+ * Function to calculate a random number between [0,1) being 0 the fifty
  * percent.
  *
  * \return result.
  */
 static inline long double
 random_zero (gsl_rng * rng)     ///< GSL random number generator struct data.
+{
+  register double r;
+  r = gsl_rng_uniform (rng);
+  if (r <= 0.5)
+    return 0.L;
+  return 2.L * (r - 0.5L);
+}
+
+/**
+ * Function to calculate a random number between [0,1] being 0 and 1 the fifty
+ * percent.
+ *
+ * \return result.
+ */
+static inline long double
+random_extreme (gsl_rng * rng)  ///< GSL random number generator struct data.
 {
   register double r;
   r = gsl_rng_uniform (rng);

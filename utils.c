@@ -196,11 +196,13 @@ read_variable (xmlNode * node,  ///< XML node.
     }
   prop = xmlGetProp (node, XML_TYPE);
   if (!prop || !xmlStrcmp (prop, XML_RANDOM))
-    type[n] = 0;
+    type[n] = RANDOM_TYPE_UNIFORM;
+  else if (!xmlStrcmp (prop, XML_BOTTOM))
+    type[n] = RANDOM_TYPE_BOTTOM;
   else if (!xmlStrcmp (prop, XML_EXTREME))
-    type[n] = 1;
+    type[n] = RANDOM_TYPE_EXTREME;
   else if (!xmlStrcmp (prop, XML_TOP))
-    type[n] = 2;
+    type[n] = RANDOM_TYPE_TOP;
   else
     {
       xmlFree (prop);
