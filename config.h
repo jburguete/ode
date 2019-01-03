@@ -35,6 +35,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CONFIG__H 1
 
 #define EPSILON 1
+#define MAXIMA_PRECISION 20
 #define OPTIMIZE_STEPS_11_6 0
 
 #define XML_AC                 (const xmlChar *) "ac"

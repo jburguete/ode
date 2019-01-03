@@ -2005,6 +2005,7 @@ rk_run (xmlNode * node,         ///< XML node.
   snprintf (filename, 32, "rk-%u-%u-%u-%u-%u.mc",
             nsteps, order, rk->time_accuracy, rk->pair, rk->strong);
   file = fopen (filename, "w");
+	print_maxima_precision (file);
   tb->print ((Optimize *) rk, file);
   tb->print_maxima (file, nsteps, order);
   fclose (file);

@@ -34,6 +34,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #define _GNU_SOURCE
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <libxml/parser.h>
@@ -1020,6 +1021,494 @@ steps_7_7 (Optimize * optimize) ///< Optimize struct.
 }
 
 /**
+ * Function to get the coefficients on a 8 steps 2nd order multi-steps method.
+ */
+static int
+steps_8_2 (Optimize * optimize) ///< Optimize struct.
+{
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  b7 (x) = r[7];
+  b6 (x) = r[8];
+  b5 (x) = r[9];
+  b4 (x) = r[10];
+  b3 (x) = r[11];
+  b2 (x) = r[12];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x);
+  b1 (x)
+    = 0.5L * (a1 (x) + 4.L * (a2 (x) - b2 (x)) + 9.L * a3 (x) + 16.L * a4 (x)
+              + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) - 6.L * b3 (x)
+							- 8.L * b4 (x) - 10.L * b5 (x) - 12.L * b6 (x) - 14.L * b7 (x)
+							- 1.L);
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) - b1 (x) - b2 (x) - b3 (x) 
+		- b4 (x) - b5 (x) - b6 (x) - b7 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 8 steps 3th order multi-steps method.
+ */
+static int
+steps_8_3 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[2], B[2], C[2];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  b7 (x) = r[7];
+  b6 (x) = r[8];
+  b5 (x) = r[9];
+  b4 (x) = r[10];
+  b3 (x) = r[11];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * a4 (x)
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) - 6.L * b3 (x)
+		- 8.L * b4 (x) - 10.L * b5 (x) - 12.L * b6 (x) - 14.L * b7 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * (a3 (x) - b3 (x)) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) - 48.L * b4 (x) 
+		- 75.L * b5 (x) - 108.L * b6 (x) - 147.L * b7 (x);
+  solve_2 (A, B, C);
+  b2 (x) = C[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = C[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) - b1 (x) - b2 (x) - b3 (x) 
+		- b4 (x) - b5 (x) - b6 (x) - b7 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 8 steps 4th order multi-steps method.
+ */
+static int
+steps_8_4 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[3], B[3], C[3], D[3];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  b7 (x) = r[7];
+  b6 (x) = r[8];
+  b5 (x) = r[9];
+  b4 (x) = r[10];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * a4 (x)
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) - 8.L * b4 (x)
+		- 10.L * b5 (x) - 12.L * b6 (x) - 14.L * b7 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) - 48.L * b4 (x) 
+		- 75.L * b5 (x) - 108.L * b6 (x) - 147.L * b7 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x)
+    + 256.L * (a4 (x) - b4 (x)) + 625.L * a5 (x) + 1296.L * a6 (x)
+		+ 2401.L * a7 (x) - 500.L * b5 (x) - 864.L * b6 (x) - 1372.L * b7 (x);
+  solve_3 (A, B, C, D);
+  b3 (x) = D[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = D[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = D[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) - b1 (x) - b2 (x) - b3 (x) 
+		- b4 (x) - b5 (x) - b6 (x) - b7 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 8 steps 5th order multi-steps method.
+ */
+static int
+steps_8_5 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[4], B[4], C[4], D[4], E[4];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  b7 (x) = r[7];
+  b6 (x) = r[8];
+  b5 (x) = r[9];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = 8.L;
+  E[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * a4 (x)
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) - 10.L * b5 (x)
+		- 12.L * b6 (x) - 14.L * b7 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 48.L;
+  E[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) - 75.L * b5 (x) 
+		- 108.L * b6 (x) - 147.L * b7 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = 256.L;
+  E[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x) + 256.L * a4 (x) 
+		+ 625.L * a5 (x) + 1296.L * a6 (x) + 2401.L * a7 (x) - 500.L * b5 (x) 
+		- 864.L * b6 (x) - 1372.L * b7 (x);
+  A[3] = 5.L;
+  B[3] = 80.L;
+  C[3] = 405.L;
+  D[3] = 1280.L;
+  E[3] = 1.L + a1 (x) + 32.L * a2 (x) + 243.L * a3 (x) + 1024.L * a4 (x)
+    + 3125.L * (a5 (x) - b5 (x)) + 7776.L * a6 (x) + 16807.L * a7 (x)
+		- 6480.L * b6 (x) - 12005.L * b7 (x);
+  solve_4 (A, B, C, D, E);
+  b4 (x) = E[3];
+  if (isnan (b4 (x)))
+    return 0;
+  b3 (x) = E[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = E[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = E[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) - b1 (x) - b2 (x) - b3 (x) 
+		- b4 (x) - b5 (x) - b6 (x) - b7 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 8 steps 6th order multi-steps method.
+ */
+static int
+steps_8_6 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[5], B[5], C[5], D[5], E[5], F[5];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  b7 (x) = r[7];
+  b6 (x) = r[8];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = 8.L;
+  E[0] = 10.L;
+  F[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * a4 (x)
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) - 12.L * b6 (x) 
+		- 14.L * b7 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 48.L;
+  E[1] = 75.L;
+  F[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) - 108.L * b6 (x) 
+		- 147.L * b7 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = 256.L;
+  E[2] = 500.L;
+  F[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x) + 256.L * a4 (x) 
+		+ 625.L * a5 (x) + 1296.L * a6 (x) + 2401.L * a7 (x) - 864.L * b6 (x)
+	 	- 1372.L * b7 (x);
+  A[3] = 5.L;
+  B[3] = 80.L;
+  C[3] = 405.L;
+  D[3] = 1280.L;
+  E[3] = 3125.L;
+  F[3] = 1.L + a1 (x) + 32.L * a2 (x) + 243.L * a3 (x) + 1024.L * a4 (x)
+    + 3125.L * a5 (x) + 7776.L * a6 (x) + 16807.L * a7 (x) - 6480.L * b6 (x)
+	 	- 12005.L * b7 (x);
+  A[4] = 6.L;
+  B[4] = 192.L;
+  C[4] = 1458.L;
+  D[4] = 6144.L;
+  E[4] = 18750.L;
+  F[4] = -1.L + a1 (x) + 64.L * a2 (x) + 729.L * a3 (x) + 4096.L * a4 (x)
+    + 15625.L * a5 (x) + 46656.L * (a6 (x) - b6 (x)) + 117649.L * a7 (x)
+		- 100842.L * b7 (x);
+  solve_5 (A, B, C, D, E, F);
+  b5 (x) = F[4];
+  if (isnan (b5 (x)))
+    return 0;
+  b4 (x) = F[3];
+  if (isnan (b4 (x)))
+    return 0;
+  b3 (x) = F[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = F[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = F[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) - b1 (x) - b2 (x) - b3 (x) 
+		- b4 (x) - b5 (x) - b6 (x) - b7 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 8 steps 7th order multi-steps method.
+ */
+static int
+steps_8_7 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[6], B[6], C[6], D[6], E[6], F[6], G[6];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  b7 (x) = r[7];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = 8.L;
+  E[0] = 10.L;
+  F[0] = 12.L;
+  G[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * a4 (x)
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) - 14.L * b7 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 48.L;
+  E[1] = 75.L;
+  F[1] = 108.L;
+  G[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) - 147.L * b7 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = 256.L;
+  E[2] = 500.L;
+  F[2] = 864.L;
+  G[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x) + 256.L * a4 (x) 
+		+ 625.L * a5 (x) + 1296.L * a6 (x) + 2401.L * a7 (x) - 1372.L * b7 (x);
+  A[3] = 5.L;
+  B[3] = 80.L;
+  C[3] = 405.L;
+  D[3] = 1280.L;
+  E[3] = 3125.L;
+  F[3] = 6480.L;
+  G[3] = 1.L + a1 (x) + 32.L * a2 (x) + 243.L * a3 (x) + 1024.L * a4 (x)
+    + 3125.L * a5 (x) + 7776.L * a6 (x) + 16807.L * a7 (x) - 12005.L * b7 (x);
+  A[4] = 6.L;
+  B[4] = 192.L;
+  C[4] = 1458.L;
+  D[4] = 6144.L;
+  E[4] = 18750.L;
+  F[4] = 46656.L;
+  G[4] = -1.L + a1 (x) + 64.L * a2 (x) + 729.L * a3 (x) + 4096.L * a4 (x)
+    + 15625.L * a5 (x) + 46656.L * a6 (x) + 117649.L * a7 (x) 
+		- 100842.L * b7 (x);
+  A[5] = 7.L;
+  B[5] = 448.L;
+  C[5] = 5103.L;
+  D[5] = 28672.L;
+  E[5] = 109375.L;
+  F[5] = 326592.L;
+  G[5] = 1.L + a1 (x) + 128.L * a2 (x) + 2187.L * a3 (x) + 16384.L * a4 (x)
+    + 78125.L * a5 (x) + 279936.L * a6 (x) + 823543.L * (a7 (x) - b7 (x));
+  solve_6 (A, B, C, D, E, F, G);
+  b6 (x) = G[5];
+  if (isnan (b6 (x)))
+    return 0;
+  b5 (x) = G[4];
+  if (isnan (b5 (x)))
+    return 0;
+  b4 (x) = G[3];
+  if (isnan (b4 (x)))
+    return 0;
+  b3 (x) = G[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = G[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = G[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) - b1 (x) - b2 (x) - b3 (x) 
+		- b4 (x) - b5 (x) - b6 (x) - b7 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 8 steps 8th order multi-steps method.
+ */
+static int
+steps_8_8 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[7], B[7], C[7], D[7], E[7], F[7], G[7], H[7];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = 8.L;
+  E[0] = 10.L;
+  F[0] = 12.L;
+  G[0] = 14.L;
+  H[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * a4 (x)
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 48.L;
+  E[1] = 75.L;
+  F[1] = 108.L;
+  G[1] = 147.L;
+  H[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = 256.L;
+  E[2] = 500.L;
+  F[2] = 864.L;
+  G[2] = 1372.L;
+  H[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x) + 256.L * a4 (x) 
+		+ 625.L * a5 (x) + 1296.L * a6 (x) + 2401.L * a7 (x);
+  A[3] = 5.L;
+  B[3] = 80.L;
+  C[3] = 405.L;
+  D[3] = 1280.L;
+  E[3] = 3125.L;
+  F[3] = 6480.L;
+  G[3] = 12005.L;
+  H[3] = 1.L + a1 (x) + 32.L * a2 (x) + 243.L * a3 (x) + 1024.L * a4 (x)
+    + 3125.L * a5 (x) + 7776.L * a6 (x) + 16807.L * a7 (x);
+  A[4] = 6.L;
+  B[4] = 192.L;
+  C[4] = 1458.L;
+  D[4] = 6144.L;
+  E[4] = 18750.L;
+  F[4] = 46656.L;
+  G[4] = 100842.L;
+  H[4] = -1.L + a1 (x) + 64.L * a2 (x) + 729.L * a3 (x) + 4096.L * a4 (x)
+    + 15625.L * a5 (x) + 46656.L * a6 (x) + 117649.L * a7 (x);
+  A[5] = 7.L;
+  B[5] = 448.L;
+  C[5] = 5103.L;
+  D[5] = 28672.L;
+  E[5] = 109375.L;
+  F[5] = 326592.L;
+  G[5] = 823543.L;
+  H[5] = 1.L + a1 (x) + 128.L * a2 (x) + 2187.L * a3 (x) + 16384.L * a4 (x)
+    + 78125.L * a5 (x) + 279936.L * a6 (x) + 823543.L * a7 (x);
+  A[6] = 8.L;
+  B[6] = 1024.L;
+  C[6] = 17496.L;
+  D[6] = 131072.L;
+  E[6] = 625000.L;
+  F[6] = 2239488.L;
+  G[6] = 6588344.L;
+  H[6] = -1.L + a1 (x) + 256.L * a2 (x) + 6561.L * a3 (x) + 65536.L * a4 (x)
+    + 390625.L * a5 (x) + 1679616.L * a6 (x) + 5764801.L * a7 (x);
+  solve_7 (A, B, C, D, E, F, G, H);
+  b7 (x) = H[6];
+  if (isnan (b7 (x)))
+    return 0;
+  b6 (x) = H[5];
+  if (isnan (b6 (x)))
+    return 0;
+  b5 (x) = H[4];
+  if (isnan (b5 (x)))
+    return 0;
+  b4 (x) = H[3];
+  if (isnan (b4 (x)))
+    return 0;
+  b3 (x) = H[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = H[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = H[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) - b1 (x) - b2 (x) - b3 (x) 
+		- b4 (x) - b5 (x) - b6 (x) - b7 (x);
+  return 1;
+}
+
+/**
  * Function to print a maxima format file to check the accuracy order of a
  * multi-steps method.
  */
@@ -1239,23 +1728,34 @@ steps_objective_3 (Optimize * optimize) ///< Optimize struct.
   register long double *x;
   register long double k;
   x = optimize->coefficient;
-  k = fminl (0.L, a0 (x));
-  if (a1 (x) < 0.L)
+	k = 0.L;
+  if (a0 (x) < -LDBL_EPSILON)
+    k += a0 (x);
+  if (a1 (x) < -LDBL_EPSILON)
     k += a1 (x);
-  if (a2 (x) < 0.L)
+  if (a2 (x) < -LDBL_EPSILON)
     k += a2 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 30.L - k;
-  k = fminl (0.L, b0 (x));
-  if (b1 (x) < 0.L)
+	k = 0.L;
+  if (b0 (x) < -LDBL_EPSILON)
+    k += b0 (x);
+  if (b1 (x) < -LDBL_EPSILON)
     k += b1 (x);
-  if (b2 (x) < 0.L)
+  if (b2 (x) < -LDBL_EPSILON)
     k += b2 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 20.L - k;
-  if (isnan (c0 (x)) || isnan (c1 (x)) || isnan (c2 (x)))
+	k = 0.L;
+  if (!isnan (c0 (x)))
+		k = fmaxl (k, c0 (x));
+  if (!isnan (c1 (x)))
+		k = fmaxl (k, c1 (x));
+  if (!isnan (c2 (x)))
+		k = fmaxl (k, c2 (x));
+	if (k == 0.L || k > 20.L)
     return 20.L;
-  return fmaxl (c0 (x), fmaxl (c1 (x), c2 (x)));
+  return k;
 }
 
 /**
@@ -1269,27 +1769,40 @@ steps_objective_4 (Optimize * optimize) ///< Optimize struct.
   register long double *x;
   register long double k;
   x = optimize->coefficient;
-  k = fminl (0.L, a0 (x));
-  if (a1 (x) < 0.L)
+	k = 0.L;
+  if (a0 (x) < -LDBL_EPSILON)
+    k += a0 (x);
+  if (a1 (x) < -LDBL_EPSILON)
     k += a1 (x);
-  if (a2 (x) < 0.L)
+  if (a2 (x) < -LDBL_EPSILON)
     k += a2 (x);
-  if (a3 (x) < 0.L)
+  if (a3 (x) < -LDBL_EPSILON)
     k += a3 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 30.L - k;
-  k = fminl (0.L, b0 (x));
-  if (b1 (x) < 0.L)
+	k = 0.L;
+  if (b0 (x) < -LDBL_EPSILON)
+    k += b0 (x);
+  if (b1 (x) < -LDBL_EPSILON)
     k += b1 (x);
-  if (b2 (x) < 0.L)
+  if (b2 (x) < -LDBL_EPSILON)
     k += b2 (x);
-  if (b3 (x) < 0.L)
+  if (b3 (x) < -LDBL_EPSILON)
     k += b3 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 20.L - k;
-  if (isnan (c0 (x)) || isnan (c1 (x)) || isnan (c2 (x)) || isnan (c3 (x)))
+	k = 0.L;
+  if (!isnan (c0 (x)))
+		k = fmaxl (k, c0 (x));
+  if (!isnan (c1 (x)))
+		k = fmaxl (k, c1 (x));
+  if (!isnan (c2 (x)))
+		k = fmaxl (k, c2 (x));
+  if (!isnan (c3 (x)))
+		k = fmaxl (k, c3 (x));
+	if (k == 0.L || k > 20.L)
     return 20.L;
-  return fmaxl (c0 (x), fmaxl (c1 (x), fmaxl (c2 (x), c3 (x))));
+  return k;
 }
 
 /**
@@ -1303,32 +1816,46 @@ steps_objective_5 (Optimize * optimize) ///< Optimize struct.
   register long double *x;
   register long double k;
   x = optimize->coefficient;
-  k = fminl (0.L, a0 (x));
-  if (a1 (x) < 0.L)
+	k = 0.L;
+  if (a0 (x) < -LDBL_EPSILON)
+    k += a0 (x);
+  if (a1 (x) < -LDBL_EPSILON)
     k += a1 (x);
-  if (a2 (x) < 0.L)
+  if (a2 (x) < -LDBL_EPSILON)
     k += a2 (x);
-  if (a3 (x) < 0.L)
+  if (a3 (x) < -LDBL_EPSILON)
     k += a3 (x);
-  if (a4 (x) < 0.L)
+  if (a4 (x) < -LDBL_EPSILON)
     k += a4 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 30.L - k;
-  k = fminl (0.L, b0 (x));
-  if (b1 (x) < 0.L)
+	k = 0.L;
+  if (b0 (x) < -LDBL_EPSILON)
+    k += b0 (x);
+  if (b1 (x) < -LDBL_EPSILON)
     k += b1 (x);
-  if (b2 (x) < 0.L)
+  if (b2 (x) < -LDBL_EPSILON)
     k += b2 (x);
-  if (b3 (x) < 0.L)
+  if (b3 (x) < -LDBL_EPSILON)
     k += b3 (x);
-  if (b4 (x) < 0.L)
+  if (b4 (x) < -LDBL_EPSILON)
     k += b4 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 20.L - k;
-  if (isnan (c0 (x)) || isnan (c1 (x)) || isnan (c2 (x)) || isnan (c3 (x))
-      || isnan (c4 (x)))
+	k = 0.L;
+  if (!isnan (c0 (x)))
+		k = fmaxl (k, c0 (x));
+  if (!isnan (c1 (x)))
+		k = fmaxl (k, c1 (x));
+  if (!isnan (c2 (x)))
+		k = fmaxl (k, c2 (x));
+  if (!isnan (c3 (x)))
+		k = fmaxl (k, c3 (x));
+  if (!isnan (c4 (x)))
+		k = fmaxl (k, c4 (x));
+	if (k == 0.L || k > 20.L)
     return 20.L;
-  return fmaxl (c0 (x), fmaxl (c1 (x), fmaxl (c2 (x), fmaxl (c3 (x), c4 (x)))));
+  return k;
 }
 
 /**
@@ -1342,39 +1869,52 @@ steps_objective_6 (Optimize * optimize) ///< Optimize struct.
   register long double *x;
   register long double k;
   x = optimize->coefficient;
-  k = fminl (0.L, a0 (x));
-  if (a1 (x) < 0.L)
+	k = 0.L;
+  if (a0 (x) < -LDBL_EPSILON)
+    k += a0 (x);
+  if (a1 (x) < -LDBL_EPSILON)
     k += a1 (x);
-  if (a2 (x) < 0.L)
+  if (a2 (x) < -LDBL_EPSILON)
     k += a2 (x);
-  if (a3 (x) < 0.L)
+  if (a3 (x) < -LDBL_EPSILON)
     k += a3 (x);
-  if (a4 (x) < 0.L)
+  if (a4 (x) < -LDBL_EPSILON)
     k += a4 (x);
-  if (a5 (x) < 0.L)
+  if (a5 (x) < -LDBL_EPSILON)
     k += a5 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 30.L - k;
-  k = fminl (0.L, b0 (x));
-  if (b1 (x) < 0.L)
+	k = 0.L;
+  if (b0 (x) < -LDBL_EPSILON)
+    k += b0 (x);
+  if (b1 (x) < -LDBL_EPSILON)
     k += b1 (x);
-  if (b2 (x) < 0.L)
+  if (b2 (x) < -LDBL_EPSILON)
     k += b2 (x);
-  if (b3 (x) < 0.L)
+  if (b3 (x) < -LDBL_EPSILON)
     k += b3 (x);
-  if (b4 (x) < 0.L)
+  if (b4 (x) < -LDBL_EPSILON)
     k += b4 (x);
-  if (b5 (x) < 0.L)
+  if (b5 (x) < -LDBL_EPSILON)
     k += b5 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 20.L - k;
-  if (isnan (c0 (x)) || isnan (c1 (x)) || isnan (c2 (x)) || isnan (c3 (x))
-      || isnan (c4 (x)) || isnan (c5 (x)))
+	k = 0.L;
+  if (!isnan (c0 (x)))
+		k = fmaxl (k, c0 (x));
+  if (!isnan (c1 (x)))
+		k = fmaxl (k, c1 (x));
+  if (!isnan (c2 (x)))
+		k = fmaxl (k, c2 (x));
+  if (!isnan (c3 (x)))
+		k = fmaxl (k, c3 (x));
+  if (!isnan (c4 (x)))
+		k = fmaxl (k, c4 (x));
+  if (!isnan (c5 (x)))
+		k = fmaxl (k, c5 (x));
+	if (k == 0.L || k > 20.L)
     return 20.L;
-  return
-    fmaxl (c0 (x), fmaxl (c1 (x),
-                          fmaxl (c2 (x),
-                                 fmaxl (c3 (x), fmaxl (c4 (x), c5 (x))))));
+  return k;
 }
 
 /**
@@ -1388,45 +1928,58 @@ steps_objective_7 (Optimize * optimize) ///< Optimize struct.
   register long double *x;
   register long double k;
   x = optimize->coefficient;
-  k = fminl (0.L, a0 (x));
-  if (a1 (x) < 0.L)
+	k = 0.L;
+  if (a0 (x) < -LDBL_EPSILON)
+    k += a0 (x);
+  if (a1 (x) < -LDBL_EPSILON)
     k += a1 (x);
-  if (a2 (x) < 0.L)
+  if (a2 (x) < -LDBL_EPSILON)
     k += a2 (x);
-  if (a3 (x) < 0.L)
+  if (a3 (x) < -LDBL_EPSILON)
     k += a3 (x);
-  if (a4 (x) < 0.L)
+  if (a4 (x) < -LDBL_EPSILON)
     k += a4 (x);
-  if (a5 (x) < 0.L)
+  if (a5 (x) < -LDBL_EPSILON)
     k += a5 (x);
-  if (a6 (x) < 0.L)
+  if (a6 (x) < -LDBL_EPSILON)
     k += a6 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 30.L - k;
-  k = fminl (0.L, b0 (x));
-  if (b1 (x) < 0.L)
+	k = 0.L;
+  if (b0 (x) < -LDBL_EPSILON)
+    k += b0 (x);
+  if (b1 (x) < -LDBL_EPSILON)
     k += b1 (x);
-  if (b2 (x) < 0.L)
+  if (b2 (x) < -LDBL_EPSILON)
     k += b2 (x);
-  if (b3 (x) < 0.L)
+  if (b3 (x) < -LDBL_EPSILON)
     k += b3 (x);
-  if (b4 (x) < 0.L)
+  if (b4 (x) < -LDBL_EPSILON)
     k += b4 (x);
-  if (b5 (x) < 0.L)
+  if (b5 (x) < -LDBL_EPSILON)
     k += b5 (x);
-  if (b6 (x) < 0.L)
+  if (b6 (x) < -LDBL_EPSILON)
     k += b6 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 20.L - k;
-  if (isnan (c0 (x)) || isnan (c1 (x)) || isnan (c2 (x)) || isnan (c3 (x))
-      || isnan (c4 (x)) || isnan (c5 (x)) || isnan (c6 (x)))
+	k = 0.L;
+  if (!isnan (c0 (x)))
+		k = fmaxl (k, c0 (x));
+  if (!isnan (c1 (x)))
+		k = fmaxl (k, c1 (x));
+  if (!isnan (c2 (x)))
+		k = fmaxl (k, c2 (x));
+  if (!isnan (c3 (x)))
+		k = fmaxl (k, c3 (x));
+  if (!isnan (c4 (x)))
+		k = fmaxl (k, c4 (x));
+  if (!isnan (c5 (x)))
+		k = fmaxl (k, c5 (x));
+  if (!isnan (c6 (x)))
+		k = fmaxl (k, c6 (x));
+	if (k == 0.L || k > 20.L)
     return 20.L;
-  return
-    fmaxl (c0 (x),
-           fmaxl (c1 (x),
-                  fmaxl (c2 (x),
-                         fmaxl (c3 (x),
-                                fmaxl (c4 (x), fmaxl (c5 (x), c6 (x)))))));
+  return k;
 }
 
 /**
@@ -1440,51 +1993,64 @@ steps_objective_8 (Optimize * optimize) ///< Optimize struct.
   register long double *x;
   register long double k;
   x = optimize->coefficient;
-  k = fminl (0.L, a0 (x));
-  if (a1 (x) < 0.L)
+	k = 0.L;
+  if (a0 (x) < -LDBL_EPSILON)
+    k += a0 (x);
+  if (a1 (x) < -LDBL_EPSILON)
     k += a1 (x);
-  if (a2 (x) < 0.L)
+  if (a2 (x) < -LDBL_EPSILON)
     k += a2 (x);
-  if (a3 (x) < 0.L)
+  if (a3 (x) < -LDBL_EPSILON)
     k += a3 (x);
-  if (a4 (x) < 0.L)
+  if (a4 (x) < -LDBL_EPSILON)
     k += a4 (x);
-  if (a5 (x) < 0.L)
+  if (a5 (x) < -LDBL_EPSILON)
     k += a5 (x);
-  if (a6 (x) < 0.L)
+  if (a6 (x) < -LDBL_EPSILON)
     k += a6 (x);
-  if (a7 (x) < 0.L)
+  if (a7 (x) < -LDBL_EPSILON)
     k += a7 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 30.L - k;
-  k = fminl (0.L, b0 (x));
-  if (b1 (x) < 0.L)
+	k = 0.L;
+  if (b0 (x) < -LDBL_EPSILON)
+    k += b0 (x);
+  if (b1 (x) < -LDBL_EPSILON)
     k += b1 (x);
-  if (b2 (x) < 0.L)
+  if (b2 (x) < -LDBL_EPSILON)
     k += b2 (x);
-  if (b3 (x) < 0.L)
+  if (b3 (x) < -LDBL_EPSILON)
     k += b3 (x);
-  if (b4 (x) < 0.L)
+  if (b4 (x) < -LDBL_EPSILON)
     k += b4 (x);
-  if (b5 (x) < 0.L)
+  if (b5 (x) < -LDBL_EPSILON)
     k += b5 (x);
-  if (b6 (x) < 0.L)
+  if (b6 (x) < -LDBL_EPSILON)
     k += b6 (x);
-  if (b7 (x) < 0.L)
+  if (b7 (x) < -LDBL_EPSILON)
     k += b7 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 20.L - k;
-  if (isnan (c0 (x)) || isnan (c1 (x)) || isnan (c2 (x)) || isnan (c3 (x))
-      || isnan (c4 (x)) || isnan (c5 (x)) || isnan (c6 (x)) || isnan (c7 (x)))
+	k = 0.L;
+  if (!isnan (c0 (x)))
+		k = fmaxl (k, c0 (x));
+  if (!isnan (c1 (x)))
+		k = fmaxl (k, c1 (x));
+  if (!isnan (c2 (x)))
+		k = fmaxl (k, c2 (x));
+  if (!isnan (c3 (x)))
+		k = fmaxl (k, c3 (x));
+  if (!isnan (c4 (x)))
+		k = fmaxl (k, c4 (x));
+  if (!isnan (c5 (x)))
+		k = fmaxl (k, c5 (x));
+  if (!isnan (c6 (x)))
+		k = fmaxl (k, c6 (x));
+  if (!isnan (c7 (x)))
+		k = fmaxl (k, c7 (x));
+	if (k == 0.L || k > 20.L)
     return 20.L;
-  return
-    fmaxl (c0 (x),
-           fmaxl (c1 (x),
-                  fmaxl (c2 (x),
-                         fmaxl (c3 (x),
-                                fmaxl (c4 (x),
-                                       fmaxl (c5 (x),
-                                              fmaxl (c6 (x), c7 (x))))))));
+  return k;
 }
 
 /**
@@ -1498,58 +2064,70 @@ steps_objective_9 (Optimize * optimize) ///< Optimize struct.
   register long double *x;
   register long double k;
   x = optimize->coefficient;
-  k = fminl (0.L, a0 (x));
-  if (a1 (x) < 0.L)
+	k = 0.L;
+  if (a0 (x) < -LDBL_EPSILON)
+    k += a0 (x);
+  if (a1 (x) < -LDBL_EPSILON)
     k += a1 (x);
-  if (a2 (x) < 0.L)
+  if (a2 (x) < -LDBL_EPSILON)
     k += a2 (x);
-  if (a3 (x) < 0.L)
+  if (a3 (x) < -LDBL_EPSILON)
     k += a3 (x);
-  if (a4 (x) < 0.L)
+  if (a4 (x) < -LDBL_EPSILON)
     k += a4 (x);
-  if (a5 (x) < 0.L)
+  if (a5 (x) < -LDBL_EPSILON)
     k += a5 (x);
-  if (a6 (x) < 0.L)
+  if (a6 (x) < -LDBL_EPSILON)
     k += a6 (x);
-  if (a7 (x) < 0.L)
+  if (a7 (x) < -LDBL_EPSILON)
     k += a7 (x);
-  if (a8 (x) < 0.L)
+  if (a8 (x) < -LDBL_EPSILON)
     k += a8 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 30.L - k;
-  k = fminl (0.L, b0 (x));
-  if (b1 (x) < 0.L)
+	k = 0.L;
+  if (b0 (x) < -LDBL_EPSILON)
+    k += b0 (x);
+  if (b1 (x) < -LDBL_EPSILON)
     k += b1 (x);
-  if (b2 (x) < 0.L)
+  if (b2 (x) < -LDBL_EPSILON)
     k += b2 (x);
-  if (b3 (x) < 0.L)
+  if (b3 (x) < -LDBL_EPSILON)
     k += b3 (x);
-  if (b4 (x) < 0.L)
+  if (b4 (x) < -LDBL_EPSILON)
     k += b4 (x);
-  if (b5 (x) < 0.L)
+  if (b5 (x) < -LDBL_EPSILON)
     k += b5 (x);
-  if (b6 (x) < 0.L)
+  if (b6 (x) < -LDBL_EPSILON)
     k += b6 (x);
-  if (b7 (x) < 0.L)
+  if (b7 (x) < -LDBL_EPSILON)
     k += b7 (x);
-  if (b8 (x) < 0.L)
+  if (b8 (x) < -LDBL_EPSILON)
     k += b8 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 20.L - k;
-  if (isnan (c0 (x)) || isnan (c1 (x)) || isnan (c2 (x)) || isnan (c3 (x))
-      || isnan (c4 (x)) || isnan (c5 (x)) || isnan (c6 (x)) || isnan (c7 (x))
-      || isnan (c8 (x)))
+	k = 0.L;
+  if (!isnan (c0 (x)))
+		k = fmaxl (k, c0 (x));
+  if (!isnan (c1 (x)))
+		k = fmaxl (k, c1 (x));
+  if (!isnan (c2 (x)))
+		k = fmaxl (k, c2 (x));
+  if (!isnan (c3 (x)))
+		k = fmaxl (k, c3 (x));
+  if (!isnan (c4 (x)))
+		k = fmaxl (k, c4 (x));
+  if (!isnan (c5 (x)))
+		k = fmaxl (k, c5 (x));
+  if (!isnan (c6 (x)))
+		k = fmaxl (k, c6 (x));
+  if (!isnan (c7 (x)))
+		k = fmaxl (k, c7 (x));
+  if (!isnan (c8 (x)))
+		k = fmaxl (k, c8 (x));
+	if (k == 0.L || k > 20.L)
     return 20.L;
-  return
-    fmaxl (c0 (x),
-           fmaxl (c1 (x),
-                  fmaxl (c2 (x),
-                         fmaxl (c3 (x),
-                                fmaxl (c4 (x),
-                                       fmaxl (c5 (x),
-                                              fmaxl (c6 (x),
-                                                     fmaxl (c7 (x),
-                                                            c8 (x)))))))));
+  return k;
 }
 
 /**
@@ -1563,62 +2141,76 @@ steps_objective_10 (Optimize * optimize)        ///< Optimize struct.
   register long double *x;
   register long double k;
   x = optimize->coefficient;
-  k = fminl (0.L, a0 (x));
-  if (a1 (x) < 0.L)
+	k = 0.L;
+  if (a0 (x) < -LDBL_EPSILON)
+    k += a0 (x);
+  if (a1 (x) < -LDBL_EPSILON)
     k += a1 (x);
-  if (a2 (x) < 0.L)
+  if (a2 (x) < -LDBL_EPSILON)
     k += a2 (x);
-  if (a3 (x) < 0.L)
+  if (a3 (x) < -LDBL_EPSILON)
     k += a3 (x);
-  if (a4 (x) < 0.L)
+  if (a4 (x) < -LDBL_EPSILON)
     k += a4 (x);
-  if (a5 (x) < 0.L)
+  if (a5 (x) < -LDBL_EPSILON)
     k += a5 (x);
-  if (a6 (x) < 0.L)
+  if (a6 (x) < -LDBL_EPSILON)
     k += a6 (x);
-  if (a7 (x) < 0.L)
+  if (a7 (x) < -LDBL_EPSILON)
     k += a7 (x);
-  if (a8 (x) < 0.L)
+  if (a8 (x) < -LDBL_EPSILON)
     k += a8 (x);
-  if (a9 (x) < 0.L)
+  if (a9 (x) < -LDBL_EPSILON)
     k += a9 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 30.L - k;
-  k = fminl (0.L, b0 (x));
-  if (b1 (x) < 0.L)
+	k = 0.L;
+  if (b0 (x) < -LDBL_EPSILON)
+    k += b0 (x);
+  if (b1 (x) < -LDBL_EPSILON)
     k += b1 (x);
-  if (b2 (x) < 0.L)
+  if (b2 (x) < -LDBL_EPSILON)
     k += b2 (x);
-  if (b3 (x) < 0.L)
+  if (b3 (x) < -LDBL_EPSILON)
     k += b3 (x);
-  if (b4 (x) < 0.L)
+  if (b4 (x) < -LDBL_EPSILON)
     k += b4 (x);
-  if (b5 (x) < 0.L)
+  if (b5 (x) < -LDBL_EPSILON)
     k += b5 (x);
-  if (b6 (x) < 0.L)
+  if (b6 (x) < -LDBL_EPSILON)
     k += b6 (x);
-  if (b7 (x) < 0.L)
+  if (b7 (x) < -LDBL_EPSILON)
     k += b7 (x);
-  if (b8 (x) < 0.L)
+  if (b8 (x) < -LDBL_EPSILON)
     k += b8 (x);
-  if (b9 (x) < 0.L)
+  if (b9 (x) < -LDBL_EPSILON)
     k += b9 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 20.L - k;
-  if (isnan (c0 (x)) || isnan (c1 (x)) || isnan (c2 (x)) || isnan (c3 (x))
-      || isnan (c4 (x)) || isnan (c5 (x)) || isnan (c6 (x)) || isnan (c7 (x))
-      || isnan (c8 (x)) || isnan (c9 (x)))
+	k = 0.L;
+  if (!isnan (c0 (x)))
+		k = fmaxl (k, c0 (x));
+  if (!isnan (c1 (x)))
+		k = fmaxl (k, c1 (x));
+  if (!isnan (c2 (x)))
+		k = fmaxl (k, c2 (x));
+  if (!isnan (c3 (x)))
+		k = fmaxl (k, c3 (x));
+  if (!isnan (c4 (x)))
+		k = fmaxl (k, c4 (x));
+  if (!isnan (c5 (x)))
+		k = fmaxl (k, c5 (x));
+  if (!isnan (c6 (x)))
+		k = fmaxl (k, c6 (x));
+  if (!isnan (c7 (x)))
+		k = fmaxl (k, c7 (x));
+  if (!isnan (c8 (x)))
+		k = fmaxl (k, c8 (x));
+  if (!isnan (c9 (x)))
+		k = fmaxl (k, c9 (x));
+	if (k == 0.L || k > 20.L)
     return 20.L;
-  k = fmaxl (c8 (x), c9 (x));
-  return
-    fmaxl (c0 (x),
-           fmaxl (c1 (x),
-                  fmaxl (c2 (x),
-                         fmaxl (c3 (x),
-                                fmaxl (c4 (x),
-                                       fmaxl (c5 (x),
-                                              fmaxl (c6 (x),
-                                                     fmaxl (c7 (x), k))))))));
+  return k;
 }
 
 /**
@@ -1632,68 +2224,82 @@ steps_objective_11 (Optimize * optimize)        ///< Optimize struct.
   register long double *x;
   register long double k;
   x = optimize->coefficient;
-  k = fminl (0.L, a0 (x));
-  if (a1 (x) < 0.L)
+	k = 0.L;
+  if (a0 (x) < -LDBL_EPSILON)
+    k += a0 (x);
+  if (a1 (x) < -LDBL_EPSILON)
     k += a1 (x);
-  if (a2 (x) < 0.L)
+  if (a2 (x) < -LDBL_EPSILON)
     k += a2 (x);
-  if (a3 (x) < 0.L)
+  if (a3 (x) < -LDBL_EPSILON)
     k += a3 (x);
-  if (a4 (x) < 0.L)
+  if (a4 (x) < -LDBL_EPSILON)
     k += a4 (x);
-  if (a5 (x) < 0.L)
+  if (a5 (x) < -LDBL_EPSILON)
     k += a5 (x);
-  if (a6 (x) < 0.L)
+  if (a6 (x) < -LDBL_EPSILON)
     k += a6 (x);
-  if (a7 (x) < 0.L)
+  if (a7 (x) < -LDBL_EPSILON)
     k += a7 (x);
-  if (a8 (x) < 0.L)
+  if (a8 (x) < -LDBL_EPSILON)
     k += a8 (x);
-  if (a9 (x) < 0.L)
+  if (a9 (x) < -LDBL_EPSILON)
     k += a9 (x);
-  if (a10 (x) < 0.L)
+  if (a10 (x) < -LDBL_EPSILON)
     k += a10 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 30.L - k;
-  k = fminl (0.L, b0 (x));
-  if (b1 (x) < 0.L)
+	k = 0.L;
+  if (b0 (x) < -LDBL_EPSILON)
+    k += b0 (x);
+  if (b1 (x) < -LDBL_EPSILON)
     k += b1 (x);
-  if (b2 (x) < 0.L)
+  if (b2 (x) < -LDBL_EPSILON)
     k += b2 (x);
-  if (b3 (x) < 0.L)
+  if (b3 (x) < -LDBL_EPSILON)
     k += b3 (x);
-  if (b4 (x) < 0.L)
+  if (b4 (x) < -LDBL_EPSILON)
     k += b4 (x);
-  if (b5 (x) < 0.L)
+  if (b5 (x) < -LDBL_EPSILON)
     k += b5 (x);
-  if (b6 (x) < 0.L)
+  if (b6 (x) < -LDBL_EPSILON)
     k += b6 (x);
-  if (b7 (x) < 0.L)
+  if (b7 (x) < -LDBL_EPSILON)
     k += b7 (x);
-  if (b8 (x) < 0.L)
+  if (b8 (x) < -LDBL_EPSILON)
     k += b8 (x);
-  if (b9 (x) < 0.L)
+  if (b9 (x) < -LDBL_EPSILON)
     k += b9 (x);
-  if (b10 (x) < 0.L)
+  if (b10 (x) < -LDBL_EPSILON)
     k += b10 (x);
-  if (k < 0.L)
+  if (k < -LDBL_EPSILON)
     return 20.L - k;
-  if (isnan (c0 (x)) || isnan (c1 (x)) || isnan (c2 (x)) || isnan (c3 (x))
-      || isnan (c4 (x)) || isnan (c5 (x)) || isnan (c6 (x)) || isnan (c7 (x))
-      || isnan (c8 (x)) || isnan (c9 (x)) || isnan (c10 (x)))
+	k = 0.L;
+  if (!isnan (c0 (x)))
+		k = fmaxl (k, c0 (x));
+  if (!isnan (c1 (x)))
+		k = fmaxl (k, c1 (x));
+  if (!isnan (c2 (x)))
+		k = fmaxl (k, c2 (x));
+  if (!isnan (c3 (x)))
+		k = fmaxl (k, c3 (x));
+  if (!isnan (c4 (x)))
+		k = fmaxl (k, c4 (x));
+  if (!isnan (c5 (x)))
+		k = fmaxl (k, c5 (x));
+  if (!isnan (c6 (x)))
+		k = fmaxl (k, c6 (x));
+  if (!isnan (c7 (x)))
+		k = fmaxl (k, c7 (x));
+  if (!isnan (c8 (x)))
+		k = fmaxl (k, c8 (x));
+  if (!isnan (c9 (x)))
+		k = fmaxl (k, c9 (x));
+  if (!isnan (c10 (x)))
+		k = fmaxl (k, c10 (x));
+	if (k == 0.L || k > 20.L)
     return 20.L;
-  k = fmaxl (c9 (x), c10 (x));
-  return
-    fmaxl (c0 (x),
-           fmaxl (c1 (x),
-                  fmaxl (c2 (x),
-                         fmaxl (c3 (x),
-                                fmaxl (c4 (x),
-                                       fmaxl (c5 (x),
-                                              fmaxl (c6 (x),
-                                                     fmaxl (c7 (x),
-                                                            fmaxl (c8 (x),
-                                                                   k)))))))));
+  return k;
 }
 
 /**
@@ -1833,7 +2439,6 @@ steps_select (Optimize * optimize,      ///< Optimize struct.
           goto exit_on_error;
         }
       break;
-/*
     case 8:
       optimize->print = steps_print_8;
       optimize->objective = steps_objective_8;
@@ -1854,11 +2459,18 @@ steps_select (Optimize * optimize,      ///< Optimize struct.
         case 6:
           optimize->method = steps_8_6;
           break;
+        case 7:
+          optimize->method = steps_8_7;
+          break;
+        case 8:
+          optimize->method = steps_8_8;
+          break;
         default:
           code = 0;
           goto exit_on_error;
         }
       break;
+/*
     case 9:
       optimize->print = steps_print_9;
       optimize->objective = steps_objective_9;
@@ -2018,9 +2630,14 @@ steps_run (xmlNode * node,      ///< XML node.
   code = s->method (s);
   snprintf (filename, 32, "steps-%u-%u.mc", nsteps, order);
   file = fopen (filename, "w");
+	print_maxima_precision (file);
   s->print (s, file);
   s->print_maxima (file, nsteps, order);
   fclose (file);
+  snprintf (filename, 32, "sed -i 's/e\+/b\+/g' steps-%u-%u.mc", nsteps, order);
+	system (filename);
+  snprintf (filename, 32, "sed -i 's/e\-/b\-/g' steps-%u-%u.mc", nsteps, order);
+	system (filename);
 
   // Free memory
   g_slice_free1 (nfree * sizeof (unsigned int), s->random_type);

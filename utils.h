@@ -61,6 +61,7 @@ long double
 xml_node_get_float (xmlNode * node, const xmlChar * prop, int *error_code);
 int read_variable (xmlNode * node, long double *minimum, long double *interval,
                    unsigned int *type, unsigned int n);
+void print_maxima_precision (FILE *file);
 
 /**
  * Function to print the random variables on a file.

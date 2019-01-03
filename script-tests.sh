@@ -26,3 +26,10 @@
 ./ode-pgo tests/test-steps-7-5.xml
 ./ode-pgo tests/test-steps-7-6.xml
 ./ode-pgo tests/test-steps-7-7.xml
+./ode-pgo tests/test-steps-8-2.xml
+./ode-pgo tests/test-steps-8-3.xml
+./ode-pgo tests/test-steps-8-4.xml
+./ode-pgo tests/test-steps-8-5.xml
+./ode-pgo tests/test-steps-8-6.xml
+./ode-pgo tests/test-steps-8-7.xml
+./ode-pgo tests/test-steps-8-8.xml

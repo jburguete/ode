@@ -43,6 +43,43 @@ pgofiles = ode.pgo optimize.pgo steps.pgo $(rkpgofiles) utils.pgo
 
 gcdafiles = ode.gcda optimize.gcda steps.gcda $(rkgcdafiles) utils.gcda
 
+tests = \
+	tests/test-rk-2-2-0-0-0.xml \
+	tests/test-rk-2-2-0-0-1.xml \
+	tests/test-rk-2-2-1-0-0.xml \
+	tests/test-rk-2-2-1-0-1.xml \
+	tests/test-rk-3-2-0-0-0.xml \
+	tests/test-rk-3-2-0-0-1.xml \
+	tests/test-rk-3-2-1-0-0.xml \
+	tests/test-rk-3-2-1-0-1.xml \
+	tests/test-steps-3-2.xml \
+	tests/test-steps-3-3.xml \
+	tests/test-steps-4-2.xml \
+	tests/test-steps-4-3.xml \
+	tests/test-steps-4-4.xml \
+	tests/test-steps-5-2.xml \
+	tests/test-steps-5-3.xml \
+	tests/test-steps-5-4.xml \
+	tests/test-steps-5-5.xml \
+	tests/test-steps-6-2.xml \
+	tests/test-steps-6-3.xml \
+	tests/test-steps-6-4.xml \
+	tests/test-steps-6-5.xml \
+	tests/test-steps-6-6.xml \
+	tests/test-steps-7-2.xml \
+	tests/test-steps-7-3.xml \
+	tests/test-steps-7-4.xml \
+	tests/test-steps-7-5.xml \
+	tests/test-steps-7-6.xml \
+	tests/test-steps-7-7.xml \
+	tests/test-steps-8-2.xml \
+	tests/test-steps-8-3.xml \
+	tests/test-steps-8-4.xml \
+	tests/test-steps-8-5.xml \
+	tests/test-steps-8-6.xml \
+	tests/test-steps-8-7.xml \
+	tests/test-steps-8-8.xml \
+
 cc = gcc -flto -g -std=gnu11
 ccgen = $(cc) -fprofile-generate
 ccuse = $(cc) -fprofile-use -fprofile-correction
@@ -160,52 +197,55 @@ rk_6_4.pgo: rk_6_4.c rk_6_4.h rk_6_3.h rk.h $(cfiles)
 ode.pgo: ode.c steps.h $(rkhfiles) $(cfiles)
 	$(ccgen) $(cflags) ode.c -o ode.pgo
 
-utils.gcda: ode-pgo script-tests.sh
+utils.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
-optimize.gcda: ode-pgo script-tests.sh
+optimize.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
-rk.gcda: ode-pgo script-tests.sh
+steps.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
-rk_2_2.gcda: ode-pgo script-tests.sh
+rk.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
-rk_3_2.gcda: ode-pgo script-tests.sh
+rk_2_2.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
-rk_3_3.gcda: ode-pgo script-tests.sh
+rk_3_2.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
-rk_4_2.gcda: ode-pgo script-tests.sh
+rk_3_3.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
-rk_4_3.gcda: ode-pgo script-tests.sh
+rk_4_2.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
-rk_4_4.gcda: ode-pgo script-tests.sh
+rk_4_3.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
-rk_5_2.gcda: ode-pgo script-tests.sh
+rk_4_4.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
-rk_5_3.gcda: ode-pgo script-tests.sh
+rk_5_2.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
-rk_5_4.gcda: ode-pgo script-tests.sh
+rk_5_3.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
-rk_6_2.gcda: ode-pgo script-tests.sh
+rk_5_4.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
-rk_6_3.gcda: ode-pgo script-tests.sh
+rk_6_2.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
-rk_6_4.gcda: ode-pgo script-tests.sh
+rk_6_3.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
-ode.gcda: ode-pgo script-tests.sh
+rk_6_4.gcda: ode-pgo script-tests.sh $(tests)
+	sh script-tests.sh
+
+ode.gcda: ode-pgo script-tests.sh $(tests)
 	sh script-tests.sh
 
 ode.pdf: ode.tex Makefile

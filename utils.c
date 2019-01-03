@@ -224,3 +224,12 @@ exit_on_error:
   g_free (buffer);
   return 0;
 }
+
+/**
+ * Function to set the precision in a maxima program file.
+ */
+void
+print_maxima_precision (FILE *file) ///< maxima program file.
+{
+	fprintf (file, "fpprec:%u;\nfpprintprec:fpprec;\n", MAXIMA_PRECISION);
+}
