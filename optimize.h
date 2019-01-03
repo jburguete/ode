@@ -74,12 +74,11 @@ struct _Optimize
   long double convergence_factor;       ///< convergence factor.
   long double climbing_factor;
   ///< factor to the coordinates hill climbing optimization algorithm.
-  unsigned int nvariable;
-  ///< number of total simulations per variable on optimization algorithm.
   unsigned long long int nsimulations;
   ///< number of total simulations on optimization algorithm.
-  unsigned long long int nrandom;
-  ///< number of simulations per thread on Monte-Carlo optimization algorithm.
+  unsigned int thread;          ///< thread number.
+  unsigned int nvariable;
+  ///< number of total simulations per variable on optimization algorithm.
   unsigned int nclimbings;
   ///< number of steps on coordinates hill climbing optimization algorithm.
   unsigned int niterations;     ///< iterations number.
@@ -99,7 +98,7 @@ extern unsigned nthreads;
 
 void optimize_print_random (Optimize * optimize, FILE * file);
 void optimize_step (Optimize * optimize);
-void optimize_init (Optimize * optimize, gsl_rng * rng);
+void optimize_init (Optimize * optimize, gsl_rng * rng, unsigned int thread);
 void optimize_delete (Optimize * optimize);
 void optimize_bucle (Optimize * optimize);
 void optimize_create (Optimize * optimize, long double *optimal,

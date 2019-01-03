@@ -943,11 +943,12 @@ end:
  */
 static inline void
 rk_init (RK * rk,               ///< RK struct.
-         gsl_rng * rng)         ///< GSL pseudo-random number generator struct.
+         gsl_rng * rng,         ///< GSL pseudo-random number generator struct.
+	 unsigned int thread)   ///< thread number.
 {
-  optimize_init (rk->tb, rng);
+  optimize_init (rk->tb, rng, thread);
   if (rk->strong)
-    optimize_init (rk->ac0, rng);
+    optimize_init (rk->ac0, rng, 0);
 }
 
 /**
@@ -990,9 +991,9 @@ rk_step_ac (RK * rk)            ///< RK struct.
   vo2 = (long double *) alloca (nfree * sizeof (long double));
   memcpy (vo, ac->value_optimal, nfree * sizeof (long double));
 
-  // Monte-Carlo algorithm
+  // optimzation algorithm sampling
 #if DEBUG_RK
-  fprintf (stderr, "rk_step_ac: Monte-Carlo algorithm\n");
+  fprintf (stderr, "rk_step_ac: optimization algorithm sampling\n");
   fprintf (stderr, "rk_step_ac: nsimulations=%Lu nclimbings=%u nfree=%u\n",
            ac->nsimulations, ac->nclimbings, ac->nfree);
 #endif
@@ -1052,6 +1053,7 @@ rk_step_ac (RK * rk)            ///< RK struct.
   fprintf (stderr, "rk_step_ac: hill climbing algorithm bucle\n");
 #endif
   memcpy (vo2, vo, nfree * sizeof (long double));
+  memcpy (ac->random_data, vo, nfree * sizeof (long double));
   n = ac->nclimbings;
   for (i = 0; i < n; ++i)
     {
@@ -1059,7 +1061,6 @@ rk_step_ac (RK * rk)            ///< RK struct.
       for (j = 0; j < nfree; ++j)
         fprintf (stderr, "rk_step_ac: j=%u is=%Lg\n", j, is[j]);
 #endif
-      memcpy (ac->random_data, vo, nfree * sizeof (long double));
       for (j = k = 0; j < nfree; ++j)
         {
           v = vo[j];
@@ -1114,14 +1115,16 @@ rk_step_ac (RK * rk)            ///< RK struct.
           ac->random_data[j] = v;
         }
 
-      // update optimal values
-      memcpy (vo, vo2, nfree * sizeof (long double));
 
-      // increase or reduce intervals if converging or not
+      // update optimal values and increase or reduce intervals if converging or
+      // not
       if (!k)
         f = 0.5L;
       else
-        f = 1.2L;
+        {
+          f = 1.2L;
+          memcpy (vo, vo2, nfree * sizeof (long double));
+        }
       for (j = 0; j < nfree; ++j)
         is[j] *= f;
     }
@@ -1173,7 +1176,7 @@ rk_bucle_ac (RK * rk)           ///< RK struct.
   memcpy (ac, ac0, sizeof (Optimize));
   ac->optimal = &optimal;
   ac->value_optimal = vo;
-  optimize_init (ac, ac0->rng);
+  optimize_init (ac, ac0->rng, 0);
 #if DEBUG_RK
   for (i = 0; i < tb->nfree; ++i)
     fprintf (stderr, "rk_bucle_ac: i=%u random=%Lg\n", i, tb->random_data[i]);
@@ -1252,14 +1255,17 @@ rk_step_tb (RK * rk)            ///< RK struct.
   vo = (long double *) alloca (nfree * sizeof (long double));
   b = (file_variables && !rk->strong) ? 1 : 0;
 
-  // Monte-Carlo algorithm
+  // optimization algorithm sampling
 #if DEBUG_RK
-  fprintf (stderr, "rk_step_tb: Monte-Carlo algorithm\n");
-  fprintf (stderr, "rk_step_tb: nrandom=%Lu nclimbings=%u\n",
-           tb->nrandom, tb->nclimbings);
+  fprintf (stderr, "rk_step_tb: optimization algorithm sampling\n");
+  fprintf (stderr, "rk_step_tb: nsimulations=%Lu nclimbings=%u\n",
+           tb->nsimulations, tb->nclimbings);
 #endif
-  nrandom = tb->nrandom;
-  for (ii = 0L; ii < nrandom; ++ii)
+  ii = tb->nsimulations * (rank * nthreads + tb->thread) 
+	  / (nnodes * nthreads);
+  nrandom = tb->nsimulations * (rank * nthreads + tb->thread + 1) 
+	  / (nnodes * nthreads);
+  for (; ii < nrandom; ++ii)
     {
 
       // random freedom degrees
@@ -1307,10 +1313,10 @@ rk_step_tb (RK * rk)            ///< RK struct.
   fprintf (stderr, "rk_step_tb: hill climbing algorithm bucle\n");
 #endif
   memcpy (tb->random_data, tb->value_optimal, nfree * sizeof (long double));
+  memcpy (vo, tb->value_optimal, nfree * sizeof (long double));
   n = tb->nclimbings;
   for (i = 0; i < n; ++i)
     {
-      memcpy (vo, tb->value_optimal, nfree * sizeof (long double));
       for (j = k = 0; j < nfree; ++j)
         {
           v = vo[j];
@@ -1363,7 +1369,10 @@ rk_step_tb (RK * rk)            ///< RK struct.
       if (!k)
         f = 0.5L;
       else
-        f = 1.2L;
+        {
+          f = 1.2L;
+          memcpy (vo, tb->value_optimal, nfree * sizeof (long double));
+        }
       for (j = 0; j < nfree; ++j)
         is[j] *= f;
     }
@@ -1976,7 +1985,7 @@ rk_run (xmlNode * node,         ///< XML node.
     memcpy (rk + i, rk, sizeof (RK));
   j = rank * nthreads;
   for (i = 0; i < nthreads; ++i)
-    rk_init (rk + i, rng[j + i]);
+    rk_init (rk + i, rng[j + i], i);
 
   // Method bucle
   printf ("Optimize bucle\n");

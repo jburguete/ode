@@ -97,18 +97,23 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
   vo2 = (long double *) alloca (nfree * sizeof (long double));
   memcpy (vo, optimize->value_optimal, nfree * sizeof (long double));
 
-  // Monte-Carlo algorithm
+  // optimization algorithm sampling
 #if DEBUG_OPTIMIZE
-  fprintf (stderr, "optimize_step: Monte-Carlo algorithm\n");
+  fprintf (stderr, "optimize_step: optimization algorithm sampling\n");
+  fprintf (stderr, "optimize_step: nsimulations=%Lu\n", optimize->nsimulations);
 #endif
   random = optimize->random_data;
-  nrandom = optimize->nrandom;
-  for (ii = 0; ii < nrandom; ++ii)
+  ii = optimize->nsimulations * (rank * nthreads + optimize->thread) 
+	  / (nnodes * nthreads);
+  nrandom = optimize->nsimulations * (rank * nthreads + optimize->thread + 1) 
+	  / (nnodes * nthreads);
+  for (; ii < nrandom; ++ii)
     {
 
       // random freedom degrees
 #if DEBUG_OPTIMIZE
       fprintf (stderr, "optimize_step: random freedom degrees\n");
+      fprintf (stderr, "optimize_step: simulation=%Lu\n", ii);
 #endif
       optimize_generate_freedom (optimize, ii);
 
@@ -194,14 +199,16 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
           random[j] = v;
         }
 
-      // update optimal values
-      memcpy (vo, vo2, nfree * sizeof (long double));
 
-      // increase or reduce intervals if converging or not
+      // update optimal values and increase or reduce intervals if converging or
+      // not
       if (!k)
         f = 0.5L;
       else
-        f = 1.2L;
+        {
+          f = 1.2L;
+          memcpy (vo, vo2, nfree * sizeof (long double));
+	}
       for (j = 0; j < nfree; ++j)
         is[j] *= f;
     }
@@ -228,15 +235,15 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
  */
 void
 optimize_init (Optimize * optimize,     ///< Optimize struct.
-               gsl_rng * rng)   ///< GSL pseudo-random number generator struct.
+               gsl_rng * rng,   ///< GSL pseudo-random number generator struct.
+	       unsigned int thread) ///< thread number.
 {
 #if DEBUG_OPTIMIZE
   fprintf (stderr, "optimize_init: start\n");
 #endif
-  optimize->nrandom = optimize->nsimulations / (nnodes * nthreads) + 1;
 #if DEBUG_OPTIMIZE
-  fprintf (stderr, "optimize_init: nrandom=%Lu nfree=%u size=%u\n",
-           optimize->nrandom, optimize->nfree, optimize->size);
+  fprintf (stderr, "optimize_init: nsimulations=%Lu nfree=%u size=%u\n",
+           optimize->nsimulations, optimize->nfree, optimize->size);
 #endif
   optimize->random_data
     = (long double *) g_slice_alloc (optimize->nfree * sizeof (long double));
@@ -251,6 +258,7 @@ optimize_init (Optimize * optimize,     ///< Optimize struct.
   memcpy (optimize->interval, optimize->interval0,
           optimize->nfree * sizeof (long double));
   optimize->rng = rng;
+  optimize->thread = thread;
 #if DEBUG_OPTIMIZE
   fprintf (stderr, "optimize_init: end\n");
 #endif

@@ -2006,7 +2006,7 @@ steps_run (xmlNode * node,      ///< XML node.
     memcpy (s + i, s, sizeof (Optimize));
   j = rank * nthreads;
   for (i = 0; i < nthreads; ++i)
-    optimize_init (s + i, rng[j + i]);
+    optimize_init (s + i, rng[j + i], i);
 
   // Method bucle
   printf ("Optimize bucle\n");
