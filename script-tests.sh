@@ -6,30 +6,19 @@
 ./ode-pgo tests/test-rk-3-2-0-0-1.xml
 ./ode-pgo tests/test-rk-3-2-1-0-0.xml
 ./ode-pgo tests/test-rk-3-2-1-0-1.xml
-./ode-pgo tests/test-steps-3-2.xml
-./ode-pgo tests/test-steps-3-3.xml
-./ode-pgo tests/test-steps-4-2.xml
-./ode-pgo tests/test-steps-4-3.xml
-./ode-pgo tests/test-steps-4-4.xml
-./ode-pgo tests/test-steps-5-2.xml
-./ode-pgo tests/test-steps-5-3.xml
-./ode-pgo tests/test-steps-5-4.xml
-./ode-pgo tests/test-steps-5-5.xml
-./ode-pgo tests/test-steps-6-2.xml
-./ode-pgo tests/test-steps-6-3.xml
-./ode-pgo tests/test-steps-6-4.xml
-./ode-pgo tests/test-steps-6-5.xml
-./ode-pgo tests/test-steps-6-6.xml
-./ode-pgo tests/test-steps-7-2.xml
-./ode-pgo tests/test-steps-7-3.xml
-./ode-pgo tests/test-steps-7-4.xml
-./ode-pgo tests/test-steps-7-5.xml
-./ode-pgo tests/test-steps-7-6.xml
-./ode-pgo tests/test-steps-7-7.xml
-./ode-pgo tests/test-steps-8-2.xml
-./ode-pgo tests/test-steps-8-3.xml
-./ode-pgo tests/test-steps-8-4.xml
-./ode-pgo tests/test-steps-8-5.xml
-./ode-pgo tests/test-steps-8-6.xml
-./ode-pgo tests/test-steps-8-7.xml
-./ode-pgo tests/test-steps-8-8.xml
+for i in `seq 3 8`;
+do
+	k=`echo "$i-1" | bc`;
+	echo $k
+	for j in `seq 2 $k`;
+	do
+		./ode-pgo tests/test-steps-$i-$j.xml
+	done
+done
+for i in `seq 9 9`;
+do
+	for j in `seq 2 8`;
+	do
+		./ode-pgo tests/test-steps-$i-$j.xml
+	done
+done
