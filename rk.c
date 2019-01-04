@@ -33,6 +33,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \copyright Copyright 2011-2018.
  */
 #define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <float.h>
 #include <math.h>
@@ -1877,7 +1879,7 @@ rk_run (xmlNode * node,         ///< XML node.
         gsl_rng ** rng)         ///< array of gsl_rng structs.
 {
   RK rk[nthreads];
-  char filename[32];
+  char filename[64];
   Optimize *tb, *ac;
   gchar *buffer;
   xmlChar *prop;
@@ -2002,13 +2004,19 @@ rk_run (xmlNode * node,         ///< XML node.
       memcpy (rk->ac, ac, sizeof (Optimize));
       code = ac->method ((Optimize *) rk);
     }
-  snprintf (filename, 32, "rk-%u-%u-%u-%u-%u.mc",
+  snprintf (filename, 64, "rk-%u-%u-%u-%u-%u.mc",
             nsteps, order, rk->time_accuracy, rk->pair, rk->strong);
   file = fopen (filename, "w");
 	print_maxima_precision (file);
   tb->print ((Optimize *) rk, file);
   tb->print_maxima (file, nsteps, order);
   fclose (file);
+  snprintf (filename, 64, "sed -i 's/e+/b+/g' rk-%u-%u-%u-%u-%u.mc", 
+            nsteps, order, rk->time_accuracy, rk->pair, rk->strong);
+  system (filename);
+  snprintf (filename, 64, "sed -i 's/e-/b-/g' rk-%u-%u-%u-%u-%u.mc", 
+            nsteps, order, rk->time_accuracy, rk->pair, rk->strong);
+  system (filename);
 
   // Free memory
   if (rk->strong)

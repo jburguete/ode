@@ -15,7 +15,7 @@ do
 		./ode-pgo tests/test-steps-$i-$j.xml
 	done
 done
-for i in `seq 9 9`;
+for i in `seq 9 11`;
 do
 	for j in `seq 2 8`;
 	do

@@ -2033,6 +2033,1157 @@ steps_9_8 (Optimize * optimize) ///< Optimize struct.
 }
 
 /**
+ * Function to get the coefficients on a 10 steps 2nd order multi-steps method.
+ */
+static int
+steps_10_2 (Optimize * optimize) ///< Optimize struct.
+{
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  a8 (x) = r[7];
+  a9 (x) = r[8];
+  b9 (x) = r[9];
+  b8 (x) = r[10];
+  b7 (x) = r[11];
+  b6 (x) = r[12];
+  b5 (x) = r[13];
+  b4 (x) = r[14];
+  b3 (x) = r[15];
+  b2 (x) = r[16];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
+    - a8 (x) - a9 (x);
+  b1 (x)
+    = 0.5L * (a1 (x) + 4.L * (a2 (x) - b2 (x)) + 9.L * a3 (x)
+              + 16.L * (a4 (x) - b8 (x)) + 25.L * a5 (x) + 36.L * a6 (x)
+              + 49.L * a7 (x) + 64.L * a8 (x) + 81.L * a9 (x) - 6.L * b3 (x) 
+							- 8.L * b4 (x) - 10.L * b5 (x) - 12.L * b6 (x) - 14.L * b7 (x) 
+							- 18.L * b9 (x) - 1.L);
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) + 8.L * a8 (x) + 9.L * a9 (x)
+		- b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x) - b6 (x) - b7 (x) - b8 (x)
+		- b9 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 10 steps 3th order multi-steps method.
+ */
+static int
+steps_10_3 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[2], B[2], C[2];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  a8 (x) = r[7];
+  a9 (x) = r[8];
+  b9 (x) = r[9];
+  b8 (x) = r[10];
+  b7 (x) = r[11];
+  b6 (x) = r[12];
+  b5 (x) = r[13];
+  b4 (x) = r[14];
+  b3 (x) = r[15];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
+    - a8 (x) - a9 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * (a4 (x) - b8 (x))
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) + 64.L * a8 (x)
+		+ 81.L * a9 (x) - 6.L * b3 (x) - 8.L * b4 (x) - 10.L * b5 (x) 
+		- 12.L * b6 (x) - 14.L * b7 (x) - 18.L * b9 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * (a3 (x) - b3 (x)) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) + 512.L * a8 (x)
+		+ 729.L * a9 (x) - 48.L * b4 (x) - 75.L * b5 (x) - 108.L * b6 (x)
+		- 147.L * b7 (x) - 192.L * b8 (x) - 243.L * b9 (x);
+  solve_2 (A, B, C);
+  b2 (x) = C[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = C[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) + 8.L * a8 (x) + 9.L * a9 (x)
+		- b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x) - b6 (x) - b7 (x) - b8 (x)
+		- b9 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 10 steps 4th order multi-steps method.
+ */
+static int
+steps_10_4 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[3], B[3], C[3], D[3];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  a8 (x) = r[7];
+  a9 (x) = r[8];
+  b9 (x) = r[9];
+  b8 (x) = r[10];
+  b7 (x) = r[11];
+  b6 (x) = r[12];
+  b5 (x) = r[13];
+  b4 (x) = r[14];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
+    - a8 (x) - a9 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * (a4 (x) - b8 (x))
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) + 64.L * a8 (x)
+		+ 81.L * a9 (x) - 8.L * b4 (x) - 10.L * b5 (x) - 12.L * b6 (x)
+	 	- 14.L * b7 (x) - 18.L * b9 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) + 512.L * a8 (x)
+		+ 729.L * a9 (x) - 48.L * b4 (x) - 75.L * b5 (x) - 108.L * b6 (x)
+		- 147.L * b7 (x) - 192.L * b8 (x) - 243.L * b9 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x)
+    + 256.L * (a4 (x) - b4 (x)) + 625.L * a5 (x) + 1296.L * a6 (x)
+    + 2401.L * a7 (x) + 4096.L * a8 (x) + 6561.L * a9 (x) - 500.L * b5 (x)
+	 	- 864.L * b6 (x) - 1372.L * b7 (x) - 2048.L * b8 (x) - 2916.L * b9 (x);
+  solve_3 (A, B, C, D);
+  b3 (x) = D[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = D[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = D[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) + 8.L * a8 (x) + 9.L * a9 (x)
+		- b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x) - b6 (x) - b7 (x) - b8 (x)
+		- b9 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 10 steps 5th order multi-steps method.
+ */
+static int
+steps_10_5 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[4], B[4], C[4], D[4], E[4];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  a8 (x) = r[7];
+  a9 (x) = r[8];
+  b9 (x) = r[9];
+  b8 (x) = r[10];
+  b7 (x) = r[11];
+  b6 (x) = r[12];
+  b5 (x) = r[13];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
+    - a8 (x) - a9 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = 8.L;
+  E[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * (a4 (x) - b8 (x))
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) + 64.L * a8 (x)
+		+ 81.L * a9 (x) - 10.L * b5 (x) - 12.L * b6 (x) - 14.L * b7 (x)
+	 	- 18.L * b9 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 48.L;
+  E[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) + 512.L * a8 (x)
+		+ 729.L * a9 (x) - 75.L * b5 (x) - 108.L * b6 (x) - 147.L * b7 (x)
+	 	- 192.L * b8 (x) - 243.L * b9 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = 256.L;
+  E[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x) + 256.L * a4 (x)
+	 	+ 625.L * a5 (x) + 1296.L * a6 (x) + 2401.L * a7 (x) + 4096.L * a8 (x)
+	 	+ 6561.L * a9 (x) - 500.L * b5 (x) - 864.L * b6 (x) - 1372.L * b7 (x)
+	 	- 2048.L * b8 (x) - 2916.L * b9 (x);
+  A[3] = 5.L;
+  B[3] = 80.L;
+  C[3] = 405.L;
+  D[3] = 1280.L;
+  E[3] = 1.L + a1 (x) + 32.L * a2 (x) + 243.L * a3 (x) + 1024.L * a4 (x)
+    + 3125.L * (a5 (x) - b5 (x)) + 7776.L * a6 (x) + 16807.L * a7 (x)
+    + 32768.L * a8 (x) + 59049.L * a9 (x) - 6480.L * b6 (x) - 12005.L * b7 (x)
+	 	- 20480.L * b8 (x) - 32805.L * b9 (x);
+  solve_4 (A, B, C, D, E);
+  b4 (x) = E[3];
+  if (isnan (b4 (x)))
+    return 0;
+  b3 (x) = E[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = E[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = E[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) + 8.L * a8 (x) + 9.L * a9 (x)
+		- b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x) - b6 (x) - b7 (x) - b8 (x)
+		- b9 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 10 steps 6th order multi-steps method.
+ */
+static int
+steps_10_6 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[5], B[5], C[5], D[5], E[5], F[5];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  a8 (x) = r[7];
+  a9 (x) = r[8];
+  b9 (x) = r[9];
+  b8 (x) = r[10];
+  b7 (x) = r[11];
+  b6 (x) = r[12];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
+    - a8 (x) - a9 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = 8.L;
+  E[0] = 10.L;
+  F[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * (a4 (x) - b8 (x))
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) + 64.L * a8 (x)
+		+ 81.L * a9 (x) - 12.L * b6 (x) - 14.L * b7 (x) - 18.L * b9 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 48.L;
+  E[1] = 75.L;
+  F[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) + 512.L * a8 (x)
+		+ 729.L * a9 (x) - 108.L * b6 (x) - 147.L * b7 (x) - 192.L * b8 (x)
+	 	- 243.L * b9 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = 256.L;
+  E[2] = 500.L;
+  F[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x) + 256.L * a4 (x)
+	 	+ 625.L * a5 (x) + 1296.L * a6 (x) + 2401.L * a7 (x) + 4096.L * a8 (x)
+	 	+ 6561.L * a9 (x) - 864.L * b6 (x) - 1372.L * b7 (x) - 2048.L * b8 (x)
+	 	- 2916.L * b9 (x);
+  A[3] = 5.L;
+  B[3] = 80.L;
+  C[3] = 405.L;
+  D[3] = 1280.L;
+  E[3] = 3125.L;
+  F[3] = 1.L + a1 (x) + 32.L * a2 (x) + 243.L * a3 (x) + 1024.L * a4 (x)
+    + 3125.L * a5 (x) + 7776.L * a6 (x) + 16807.L * a7 (x) + 32768.L * a8 (x)
+	 	+ 59049.L * a9 (x) - 6480.L * b6 (x) - 12005.L * b7 (x) - 20480.L * b8 (x)
+	 	- 32805.L * b9 (x);
+  A[4] = 6.L;
+  B[4] = 192.L;
+  C[4] = 1458.L;
+  D[4] = 6144.L;
+  E[4] = 18750.L;
+  F[4] = -1.L + a1 (x) + 64.L * a2 (x) + 729.L * a3 (x) + 4096.L * a4 (x)
+    + 15625.L * a5 (x) + 46656.L * (a6 (x) - b6 (x)) + 117649.L * a7 (x)
+    + 262144.L * a8 (x) + 531441.L * a9 (x) - 100842.L * b7 (x)
+	 	- 196608.L * b8 (x) - 354294.L * b9 (x);
+  solve_5 (A, B, C, D, E, F);
+  b5 (x) = F[4];
+  if (isnan (b5 (x)))
+    return 0;
+  b4 (x) = F[3];
+  if (isnan (b4 (x)))
+    return 0;
+  b3 (x) = F[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = F[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = F[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) + 8.L * a8 (x) + 9.L * a9 (x)
+		- b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x) - b6 (x) - b7 (x) - b8 (x)
+		- b9 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 10 steps 7th order multi-steps method.
+ */
+static int
+steps_10_7 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[6], B[6], C[6], D[6], E[6], F[6], G[6];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  a8 (x) = r[7];
+  a9 (x) = r[8];
+  b9 (x) = r[9];
+  b8 (x) = r[10];
+  b7 (x) = r[11];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
+    - a8 (x) - a9 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = 8.L;
+  E[0] = 10.L;
+  F[0] = 12.L;
+  G[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * (a4 (x) - b8 (x))
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) + 64.L * a8 (x)
+		+ 81.L * a9 (x) - 14.L * b7 (x) - 18.L * b9 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 48.L;
+  E[1] = 75.L;
+  F[1] = 108.L;
+  G[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) + 512.L * a8 (x)
+		+ 729.L * a9 (x) - 147.L * b7 (x) - 192.L * b8 (x) - 243.L * b9 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = 256.L;
+  E[2] = 500.L;
+  F[2] = 864.L;
+  G[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x) + 256.L * a4 (x)
+	 	+ 625.L * a5 (x) + 1296.L * a6 (x) + 2401.L * a7 (x) + 4096.L * a8 (x)
+	 	+ 6561.L * a9 (x) - 1372.L * b7 (x) - 2048.L * b8 (x) - 2916.L * b9 (x);
+  A[3] = 5.L;
+  B[3] = 80.L;
+  C[3] = 405.L;
+  D[3] = 1280.L;
+  E[3] = 3125.L;
+  F[3] = 6480.L;
+  G[3] = 1.L + a1 (x) + 32.L * a2 (x) + 243.L * a3 (x) + 1024.L * a4 (x)
+    + 3125.L * a5 (x) + 7776.L * a6 (x) + 16807.L * a7 (x) + 32768.L * a8 (x)
+	 	+ 59049.L * a9 (x) - 12005.L * b7 (x) - 20480.L * b8 (x) - 32805.L * b9 (x);
+  A[4] = 6.L;
+  B[4] = 192.L;
+  C[4] = 1458.L;
+  D[4] = 6144.L;
+  E[4] = 18750.L;
+  F[4] = 46656.L;
+  G[4] = -1.L + a1 (x) + 64.L * a2 (x) + 729.L * a3 (x) + 4096.L * a4 (x)
+    + 15625.L * a5 (x) + 46656.L * a6 (x) + 117649.L * a7 (x)
+    + 262144.L * a8 (x) + 531441.L * a9 (x) - 100842.L * b7 (x)
+	 	- 196608.L * b8 (x) - 354294.L * b9 (x);
+  A[5] = 7.L;
+  B[5] = 448.L;
+  C[5] = 5103.L;
+  D[5] = 28672.L;
+  E[5] = 109375.L;
+  F[5] = 326592.L;
+  G[5] = 1.L + a1 (x) + 128.L * a2 (x) + 2187.L * a3 (x) + 16384.L * a4 (x)
+    + 78125.L * a5 (x) + 279936.L * a6 (x) + 823543.L * (a7 (x) - b7 (x))
+    + 2097152.L * a8 (x) + 4782969.L * a9 (x) - 1835008.L * b8 (x)
+		- 3720087.L * b9 (x);
+  solve_6 (A, B, C, D, E, F, G);
+  b6 (x) = G[5];
+  if (isnan (b6 (x)))
+    return 0;
+  b5 (x) = G[4];
+  if (isnan (b5 (x)))
+    return 0;
+  b4 (x) = G[3];
+  if (isnan (b4 (x)))
+    return 0;
+  b3 (x) = G[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = G[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = G[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) + 8.L * a8 (x) + 9.L * a9 (x)
+		- b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x) - b6 (x) - b7 (x) - b8 (x)
+		- b9 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 10 steps 8th order multi-steps method.
+ */
+static int
+steps_10_8 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[7], B[7], C[7], D[7], E[7], F[7], G[7], H[7];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  a8 (x) = r[7];
+  a9 (x) = r[8];
+  b9 (x) = r[9];
+  b8 (x) = r[10];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
+    - a8 (x) - a9 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = 8.L;
+  E[0] = 10.L;
+  F[0] = 12.L;
+  G[0] = 14.L;
+  H[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * (a4 (x) - b8 (x))
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) + 64.L * a8 (x)
+		+ 81.L * a9 (x) - 18.L * b9 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 48.L;
+  E[1] = 75.L;
+  F[1] = 108.L;
+  G[1] = 147.L;
+  H[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) + 512.L * a8 (x)
+		+ 729.L * a9 (x) - 192.L * b8 (x) - 243.L * b9 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = 256.L;
+  E[2] = 500.L;
+  F[2] = 864.L;
+  G[2] = 1372.L;
+  H[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x) + 256.L * a4 (x)
+	 	+ 625.L * a5 (x) + 1296.L * a6 (x) + 2401.L * a7 (x) + 4096.L * a8 (x)
+	 	+ 6561.L * a9 (x) - 2048.L * b8 (x) - 2916.L * b9 (x);
+  A[3] = 5.L;
+  B[3] = 80.L;
+  C[3] = 405.L;
+  D[3] = 1280.L;
+  E[3] = 3125.L;
+  F[3] = 6480.L;
+  G[3] = 12005.L;
+  H[3] = 1.L + a1 (x) + 32.L * a2 (x) + 243.L * a3 (x) + 1024.L * a4 (x)
+    + 3125.L * a5 (x) + 7776.L * a6 (x) + 16807.L * a7 (x) + 32768.L * a8 (x)
+	 	+ 59049.L * a9 (x) - 20480.L * b8 (x) - 32805.L * b9 (x);
+  A[4] = 6.L;
+  B[4] = 192.L;
+  C[4] = 1458.L;
+  D[4] = 6144.L;
+  E[4] = 18750.L;
+  F[4] = 46656.L;
+  G[4] = 100842.L;
+  H[4] = -1.L + a1 (x) + 64.L * a2 (x) + 729.L * a3 (x) + 4096.L * a4 (x)
+    + 15625.L * a5 (x) + 46656.L * a6 (x) + 117649.L * a7 (x)
+    + 262144.L * a8 (x) + 531441.L * a9 (x) - 196608.L * b8 (x)
+	 	- 354294.L * b9 (x);
+  A[5] = 7.L;
+  B[5] = 448.L;
+  C[5] = 5103.L;
+  D[5] = 28672.L;
+  E[5] = 109375.L;
+  F[5] = 326592.L;
+  G[5] = 823543.L;
+  H[5] = 1.L + a1 (x) + 128.L * a2 (x) + 2187.L * a3 (x) + 16384.L * a4 (x)
+    + 78125.L * a5 (x) + 279936.L * a6 (x) + 823543.L * a7 (x)
+    + 2097152.L * a8 (x) + 4782969.L * a9 (x) - 1835008.L * b8 (x)
+		- 3720087.L * b9 (x);
+  A[6] = 8.L;
+  B[6] = 1024.L;
+  C[6] = 17496.L;
+  D[6] = 131072.L;
+  E[6] = 625000.L;
+  F[6] = 2239488.L;
+  G[6] = 6588344.L;
+  H[6] = -1.L + a1 (x) + 256.L * a2 (x) + 6561.L * a3 (x) + 65536.L * a4 (x)
+    + 390625.L * a5 (x) + 1679616.L * a6 (x) + 5764801.L * a7 (x)
+    + 16777216.L * (a8 (x) - b8 (x)) + 43046721.L * a9 (x)
+		- 38263752.L * b9 (x);
+  solve_7 (A, B, C, D, E, F, G, H);
+  b7 (x) = H[6];
+  if (isnan (b7 (x)))
+    return 0;
+  b6 (x) = H[5];
+  if (isnan (b6 (x)))
+    return 0;
+  b5 (x) = H[4];
+  if (isnan (b5 (x)))
+    return 0;
+  b4 (x) = H[3];
+  if (isnan (b4 (x)))
+    return 0;
+  b3 (x) = H[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = H[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = H[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) + 8.L * a8 (x) + 9.L * a9 (x)
+		- b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x) - b6 (x) - b7 (x) - b8 (x)
+		- b9 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 11 steps 2nd order multi-steps method.
+ */
+static int
+steps_11_2 (Optimize * optimize) ///< Optimize struct.
+{
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  a8 (x) = r[7];
+  a9 (x) = r[8];
+  a10 (x) = r[9];
+  b10 (x) = r[10];
+  b9 (x) = r[11];
+  b8 (x) = r[12];
+  b7 (x) = r[13];
+  b6 (x) = r[14];
+  b5 (x) = r[15];
+  b4 (x) = r[16];
+  b3 (x) = r[17];
+  b2 (x) = r[18];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
+    - a8 (x) - a9 (x) - a10 (x);
+  b1 (x)
+    = 0.5L * (a1 (x) + 4.L * (a2 (x) - b2 (x)) + 9.L * a3 (x)
+              + 16.L * (a4 (x) - b8 (x)) + 25.L * a5 (x) + 36.L * a6 (x)
+              + 49.L * a7 (x) + 64.L * a8 (x) + 81.L * a9 (x) + 100.L * a10 (x)
+							- 6.L * b3 (x) - 8.L * b4 (x) - 10.L * b5 (x) - 12.L * b6 (x) 
+							- 14.L * b7 (x) - 18.L * b9 (x) - 20.L * b10 (x) - 1.L);
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) + 8.L * a8 (x) + 9.L * a9 (x)
+		+ 10.L * a10 (x) - b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x) - b6 (x) 
+		- b7 (x) - b8 (x) - b9 (x) - b10 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 11 steps 3th order multi-steps method.
+ */
+static int
+steps_11_3 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[2], B[2], C[2];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  a8 (x) = r[7];
+  a9 (x) = r[8];
+  a10 (x) = r[9];
+  b10 (x) = r[10];
+  b9 (x) = r[11];
+  b8 (x) = r[12];
+  b7 (x) = r[13];
+  b6 (x) = r[14];
+  b5 (x) = r[15];
+  b4 (x) = r[16];
+  b3 (x) = r[17];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
+    - a8 (x) - a9 (x) - a10 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * (a4 (x) - b8 (x))
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) + 64.L * a8 (x)
+		+ 81.L * a9 (x) + 100.L * a10 (x) - 6.L * b3 (x) - 8.L * b4 (x)
+	 	- 10.L * b5 (x) - 12.L * b6 (x) - 14.L * b7 (x) - 18.L * b9 (x)
+		- 20.L * b10 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * (a3 (x) - b3 (x)) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) + 512.L * a8 (x)
+		+ 729.L * a9 (x) + 1000.L * a10 (x) - 48.L * b4 (x) - 75.L * b5 (x)
+	 	- 108.L * b6 (x) - 147.L * b7 (x) - 192.L * b8 (x) - 243.L * b9 (x)
+		- 300.L * b10 (x);
+  solve_2 (A, B, C);
+  b2 (x) = C[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = C[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) + 8.L * a8 (x) + 9.L * a9 (x)
+		+ 10.L * a10 (x) - b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x) - b6 (x) 
+		- b7 (x) - b8 (x) - b9 (x) - b10 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 11 steps 4th order multi-steps method.
+ */
+static int
+steps_11_4 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[3], B[3], C[3], D[3];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  a8 (x) = r[7];
+  a9 (x) = r[8];
+  a10 (x) = r[9];
+  b10 (x) = r[10];
+  b9 (x) = r[11];
+  b8 (x) = r[12];
+  b7 (x) = r[13];
+  b6 (x) = r[14];
+  b5 (x) = r[15];
+  b4 (x) = r[16];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
+    - a8 (x) - a9 (x) - a10 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * (a4 (x) - b8 (x))
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) + 64.L * a8 (x)
+		+ 81.L * a9 (x) + 100.L * a10 (x) - 8.L * b4 (x) - 10.L * b5 (x)
+	 	- 12.L * b6 (x) - 14.L * b7 (x) - 18.L * b9 (x) - 20.L * b10 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) + 512.L * a8 (x)
+		+ 729.L * a9 (x) + 1000.L * a10 (x) - 48.L * b4 (x) - 75.L * b5 (x)
+	 	- 108.L * b6 (x) - 147.L * b7 (x) - 192.L * b8 (x) - 243.L * b9 (x)
+		- 300.L * b10 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x)
+    + 256.L * (a4 (x) - b4 (x)) + 625.L * a5 (x) + 1296.L * a6 (x)
+    + 2401.L * a7 (x) + 4096.L * a8 (x) + 6561.L * a9 (x) + 10000.L * a10 (x)
+		- 500.L * b5 (x) - 864.L * b6 (x) - 1372.L * b7 (x) - 2048.L * b8 (x) 
+		- 2916.L * b9 (x) - 4000.L * b10 (x);
+  solve_3 (A, B, C, D);
+  b3 (x) = D[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = D[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = D[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) + 8.L * a8 (x) + 9.L * a9 (x)
+		+ 10.L * a10 (x) - b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x) - b6 (x) 
+		- b7 (x) - b8 (x) - b9 (x) - b10 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 11 steps 5th order multi-steps method.
+ */
+static int
+steps_11_5 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[4], B[4], C[4], D[4], E[4];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  a8 (x) = r[7];
+  a9 (x) = r[8];
+  a10 (x) = r[9];
+  b10 (x) = r[10];
+  b9 (x) = r[11];
+  b8 (x) = r[12];
+  b7 (x) = r[13];
+  b6 (x) = r[14];
+  b5 (x) = r[15];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
+    - a8 (x) - a9 (x) - a10 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = 8.L;
+  E[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * (a4 (x) - b8 (x))
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) + 64.L * a8 (x)
+		+ 81.L * a9 (x) + 100.L * a10 (x) - 10.L * b5 (x) - 12.L * b6 (x)
+	 	- 14.L * b7 (x) - 18.L * b9 (x) - 20.L * b10 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 48.L;
+  E[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) + 512.L * a8 (x)
+		+ 729.L * a9 (x) + 1000.L * a10 (x) - 75.L * b5 (x) - 108.L * b6 (x)
+	 	- 147.L * b7 (x) - 192.L * b8 (x) - 243.L * b9 (x) - 300.L * b10 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = 256.L;
+  E[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x) + 256.L * a4 (x)
+	 	+ 625.L * a5 (x) + 1296.L * a6 (x) + 2401.L * a7 (x) + 4096.L * a8 (x)
+	 	+ 6561.L * a9 (x) + 10000.L * a10 (x) - 500.L * b5 (x) - 864.L * b6 (x)
+	 	- 1372.L * b7 (x) - 2048.L * b8 (x) - 2916.L * b9 (x) - 4000.L * b10 (x);
+  A[3] = 5.L;
+  B[3] = 80.L;
+  C[3] = 405.L;
+  D[3] = 1280.L;
+  E[3] = 1.L + a1 (x) + 32.L * a2 (x) + 243.L * a3 (x) + 1024.L * a4 (x)
+    + 3125.L * (a5 (x) - b5 (x)) + 7776.L * a6 (x) + 16807.L * a7 (x)
+    + 32768.L * a8 (x) + 59049.L * a9 (x) + 100000.L * a10 (x) - 6480.L * b6 (x)
+	 	- 12005.L * b7 (x) - 20480.L * b8 (x) - 32805.L * b9 (x) 
+		- 50000.L * b10 (x);
+  solve_4 (A, B, C, D, E);
+  b4 (x) = E[3];
+  if (isnan (b4 (x)))
+    return 0;
+  b3 (x) = E[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = E[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = E[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) + 8.L * a8 (x) + 9.L * a9 (x)
+		+ 10.L * a10 (x) - b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x) - b6 (x) 
+		- b7 (x) - b8 (x) - b9 (x) - b10 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 11 steps 6th order multi-steps method.
+ */
+static int
+steps_11_6 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[5], B[5], C[5], D[5], E[5], F[5];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  a8 (x) = r[7];
+  a9 (x) = r[8];
+  a10 (x) = r[9];
+  b10 (x) = r[10];
+  b9 (x) = r[11];
+  b8 (x) = r[12];
+  b7 (x) = r[13];
+  b6 (x) = r[14];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
+    - a8 (x) - a9 (x) - a10 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = 8.L;
+  E[0] = 10.L;
+  F[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * (a4 (x) - b8 (x))
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) + 64.L * a8 (x)
+		+ 81.L * a9 (x) + 100.L * a10 (x) - 12.L * b6 (x) - 14.L * b7 (x)
+	 	- 18.L * b9 (x) - 20.L * b10 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 48.L;
+  E[1] = 75.L;
+  F[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) + 512.L * a8 (x)
+		+ 729.L * a9 (x) + 1000.L * a10 (x) - 108.L * b6 (x) - 147.L * b7 (x)
+	 	- 192.L * b8 (x) - 243.L * b9 (x) - 300.L * b10 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = 256.L;
+  E[2] = 500.L;
+  F[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x) + 256.L * a4 (x)
+	 	+ 625.L * a5 (x) + 1296.L * a6 (x) + 2401.L * a7 (x) + 4096.L * a8 (x)
+	 	+ 6561.L * a9 (x) + 10000.L * a10 (x) - 864.L * b6 (x) - 1372.L * b7 (x)
+	 	- 2048.L * b8 (x) - 2916.L * b9 (x) - 4000.L * b10 (x);
+  A[3] = 5.L;
+  B[3] = 80.L;
+  C[3] = 405.L;
+  D[3] = 1280.L;
+  E[3] = 3125.L;
+  F[3] = 1.L + a1 (x) + 32.L * a2 (x) + 243.L * a3 (x) + 1024.L * a4 (x)
+    + 3125.L * a5 (x) + 7776.L * a6 (x) + 16807.L * a7 (x) + 32768.L * a8 (x)
+	 	+ 59049.L * a9 (x) + 100000.L * a10 (x) - 6480.L * b6 (x) - 12005.L * b7 (x)
+	 	- 20480.L * b8 (x) - 32805.L * b9 (x) - 50000.L * b10 (x);
+  A[4] = 6.L;
+  B[4] = 192.L;
+  C[4] = 1458.L;
+  D[4] = 6144.L;
+  E[4] = 18750.L;
+  F[4] = -1.L + a1 (x) + 64.L * a2 (x) + 729.L * a3 (x) + 4096.L * a4 (x)
+    + 15625.L * a5 (x) + 46656.L * (a6 (x) - b6 (x)) + 117649.L * a7 (x)
+    + 262144.L * a8 (x) + 531441.L * a9 (x) + 1000000.L * a10 (x)
+		- 100842.L * b7 (x) - 196608.L * b8 (x) - 354294.L * b9 (x)
+		- 600000.L * b10 (x);
+  solve_5 (A, B, C, D, E, F);
+  b5 (x) = F[4];
+  if (isnan (b5 (x)))
+    return 0;
+  b4 (x) = F[3];
+  if (isnan (b4 (x)))
+    return 0;
+  b3 (x) = F[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = F[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = F[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) + 8.L * a8 (x) + 9.L * a9 (x)
+		+ 10.L * a10 (x) - b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x) - b6 (x) 
+		- b7 (x) - b8 (x) - b9 (x) - b10 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 11 steps 7th order multi-steps method.
+ */
+static int
+steps_11_7 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[6], B[6], C[6], D[6], E[6], F[6], G[6];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  a8 (x) = r[7];
+  a9 (x) = r[8];
+  a10 (x) = r[9];
+  b10 (x) = r[10];
+  b9 (x) = r[11];
+  b8 (x) = r[12];
+  b7 (x) = r[13];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
+    - a8 (x) - a9 (x) - a10 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = 8.L;
+  E[0] = 10.L;
+  F[0] = 12.L;
+  G[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * (a4 (x) - b8 (x))
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) + 64.L * a8 (x)
+		+ 81.L * a9 (x) + 100.L * a10 (x) - 14.L * b7 (x) - 18.L * b9 (x)
+	 	- 20.L * b10 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 48.L;
+  E[1] = 75.L;
+  F[1] = 108.L;
+  G[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) + 512.L * a8 (x)
+		+ 729.L * a9 (x) + 1000.L * a10 (x) - 147.L * b7 (x) - 192.L * b8 (x)
+	 	- 243.L * b9 (x) - 300.L * b10 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = 256.L;
+  E[2] = 500.L;
+  F[2] = 864.L;
+  G[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x) + 256.L * a4 (x)
+	 	+ 625.L * a5 (x) + 1296.L * a6 (x) + 2401.L * a7 (x) + 4096.L * a8 (x)
+	 	+ 6561.L * a9 (x) + 10000.L * a10 (x) - 1372.L * b7 (x) - 2048.L * b8 (x)
+	 	- 2916.L * b9 (x) - 4000.L * b10 (x);
+  A[3] = 5.L;
+  B[3] = 80.L;
+  C[3] = 405.L;
+  D[3] = 1280.L;
+  E[3] = 3125.L;
+  F[3] = 6480.L;
+  G[3] = 1.L + a1 (x) + 32.L * a2 (x) + 243.L * a3 (x) + 1024.L * a4 (x)
+    + 3125.L * a5 (x) + 7776.L * a6 (x) + 16807.L * a7 (x) + 32768.L * a8 (x)
+	 	+ 59049.L * a9 (x) + 100000.L * a10 (x) - 12005.L * b7 (x)
+	 	- 20480.L * b8 (x) - 32805.L * b9 (x) - 50000.L * b10 (x);
+  A[4] = 6.L;
+  B[4] = 192.L;
+  C[4] = 1458.L;
+  D[4] = 6144.L;
+  E[4] = 18750.L;
+  F[4] = 46656.L;
+  G[4] = -1.L + a1 (x) + 64.L * a2 (x) + 729.L * a3 (x) + 4096.L * a4 (x)
+    + 15625.L * a5 (x) + 46656.L * a6 (x) + 117649.L * a7 (x) 
+		+ 262144.L * a8 (x) + 531441.L * a9 (x) + 1000000.L * a10 (x)
+		- 100842.L * b7 (x) - 196608.L * b8 (x) - 354294.L * b9 (x)
+		- 600000.L * b10 (x);
+  A[5] = 7.L;
+  B[5] = 448.L;
+  C[5] = 5103.L;
+  D[5] = 28672.L;
+  E[5] = 109375.L;
+  F[5] = 326592.L;
+  G[5] = 1.L + a1 (x) + 128.L * a2 (x) + 2187.L * a3 (x) + 16384.L * a4 (x)
+    + 78125.L * a5 (x) + 279936.L * a6 (x) + 823543.L * (a7 (x) - b7 (x))
+    + 2097152.L * a8 (x) + 4782969.L * a9 (x) + 10000000.L * a10 (x)
+		- 1835008.L * b8 (x) - 3720087.L * b9 (x) - 7000000.L * b10 (x);
+  solve_6 (A, B, C, D, E, F, G);
+  b6 (x) = G[5];
+  if (isnan (b6 (x)))
+    return 0;
+  b5 (x) = G[4];
+  if (isnan (b5 (x)))
+    return 0;
+  b4 (x) = G[3];
+  if (isnan (b4 (x)))
+    return 0;
+  b3 (x) = G[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = G[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = G[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) + 8.L * a8 (x) + 9.L * a9 (x)
+		+ 10.L * a10 (x) - b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x) - b6 (x) 
+		- b7 (x) - b8 (x) - b9 (x) - b10 (x);
+  return 1;
+}
+
+/**
+ * Function to get the coefficients on a 11 steps 8th order multi-steps method.
+ */
+static int
+steps_11_8 (Optimize * optimize) ///< Optimize struct.
+{
+  long double A[7], B[7], C[7], D[7], E[7], F[7], G[7], H[7];
+  long double *x, *r;
+  x = optimize->coefficient;
+  r = optimize->random_data;
+  a1 (x) = r[0];
+  a2 (x) = r[1];
+  a3 (x) = r[2];
+  a4 (x) = r[3];
+  a5 (x) = r[4];
+  a6 (x) = r[5];
+  a7 (x) = r[6];
+  a8 (x) = r[7];
+  a9 (x) = r[8];
+  a10 (x) = r[9];
+  b10 (x) = r[10];
+  b9 (x) = r[11];
+  b8 (x) = r[12];
+  a0 (x) = 1.L - a1 (x) - a2 (x) - a3 (x) - a4 (x) - a5 (x) - a6 (x) - a7 (x)
+    - a8 (x) - a9 (x) - a10 (x);
+  A[0] = 2.L;
+  B[0] = 4.L;
+  C[0] = 6.L;
+  D[0] = 8.L;
+  E[0] = 10.L;
+  F[0] = 12.L;
+  G[0] = 14.L;
+  H[0] = -1.L + a1 (x) + 4.L * a2 (x) + 9.L * a3 (x) + 16.L * (a4 (x) - b8 (x))
+    + 25.L * a5 (x) + 36.L * a6 (x) + 49.L * a7 (x) + 64.L * a8 (x)
+		+ 81.L * a9 (x) + 100.L * a10 (x) - 18.L * b9 (x) - 20.L * b10 (x);
+  A[1] = 3.L;
+  B[1] = 12.L;
+  C[1] = 27.L;
+  D[1] = 48.L;
+  E[1] = 75.L;
+  F[1] = 108.L;
+  G[1] = 147.L;
+  H[1] = 1.L + a1 (x) + 8.L * a2 (x) + 27.L * a3 (x) + 64.L * a4 (x)
+    + 125.L * a5 (x) + 216.L * a6 (x) + 343.L * a7 (x) + 512.L * a8 (x)
+		+ 729.L * a9 (x) + 1000.L * a10 (x) - 192.L * b8 (x) - 243.L * b9 (x)
+	 	- 300.L * b10 (x);
+  A[2] = 4.L;
+  B[2] = 32.L;
+  C[2] = 108.L;
+  D[2] = 256.L;
+  E[2] = 500.L;
+  F[2] = 864.L;
+  G[2] = 1372.L;
+  H[2] = -1.L + a1 (x) + 16.L * a2 (x) + 81.L * a3 (x) + 256.L * a4 (x)
+	 	+ 625.L * a5 (x) + 1296.L * a6 (x) + 2401.L * a7 (x) + 4096.L * a8 (x)
+	 	+ 6561.L * a9 (x) + 10000.L * a10 (x) - 2048.L * b8 (x) - 2916.L * b9 (x)
+	 	- 4000.L * b10 (x);
+  A[3] = 5.L;
+  B[3] = 80.L;
+  C[3] = 405.L;
+  D[3] = 1280.L;
+  E[3] = 3125.L;
+  F[3] = 6480.L;
+  G[3] = 12005.L;
+  H[3] = 1.L + a1 (x) + 32.L * a2 (x) + 243.L * a3 (x) + 1024.L * a4 (x)
+    + 3125.L * a5 (x) + 7776.L * a6 (x) + 16807.L * a7 (x) + 32768.L * a8 (x)
+	 	+ 59049.L * a9 (x) + 100000.L * a10 (x) - 20480.L * b8 (x)
+	 	- 32805.L * b9 (x) - 50000.L * b10 (x);
+  A[4] = 6.L;
+  B[4] = 192.L;
+  C[4] = 1458.L;
+  D[4] = 6144.L;
+  E[4] = 18750.L;
+  F[4] = 46656.L;
+  G[4] = 100842.L;
+  H[4] = -1.L + a1 (x) + 64.L * a2 (x) + 729.L * a3 (x) + 4096.L * a4 (x)
+    + 15625.L * a5 (x) + 46656.L * a6 (x) + 117649.L * a7 (x) 
+		+ 262144.L * a8 (x) + 531441.L * a9 (x) + 1000000.L * a10 (x)
+		- 196608.L * b8 (x) - 354294.L * b9 (x) - 600000.L * b10 (x);
+  A[5] = 7.L;
+  B[5] = 448.L;
+  C[5] = 5103.L;
+  D[5] = 28672.L;
+  E[5] = 109375.L;
+  F[5] = 326592.L;
+  G[5] = 823543.L;
+  H[5] = 1.L + a1 (x) + 128.L * a2 (x) + 2187.L * a3 (x) + 16384.L * a4 (x)
+    + 78125.L * a5 (x) + 279936.L * a6 (x) + 823543.L * a7 (x)
+    + 2097152.L * a8 (x) + 4782969.L * a9 (x) + 10000000.L * a10 (x)
+		- 1835008.L * b8 (x) - 3720087.L * b9 (x) - 7000000.L * b10 (x);
+  A[6] = 8.L;
+  B[6] = 1024.L;
+  C[6] = 17496.L;
+  D[6] = 131072.L;
+  E[6] = 625000.L;
+  F[6] = 2239488.L;
+  G[6] = 6588344.L;
+  H[6] = -1.L + a1 (x) + 256.L * a2 (x) + 6561.L * a3 (x) + 65536.L * a4 (x)
+    + 390625.L * a5 (x) + 1679616.L * a6 (x) + 5764801.L * a7 (x)
+    + 16777216.L * (a8 (x) - b8 (x)) + 43046721.L * a9 (x) 
+		+ 100000000.L * a10 (x) - 38263752.L * b9 (x) - 80000000.L * b10 (x);
+  solve_7 (A, B, C, D, E, F, G, H);
+  b7 (x) = H[6];
+  if (isnan (b7 (x)))
+    return 0;
+  b6 (x) = H[5];
+  if (isnan (b6 (x)))
+    return 0;
+  b5 (x) = H[4];
+  if (isnan (b5 (x)))
+    return 0;
+  b4 (x) = H[3];
+  if (isnan (b4 (x)))
+    return 0;
+  b3 (x) = H[2];
+  if (isnan (b3 (x)))
+    return 0;
+  b2 (x) = H[1];
+  if (isnan (b2 (x)))
+    return 0;
+  b1 (x) = H[0];
+  if (isnan (b1 (x)))
+    return 0;
+  b0 (x) = 1.L + a1 (x) + 2.L * a2 (x) + 3.L * a3 (x) + 4.L * a4 (x)
+    + 5.L * a5 (x) + 6.L * a6 (x) + 7.L * a7 (x) + 8.L * a8 (x) + 9.L * a9 (x)
+		+ 10.L * a10 (x) - b1 (x) - b2 (x) - b3 (x) - b4 (x) - b5 (x) - b6 (x) 
+		- b7 (x) - b8 (x) - b9 (x) - b10 (x);
+  return 1;
+}
+
+/**
  * Function to print a maxima format file to check the accuracy order of a
  * multi-steps method.
  */
@@ -3025,7 +4176,6 @@ steps_select (Optimize * optimize,      ///< Optimize struct.
           goto exit_on_error;
         }
       break;
-/*
     case 10:
       optimize->print = steps_print_10;
       optimize->objective = steps_objective_10;
@@ -3045,6 +4195,12 @@ steps_select (Optimize * optimize,      ///< Optimize struct.
           break;
         case 6:
           optimize->method = steps_10_6;
+          break;
+        case 7:
+          optimize->method = steps_10_7;
+          break;
+        case 8:
+          optimize->method = steps_10_8;
           break;
         default:
           code = 0;
@@ -3069,19 +4225,19 @@ steps_select (Optimize * optimize,      ///< Optimize struct.
           optimize->method = steps_11_5;
           break;
         case 6:
-#if OPTIMIZE_STEPS_11_6 == 1
-          optimize->nfree = 10;
-#elif OPTIMIZE_STEPS_11_6 == 2
-          optimize->nfree = 4;
-#endif
           optimize->method = steps_11_6;
+          break;
+        case 7:
+          optimize->method = steps_11_7;
+          break;
+        case 8:
+          optimize->method = steps_11_8;
           break;
         default:
           code = 0;
           goto exit_on_error;
         }
       break;
-*/
     default:
       code = 1;
       goto exit_on_error;
@@ -3109,7 +4265,7 @@ steps_run (xmlNode * node,      ///< XML node.
            gsl_rng ** rng)      ///< array of gsl_rng structs.
 {
   Optimize s[nthreads];
-  char filename[32];
+  char filename[64];
   gchar *buffer;
   FILE *file;
   long double *value_optimal;
@@ -3158,15 +4314,17 @@ steps_run (xmlNode * node,      ///< XML node.
   printf ("Print the optimal coefficients\n");
   memcpy (s->random_data, s->value_optimal, nfree * sizeof (long double));
   code = s->method (s);
-  snprintf (filename, 32, "steps-%u-%u.mc", nsteps, order);
+  snprintf (filename, 64, "steps-%u-%u.mc", nsteps, order);
   file = fopen (filename, "w");
   print_maxima_precision (file);
   s->print (s, file);
   s->print_maxima (file, nsteps, order);
   fclose (file);
-  snprintf (filename, 32, "sed -i 's/e\+/b\+/g' steps-%u-%u.mc", nsteps, order);
+  snprintf (filename, 64, "sed -i 's/e+/b+/g' steps-%u-%u.mc", 
+			      nsteps, order);
   system (filename);
-  snprintf (filename, 32, "sed -i 's/e\-/b\-/g' steps-%u-%u.mc", nsteps, order);
+  snprintf (filename, 64, "sed -i 's/e-/b-/g' steps-%u-%u.mc",
+			      nsteps, order);
   system (filename);
 
   // Free memory

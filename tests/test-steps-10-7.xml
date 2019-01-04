@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<steps steps="10" order="7" nsimulations="2" nclimbings="2" niterations="2" convergence-factor="0.5" climbing-factor="0.1">
+	<variable minimum="0" interval="1" type="orthogonal"/>
+	<variable minimum="0" interval="1" type="orthogonal"/>
+	<variable minimum="0" interval="1" type="orthogonal"/>
+	<variable minimum="0" interval="1" type="orthogonal"/>
+	<variable minimum="0" interval="1" type="orthogonal"/>
+	<variable minimum="0" interval="1" type="orthogonal"/>
+	<variable minimum="0" interval="1" type="orthogonal"/>
+	<variable minimum="0" interval="1" type="orthogonal"/>
+	<variable minimum="0" interval="1" type="orthogonal"/>
+	<variable minimum="0" interval="10" type="orthogonal"/>
+	<variable minimum="0" interval="10" type="orthogonal"/>
+	<variable minimum="0" interval="10" type="orthogonal"/>
+</steps>
