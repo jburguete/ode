@@ -85,6 +85,8 @@ struct _Optimize
   unsigned int nfree;           ///< number of freedom degrees.
   unsigned int size;            ///< total variables number.
   unsigned int type;            ///< method type.
+  unsigned int order;           ///< accuracy order.
+  unsigned int nsteps;          ///< steps number.
 };
 
 typedef int (*OptimizeMethod) (Optimize * optimize);

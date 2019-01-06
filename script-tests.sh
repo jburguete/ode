@@ -12,13 +12,15 @@ do
 	echo $k
 	for j in `seq 2 $k`;
 	do
+		echo "./ode-pgo tests/test-steps-$i-$j.xml"
 		./ode-pgo tests/test-steps-$i-$j.xml
 	done
 done
-for i in `seq 9 11`;
+for i in `seq 9 12`;
 do
 	for j in `seq 2 8`;
 	do
+		echo "./ode-pgo tests/test-steps-$i-$j.xml"
 		./ode-pgo tests/test-steps-$i-$j.xml
 	done
 done
