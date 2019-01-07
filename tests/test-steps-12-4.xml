@@ -11,12 +11,12 @@
 	<variable minimum="0" interval="1" type="random"/>
 	<variable minimum="0" interval="1" type="random"/>
 	<variable minimum="0" interval="1" type="random"/>
-	<variable minimum="0" interval="11" type="random"/>
-	<variable minimum="0" interval="11" type="random"/>
-	<variable minimum="0" interval="11" type="random"/>
-	<variable minimum="0" interval="11" type="random"/>
-	<variable minimum="0" interval="11" type="random"/>
-	<variable minimum="0" interval="11" type="random"/>
-	<variable minimum="0" interval="11" type="random"/>
-	<variable minimum="0" interval="11" type="random"/>
+	<variable minimum="0" interval="12" type="random"/>
+	<variable minimum="0" interval="12" type="random"/>
+	<variable minimum="0" interval="12" type="random"/>
+	<variable minimum="0" interval="12" type="random"/>
+	<variable minimum="0" interval="12" type="random"/>
+	<variable minimum="0" interval="12" type="random"/>
+	<variable minimum="0" interval="12" type="random"/>
+	<variable minimum="0" interval="12" type="random"/>
 </steps>

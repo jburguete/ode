@@ -1549,6 +1549,8 @@ rk_select (RK * rk,             ///< RK struct.
 #endif
   strong = rk->strong;
   tb = rk->tb;
+	tb->nsteps = nsteps;
+	tb->order = order;
   tb->size = nsteps * (nsteps + 3) / 2 - 1;
   if (rk->pair)
     tb->size += nsteps - 1;

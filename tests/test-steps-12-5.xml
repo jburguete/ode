@@ -11,11 +11,11 @@
 	<variable minimum="0" interval="1" type="orthogonal"/>
 	<variable minimum="0" interval="1" type="orthogonal"/>
 	<variable minimum="0" interval="1" type="orthogonal"/>
-	<variable minimum="0" interval="11" type="orthogonal"/>
-	<variable minimum="0" interval="11" type="orthogonal"/>
-	<variable minimum="0" interval="11" type="orthogonal"/>
-	<variable minimum="0" interval="11" type="orthogonal"/>
-	<variable minimum="0" interval="11" type="orthogonal"/>
-	<variable minimum="0" interval="11" type="orthogonal"/>
-	<variable minimum="0" interval="11" type="orthogonal"/>
+	<variable minimum="0" interval="12" type="orthogonal"/>
+	<variable minimum="0" interval="12" type="orthogonal"/>
+	<variable minimum="0" interval="12" type="orthogonal"/>
+	<variable minimum="0" interval="12" type="orthogonal"/>
+	<variable minimum="0" interval="12" type="orthogonal"/>
+	<variable minimum="0" interval="12" type="orthogonal"/>
+	<variable minimum="0" interval="12" type="orthogonal"/>
 </steps>
