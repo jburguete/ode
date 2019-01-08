@@ -1415,6 +1415,13 @@ rk_select (RK * rk,             ///< RK struct.
            unsigned int nsteps, ///< steps number.
            unsigned int order)  ///< accuracy order.
 {
+  static int (*ac_method[7]) (RK *) =
+  {
+  NULL, NULL, &rk_ac_2, &rk_ac_3, &rk_ac_4, &rk_ac_5, &rk_ac_6};
+  static long double (*ac_objective[7]) (RK * rk) =
+  {
+  NULL, NULL, &rk_objective_ac_2, &rk_objective_ac_3, &rk_objective_ac_4,
+      &rk_objective_ac_5, &rk_objective_ac_6};
   const char *message[] = { _("Bad order"), _("Bad steps number") };
   Optimize *tb, *ac;
   unsigned int code;
@@ -1651,32 +1658,13 @@ rk_select (RK * rk,             ///< RK struct.
         = (long double *) g_slice_alloc (ac->nfree * sizeof (long double));
       ac->random_type
         = (unsigned int *) g_slice_alloc (ac->nfree * sizeof (unsigned int));
-      switch (nsteps)
+      ac->method = (OptimizeMethod) ac_method[nsteps];
+      if (!ac->method)
         {
-        case 2:
-          ac->method = (OptimizeMethod) rk_ac_2;
-          ac->objective = (OptimizeObjective) rk_objective_ac_2;
-          break;
-        case 3:
-          ac->method = (OptimizeMethod) rk_ac_3;
-          ac->objective = (OptimizeObjective) rk_objective_ac_3;
-          break;
-        case 4:
-          ac->method = (OptimizeMethod) rk_ac_4;
-          ac->objective = (OptimizeObjective) rk_objective_ac_4;
-          break;
-        case 5:
-          ac->method = (OptimizeMethod) rk_ac_5;
-          ac->objective = (OptimizeObjective) rk_objective_ac_5;
-          break;
-        case 6:
-          ac->method = (OptimizeMethod) rk_ac_6;
-          ac->objective = (OptimizeObjective) rk_objective_ac_6;
-          break;
-        default:
           code = 1;
           goto exit_on_error;
         }
+      ac->objective = (OptimizeObjective) ac_objective[nsteps];
     }
 
 #if DEBUG_RK
