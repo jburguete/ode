@@ -48,34 +48,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DEBUG_RK_4_3 0          ///< macro to debug.
 
 /**
- * Function to print a maxima format file to check the accuracy order of a 4
- * steps 3rd order Runge-Kutta simple stable method.
- */
-void
-tb_print_maxima_4_3 (FILE * file,       ///< file.
-                     unsigned int nsteps,       ///< steps number.
-                     unsigned int order)        ///< accuracy order.
-{
-  tb_print_maxima_4_2 (file, nsteps, order);
-  fprintf (file, "b42*b21*t1+b43*(b31*t1+b32*t2)-1/6;\n");
-  fprintf (file, "b41*t1^2+b42*t2^2+b43*t3^2-1/3;\n");
-  fprintf (file, "b41*t1^3+b42*t2^3+b43*t3^3-1/4;\n");
-}
-
-/**
- * Function to print a maxima format file to check the accuracy order of a 4
- * steps 3rd order Runge-Kutta method.
- */
-void
-rk_print_maxima_4_3 (FILE * file,       ///< file.
-                     unsigned int nsteps,       ///< steps number.
-                     unsigned int order)        ///< accuracy order.
-{
-  tb_print_maxima_4_3 (file, nsteps, order);
-  rk_print_maxima_4 (file);
-}
-
-/**
  * Function to obtain the coefficients of a 4 steps 3rd order Runge-Kutta 
  * method.
  */

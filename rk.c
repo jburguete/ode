@@ -65,292 +65,167 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DEBUG_RK 0              ///< macro to debug.
 
 /**
- * Function to print the 2nd step t-b Runge-Kutta coefficients.
+ * Function to print the t-b Runge-Kutta coefficients.
  */
 void
-rk_print_tb_2 (long double *tb, ///< array of t-b Runge-Kutta coefficients.
-               char *label,     ///< label.
-               FILE * file)     ///< file.
+rk_print_tb (Optimize * tb,     ///< Optimize struct.
+             char *label,       ///< label.
+             FILE * file)       ///< file.
 {
-  fprintf (file, "%s: t1=%.19Le\n", label, t1 (tb));
-  fprintf (file, "%s: t2=%.19Le\n", label, t2 (tb));
-  fprintf (file, "%s: b20=%.19Le\n", label, b20 (tb));
-  fprintf (file, "%s: b21=%.19Le\n", label, b21 (tb));
+  long double *x;
+  unsigned int i, j, k;
+  x = tb->coefficient;
+  fprintf (file, "%s: t1=%.19Le\n", label, x[0]);
+  for (i = 2, k = 0; i <= tb->nsteps; ++i)
+    {
+      fprintf (file, "%s: t%u=%.19Le\n", label, i, x[++k]);
+      for (j = 0; j < i; ++j)
+        fprintf (file, "%s: b%u%u=%.19Le\n", label, i, j, x[++k]);
+    }
 }
 
 /**
- * Function to print the 3nd step t-b Runge-Kutta coefficients.
- */
-void
-rk_print_tb_3 (long double *tb, ///< array of t-b Runge-Kutta coefficients.
-               char *label,     ///< label.
-               FILE * file)     ///< file.
-{
-  rk_print_tb_2 (tb, label, file);
-  fprintf (file, "%s: t3=%.19Le\n", label, t3 (tb));
-  fprintf (file, "%s: b30=%.19Le\n", label, b30 (tb));
-  fprintf (file, "%s: b31=%.19Le\n", label, b31 (tb));
-  fprintf (file, "%s: b32=%.19Le\n", label, b32 (tb));
-}
-
-/**
- * Function to print the 4th step t-b Runge-Kutta coefficients.
- */
-void
-rk_print_tb_4 (long double *tb, ///< array of t-b Runge-Kutta coefficients.
-               char *label,     ///< label.
-               FILE * file)     ///< file.
-{
-  rk_print_tb_3 (tb, label, file);
-  fprintf (file, "%s: t4=%.19Le\n", label, t4 (tb));
-  fprintf (file, "%s: b40=%.19Le\n", label, b40 (tb));
-  fprintf (file, "%s: b41=%.19Le\n", label, b41 (tb));
-  fprintf (file, "%s: b42=%.19Le\n", label, b42 (tb));
-  fprintf (file, "%s: b43=%.19Le\n", label, b43 (tb));
-}
-
-/**
- * Function to print the 5th step t-b Runge-Kutta coefficients.
- */
-void
-rk_print_tb_5 (long double *tb, ///< array of t-b Runge-Kutta coefficients.
-               char *label,     ///< label.
-               FILE * file)     ///< file.
-{
-  rk_print_tb_4 (tb, label, file);
-  fprintf (file, "%s: t5=%.19Le\n", label, t5 (tb));
-  fprintf (file, "%s: b50=%.19Le\n", label, b50 (tb));
-  fprintf (file, "%s: b51=%.19Le\n", label, b51 (tb));
-  fprintf (file, "%s: b52=%.19Le\n", label, b52 (tb));
-  fprintf (file, "%s: b53=%.19Le\n", label, b53 (tb));
-  fprintf (file, "%s: b54=%.19Le\n", label, b54 (tb));
-}
-
-/**
- * Function to print the 6th step t-b Runge-Kutta coefficients.
- */
-void
-rk_print_tb_6 (long double *tb, ///< array of t-b Runge-Kutta coefficients.
-               char *label,     ///< label.
-               FILE * file)     ///< file.
-{
-  rk_print_tb_5 (tb, label, file);
-  fprintf (file, "%s: t6=%.19Le\n", label, t6 (tb));
-  fprintf (file, "%s: b60=%.19Le\n", label, b60 (tb));
-  fprintf (file, "%s: b61=%.19Le\n", label, b61 (tb));
-  fprintf (file, "%s: b62=%.19Le\n", label, b62 (tb));
-  fprintf (file, "%s: b63=%.19Le\n", label, b63 (tb));
-  fprintf (file, "%s: b64=%.19Le\n", label, b64 (tb));
-  fprintf (file, "%s: b65=%.19Le\n", label, b65 (tb));
-}
-
-/**
- * Function to print in a maxima file the 2nd step Runge-Kutta coefficients.
+ * Function to print in a maxima file the Runge-Kutta coefficients.
  */
 static void
-rk_print_2 (RK * rk,            ///< RK struct.
-            FILE * file)        ///< file.
+rk_print (RK * rk,              ///< RK struct.
+          FILE * file)          ///< file.
 {
-  long double *tb, *ac;
-  tb = rk->tb->coefficient;
-  fprintf (file, "t1:%.19Le;\n", t1 (tb));
-  fprintf (file, "t2:%.19Le;\n", t2 (tb));
-  fprintf (file, "b20:%.19Le;\n", b20 (tb));
-  fprintf (file, "b21:%.19Le;\n", b21 (tb));
-  if (!rk->strong)
-    return;
-  ac = rk->ac->coefficient;
-  fprintf (file, "a20:%.19Le;\n", a20 (ac));
-  fprintf (file, "a21:%.19Le;\n", a21 (ac));
-  fprintf (file, "c20:%.19Le;\n", c20 (ac));
-  fprintf (file, "c21:%.19Le;\n", c21 (ac));
+  Optimize *tb, *ac;
+  long double *x, *y;
+  unsigned int i, j, k, l;
+  tb = rk->tb;
+  ac = rk->ac;
+  x = tb->coefficient;
+  y = ac->coefficient;
+  fprintf (file, "t1:%.19Le;\n", x[0]);
+  for (i = 2, k = l = 0; i <= tb->nsteps; ++i)
+    {
+      fprintf (file, "t%u:%.19Le;\n", i, x[++k]);
+      for (j = 0; j < i; ++j)
+        fprintf (file, "b%u%u:%.19Le;\n", i, j, x[++k]);
+      if (!rk->strong)
+        continue;
+      for (j = 0; j < i; ++j)
+        fprintf (file, "a%u%u:%.19Le;\n", i, j, y[l++]);
+      for (j = 0; j < i; ++j)
+        fprintf (file, "c%u%u:%.19Le;\n", i, j, y[l++]);
+    }
 }
 
 /**
- * Function to print in a maxima file the 3rd step Runge-Kutta coefficients.
+ * Function to print a maxima format file to check the accuracy order of the
+ * Runge-Kutta simple stable methods.
  */
 static void
-rk_print_3 (RK * rk,            ///< RK struct.
-            FILE * file)        ///< file.
+tb_print_maxima (FILE * file,   ///< file.
+                 unsigned int nsteps,   ///< steps number.
+                 unsigned int order)    ///< accuracy order.
 {
-  long double *tb, *ac;
-  rk_print_2 (rk, file);
-  tb = rk->tb->coefficient;
-  fprintf (file, "t3:%.19Le;\n", t3 (tb));
-  fprintf (file, "b30:%.19Le;\n", b30 (tb));
-  fprintf (file, "b31:%.19Le;\n", b31 (tb));
-  fprintf (file, "b32:%.19Le;\n", b32 (tb));
-  if (!rk->strong)
+  unsigned int i, j, k;
+  // b_{ij}=1 (1st order)
+  for (i = 0; i < nsteps; ++i)
+    fprintf (file, "b%u%u+", nsteps, i);
+  fprintf (file, "-1;\n");
+  // b_{ij}t_j=1/2 (2nd order)
+  for (i = 1; i < nsteps; ++i)
+    fprintf (file, "b%u%u*t%u+", nsteps, i, i);
+  fprintf (file, "-1/2;\n");
+  if (order < 2)
     return;
-  ac = rk->ac->coefficient;
-  fprintf (file, "a30:%.19Le;\n", a30 (ac));
-  fprintf (file, "a31:%.19Le;\n", a31 (ac));
-  fprintf (file, "a32:%.19Le;\n", a32 (ac));
-  fprintf (file, "c30:%.19Le;\n", c30 (ac));
-  fprintf (file, "c31:%.19Le;\n", c31 (ac));
-  fprintf (file, "c32:%.19Le;\n", c32 (ac));
+  // b_{ij}t_j^2=1/3 (3rd order)
+  for (i = 1; i < nsteps; ++i)
+    fprintf (file, "b%u%u*t%u^2+", nsteps, i, i);
+  fprintf (file, "-1/3;\n");
+  if (order < 3)
+    return;
+  // b_{ij}b_{jk}t_k=1/6 (3rd order)
+  for (i = 2; i < nsteps; ++i)
+    {
+      fprintf (file, "b%u%u*(", nsteps, i);
+      for (j = 1; j < i; ++j)
+        fprintf (file, "b%u%u*t%u+", i, j, j);
+      fprintf (file, "0)+");
+    }
+  fprintf (file, "-1/6;\n");
+  // b_{ij}t_j^3=1/4 (4th order)
+  for (i = 1; i < nsteps; ++i)
+    fprintf (file, "b%u%u*t%u^3+", nsteps, i, i);
+  fprintf (file, "-1/4;\n");
+  if (order < 4)
+    return;
+  // b_{ij}b_{jk}b_{kl}t_l=1/24 (4th order)
+  for (i = 3; i < nsteps; ++i)
+    {
+      fprintf (file, "b%u%u*(", nsteps, i);
+      for (j = 2; j < i; ++j)
+        {
+          fprintf (file, "b%u%u*(", i, j);
+          for (k = 1; k < j; ++k)
+            fprintf (file, "b%u%u*t%u+", j, k, k);
+          fprintf (file, "0)+");
+        }
+      fprintf (file, "0)+");
+    }
+  fprintf (file, "-1/24;\n");
+  // b_{ij}b_{jk}t_k^2=1/12 (4th order)
+  for (i = 2; i < nsteps; ++i)
+    {
+      fprintf (file, "b%u%u*(", nsteps, i);
+      for (j = 1; j < i; ++j)
+        fprintf (file, "b%u%u*t%u^2+", i, j, j);
+      fprintf (file, "0)+");
+    }
+  fprintf (file, "-1/12;\n");
+  // b_{ij}t_jb_{jk}t_k^2=1/8 (4th order)
+  for (i = 2; i < nsteps; ++i)
+    {
+      fprintf (file, "b%u%u*t%u*(", nsteps, i, i);
+      for (j = 1; j < i; ++j)
+        fprintf (file, "b%u%u*t%u+", i, j, j);
+      fprintf (file, "0)+");
+    }
+  fprintf (file, "-1/8;\n");
+  // b_{ij}t_j^4=1/5 (5th order)
+  for (i = 1; i < nsteps; ++i)
+    fprintf (file, "b%u%u*t%u^4+", nsteps, i, i);
+  fprintf (file, "-1/5;\n");
+  if (order < 5)
+    return;
+  // b_{ij}t_j^5=1/6 (6th order)
+  for (i = 1; i < nsteps; ++i)
+    fprintf (file, "b%u%u*t%u^5+", nsteps, i, i);
+  fprintf (file, "-1/6;\n");
 }
 
 /**
- * Function to print in a maxima file the 4th step Runge-Kutta coefficients.
+ * Function to print in a maxima file the a-c Runge-Kutta equations.
  */
 static void
-rk_print_4 (RK * rk,            ///< RK struct.
-            FILE * file)        ///< file.
+ac_print_maxima (FILE * file,   ///< file.
+                 unsigned int nsteps)   ///< steps number.
 {
-  long double *tb, *ac;
-  rk_print_3 (rk, file);
-  tb = rk->tb->coefficient;
-  fprintf (file, "t4:%.19Le;\n", t4 (tb));
-  fprintf (file, "b40:%.19Le;\n", b40 (tb));
-  fprintf (file, "b41:%.19Le;\n", b41 (tb));
-  fprintf (file, "b42:%.19Le;\n", b42 (tb));
-  fprintf (file, "b43:%.19Le;\n", b43 (tb));
-  if (!rk->strong)
-    return;
-  ac = rk->ac->coefficient;
-  fprintf (file, "a40:%.19Le;\n", a40 (ac));
-  fprintf (file, "a41:%.19Le;\n", a41 (ac));
-  fprintf (file, "a42:%.19Le;\n", a42 (ac));
-  fprintf (file, "a43:%.19Le;\n", a43 (ac));
-  fprintf (file, "c40:%.19Le;\n", c40 (ac));
-  fprintf (file, "c41:%.19Le;\n", c41 (ac));
-  fprintf (file, "c42:%.19Le;\n", c42 (ac));
-  fprintf (file, "c43:%.19Le;\n", c43 (ac));
-}
-
-/**
- * Function to print in a maxima file the 5th step Runge-Kutta coefficients.
- */
-static void
-rk_print_5 (RK * rk,            ///< RK struct.
-            FILE * file)        ///< file.
-{
-  long double *tb, *ac;
-  rk_print_4 (rk, file);
-  tb = rk->tb->coefficient;
-  fprintf (file, "t5:%.19Le;\n", t5 (tb));
-  fprintf (file, "b50:%.19Le;\n", b50 (tb));
-  fprintf (file, "b51:%.19Le;\n", b51 (tb));
-  fprintf (file, "b52:%.19Le;\n", b52 (tb));
-  fprintf (file, "b53:%.19Le;\n", b53 (tb));
-  fprintf (file, "b54:%.19Le;\n", b54 (tb));
-  if (!rk->strong)
-    return;
-  ac = rk->ac->coefficient;
-  fprintf (file, "a50:%.19Le;\n", a50 (ac));
-  fprintf (file, "a51:%.19Le;\n", a51 (ac));
-  fprintf (file, "a52:%.19Le;\n", a52 (ac));
-  fprintf (file, "a53:%.19Le;\n", a53 (ac));
-  fprintf (file, "a54:%.19Le;\n", a54 (ac));
-  fprintf (file, "c50:%.19Le;\n", c50 (ac));
-  fprintf (file, "c51:%.19Le;\n", c51 (ac));
-  fprintf (file, "c52:%.19Le;\n", c52 (ac));
-  fprintf (file, "c53:%.19Le;\n", c53 (ac));
-  fprintf (file, "c54:%.19Le;\n", c54 (ac));
-}
-
-/**
- * Function to print in a maxima file the 6th step Runge-Kutta coefficients.
- */
-static void
-rk_print_6 (RK * rk,            ///< RK struct.
-            FILE * file)        ///< file.
-{
-  long double *tb, *ac;
-  rk_print_5 (rk, file);
-  tb = rk->tb->coefficient;
-  fprintf (file, "t6:%.19Le;\n", t6 (tb));
-  fprintf (file, "b60:%.19Le;\n", b60 (tb));
-  fprintf (file, "b61:%.19Le;\n", b61 (tb));
-  fprintf (file, "b62:%.19Le;\n", b62 (tb));
-  fprintf (file, "b63:%.19Le;\n", b63 (tb));
-  fprintf (file, "b64:%.19Le;\n", b64 (tb));
-  fprintf (file, "b65:%.19Le;\n", b65 (tb));
-  if (!rk->strong)
-    return;
-  ac = rk->ac->coefficient;
-  fprintf (file, "a60:%.19Le;\n", a60 (ac));
-  fprintf (file, "a61:%.19Le;\n", a61 (ac));
-  fprintf (file, "a62:%.19Le;\n", a62 (ac));
-  fprintf (file, "a63:%.19Le;\n", a63 (ac));
-  fprintf (file, "a64:%.19Le;\n", a64 (ac));
-  fprintf (file, "a65:%.19Le;\n", a65 (ac));
-  fprintf (file, "c60:%.19Le;\n", c60 (ac));
-  fprintf (file, "c61:%.19Le;\n", c61 (ac));
-  fprintf (file, "c62:%.19Le;\n", c62 (ac));
-  fprintf (file, "c63:%.19Le;\n", c63 (ac));
-  fprintf (file, "c64:%.19Le;\n", c64 (ac));
-  fprintf (file, "c65:%.19Le;\n", c65 (ac));
-}
-
-/**
- * Function to print in a maxima file the 2nd step Runge-Kutta equations.
- */
-void
-rk_print_maxima_2 (FILE * file) ///< file.
-{
-  fprintf (file, "a20+a21-1;\n");
-  fprintf (file, "a20*c20+a21*t1-b20;\n");
-  fprintf (file, "a21*c21-b21;\n");
-}
-
-/**
- * Function to print in a maxima file the 3rd step Runge-Kutta equations.
- */
-void
-rk_print_maxima_3 (FILE * file) ///< file.
-{
-  rk_print_maxima_2 (file);
-  fprintf (file, "a30+a31+a32-1;\n");
-  fprintf (file, "a30*c30+a31*t1+a32*b20-b30;\n");
-  fprintf (file, "a31*c31+a32*b21-b31;\n");
-  fprintf (file, "a32*c32-b32;\n");
-}
-
-/**
- * Function to print in a maxima file the 4th step Runge-Kutta equations.
- */
-void
-rk_print_maxima_4 (FILE * file) ///< file.
-{
-  rk_print_maxima_3 (file);
-  fprintf (file, "a40+a41+a42+a43-1;\n");
-  fprintf (file, "a40*c40+a41*t1+a42*b20+a43*b30-b40;\n");
-  fprintf (file, "a41*c41+a42*b21+a43*b31-b41;\n");
-  fprintf (file, "a42*c42+a43*b32-b42;\n");
-  fprintf (file, "a43*c43-b43;\n");
-}
-
-/**
- * Function to print in a maxima file the 5th step Runge-Kutta equations.
- */
-void
-rk_print_maxima_5 (FILE * file) ///< file.
-{
-  rk_print_maxima_4 (file);
-  fprintf (file, "a50+a51+a52+a53+a54-1;\n");
-  fprintf (file, "a50*c50+a51*t1+a52*b20+a53*b30+a54*b40-b50;\n");
-  fprintf (file, "a51*c51+a52*b21+a53*b31+a54*b41-b51;\n");
-  fprintf (file, "a52*c52+a53*b32+a54*b42-b52;\n");
-  fprintf (file, "a53*c53+a54*b43-b53;\n");
-  fprintf (file, "a54*c54-b54;\n");
-}
-
-/**
- * Function to print in a maxima file the 6th step Runge-Kutta equations.
- */
-void
-rk_print_maxima_6 (FILE * file) ///< file.
-{
-  rk_print_maxima_5 (file);
-  fprintf (file, "a60+a61+a62+a63+a64+a65-1;\n");
-  fprintf (file, "a60*c60+a61*t1+a62*b20+a63*b30+a64*b40+a65*b50-b60;\n");
-  fprintf (file, "a61*c61+a62*b21+a63*b31+a64*b41+a65*b51-b61;\n");
-  fprintf (file, "a62*c62+a63*b32+a64*b42+a65*b52-b62;\n");
-  fprintf (file, "a63*c63+a64*b43+a65*b53-b63;\n");
-  fprintf (file, "a64*c64+a65*b54-b64;\n");
-  fprintf (file, "a65*c65-b65;\n");
+  unsigned int i, j, k;
+  for (i = 2; i <= nsteps; ++i)
+    {
+      // a_{i,j}=1
+      for (j = 0; j < i; ++j)
+        fprintf (file, "a%u%u+", i, j);
+      fprintf (file, "-1;\n");
+      // a_{i0}c_{i0}+a_{ij}b_{j0}=b_{i0}
+      fprintf (file, "a%u0*c%u0+a%u1*t1+", i, i, i);
+      for (j = 2; j < i; ++j)
+        fprintf (file, "a%u%u*b%u0+", i, j, j);
+      fprintf (file, "-b%u0;\n", i);
+      // a_{ij}c_{ij}+a_{ik}b_{kj}=b_{ij}
+      for (j = 1; j < i; ++j)
+        {
+          fprintf (file, "a%u%u*c%u%u+", i, j, i, j);
+          for (k = j; ++k < i;)
+            fprintf (file, "a%u%u*b%u%u+", i, k, k, j);
+          fprintf (file, "-b%u%u;\n", i, j);
+        }
+    }
 }
 
 /**
@@ -946,7 +821,7 @@ end:
 static inline void
 rk_init (RK * rk,               ///< RK struct.
          gsl_rng * rng,         ///< GSL pseudo-random number generator struct.
-	 unsigned int thread)   ///< thread number.
+         unsigned int thread)   ///< thread number.
 {
   optimize_init (rk->tb, rng, thread);
   if (rk->strong)
@@ -1263,10 +1138,9 @@ rk_step_tb (RK * rk)            ///< RK struct.
   fprintf (stderr, "rk_step_tb: nsimulations=%Lu nclimbings=%u\n",
            tb->nsimulations, tb->nclimbings);
 #endif
-  ii = tb->nsimulations * (rank * nthreads + tb->thread) 
-	  / (nnodes * nthreads);
-  nrandom = tb->nsimulations * (rank * nthreads + tb->thread + 1) 
-	  / (nnodes * nthreads);
+  ii = tb->nsimulations * (rank * nthreads + tb->thread) / (nnodes * nthreads);
+  nrandom = tb->nsimulations * (rank * nthreads + tb->thread + 1)
+    / (nnodes * nthreads);
   for (; ii < nrandom; ++ii)
     {
 
@@ -1543,29 +1417,24 @@ rk_select (RK * rk,             ///< RK struct.
 {
   const char *message[] = { _("Bad order"), _("Bad steps number") };
   Optimize *tb, *ac;
-  unsigned int strong, code;
+  unsigned int code;
 #if DEBUG_RK
   fprintf (stderr, "rk_select: start\n");
 #endif
-  strong = rk->strong;
   tb = rk->tb;
-	tb->nsteps = nsteps;
-	tb->order = order;
+  ac = rk->ac;
+  tb->nsteps = nsteps;
+  tb->order = order;
   tb->size = nsteps * (nsteps + 3) / 2 - 1;
   if (rk->pair)
     tb->size += nsteps - 1;
   switch (nsteps)
     {
     case 2:
-      tb->print = (OptimizePrint) rk_print_2;
       switch (order)
         {
         case 2:
           tb->nfree = 1;
-          if (strong)
-            tb->print_maxima = rk_print_maxima_2_2;
-          else
-            tb->print_maxima = tb_print_maxima_2_2;
           if (rk->time_accuracy)
             {
               tb->method = rk_tb_2_2t;
@@ -1583,15 +1452,10 @@ rk_select (RK * rk,             ///< RK struct.
         }
       break;
     case 3:
-      tb->print = (OptimizePrint) rk_print_3;
       switch (order)
         {
         case 2:
           tb->nfree = 4;
-          if (strong)
-            tb->print_maxima = rk_print_maxima_3_2;
-          else
-            tb->print_maxima = tb_print_maxima_3_2;
           if (rk->time_accuracy)
             {
               tb->method = rk_tb_3_2t;
@@ -1605,10 +1469,6 @@ rk_select (RK * rk,             ///< RK struct.
           break;
         case 3:
           tb->nfree = 2;
-          if (strong)
-            tb->print_maxima = rk_print_maxima_3_3;
-          else
-            tb->print_maxima = tb_print_maxima_3_3;
           if (rk->time_accuracy)
             {
               tb->method = rk_tb_3_3t;
@@ -1626,15 +1486,10 @@ rk_select (RK * rk,             ///< RK struct.
         }
       break;
     case 4:
-      tb->print = (OptimizePrint) rk_print_4;
       switch (order)
         {
         case 2:
           tb->nfree = 8;
-          if (strong)
-            tb->print_maxima = rk_print_maxima_4_2;
-          else
-            tb->print_maxima = tb_print_maxima_4_2;
           if (rk->time_accuracy)
             {
               tb->method = rk_tb_4_2t;
@@ -1648,10 +1503,6 @@ rk_select (RK * rk,             ///< RK struct.
           break;
         case 3:
           tb->nfree = 6;
-          if (strong)
-            tb->print_maxima = rk_print_maxima_4_3;
-          else
-            tb->print_maxima = tb_print_maxima_4_3;
           if (rk->time_accuracy)
             {
               tb->method = rk_tb_4_3t;
@@ -1665,10 +1516,6 @@ rk_select (RK * rk,             ///< RK struct.
           break;
         case 4:
           tb->nfree = 2;
-          if (strong)
-            tb->print_maxima = rk_print_maxima_4_4;
-          else
-            tb->print_maxima = tb_print_maxima_4_4;
           if (rk->time_accuracy)
             {
               tb->method = rk_tb_4_4t;
@@ -1686,15 +1533,10 @@ rk_select (RK * rk,             ///< RK struct.
         }
       break;
     case 5:
-      tb->print = (OptimizePrint) rk_print_5;
       switch (order)
         {
         case 2:
           tb->nfree = 13;
-          if (strong)
-            tb->print_maxima = rk_print_maxima_5_2;
-          else
-            tb->print_maxima = tb_print_maxima_5_2;
           if (rk->time_accuracy)
             {
               tb->method = rk_tb_5_2t;
@@ -1708,10 +1550,6 @@ rk_select (RK * rk,             ///< RK struct.
           break;
         case 3:
           tb->nfree = 11;
-          if (strong)
-            tb->print_maxima = rk_print_maxima_5_3;
-          else
-            tb->print_maxima = tb_print_maxima_5_3;
           if (rk->time_accuracy)
             {
               tb->method = rk_tb_5_3t;
@@ -1725,10 +1563,6 @@ rk_select (RK * rk,             ///< RK struct.
           break;
         case 4:
           tb->nfree = 7;
-          if (strong)
-            tb->print_maxima = rk_print_maxima_5_4;
-          else
-            tb->print_maxima = tb_print_maxima_5_4;
           if (rk->time_accuracy)
             {
               if (rk->pair)
@@ -1748,15 +1582,10 @@ rk_select (RK * rk,             ///< RK struct.
         }
       break;
     case 6:
-      tb->print = (OptimizePrint) rk_print_6;
       switch (order)
         {
         case 2:
           tb->nfree = 19;
-          if (strong)
-            tb->print_maxima = rk_print_maxima_6_2;
-          else
-            tb->print_maxima = tb_print_maxima_6_2;
           if (rk->time_accuracy)
             {
               tb->method = rk_tb_6_2t;
@@ -1770,10 +1599,6 @@ rk_select (RK * rk,             ///< RK struct.
           break;
         case 3:
           tb->nfree = 17;
-          if (strong)
-            tb->print_maxima = rk_print_maxima_6_3;
-          else
-            tb->print_maxima = tb_print_maxima_6_3;
           if (rk->time_accuracy)
             {
               tb->method = rk_tb_6_3t;
@@ -1787,10 +1612,6 @@ rk_select (RK * rk,             ///< RK struct.
           break;
         case 4:
           tb->nfree = 13;
-          if (strong)
-            tb->print_maxima = rk_print_maxima_6_4;
-          else
-            tb->print_maxima = tb_print_maxima_6_4;
           if (rk->time_accuracy)
             {
               tb->method = rk_tb_6_4t;
@@ -2009,16 +1830,18 @@ rk_run (xmlNode * node,         ///< XML node.
   snprintf (filename, 64, "rk-%u-%u-%u-%u-%u.mc",
             nsteps, order, rk->time_accuracy, rk->pair, rk->strong);
   file = fopen (filename, "w");
-	print_maxima_precision (file);
-  tb->print ((Optimize *) rk, file);
-  tb->print_maxima (file, nsteps, order);
+  print_maxima_precision (file);
+  rk_print (rk, file);
+  tb_print_maxima (file, nsteps, order);
+  if (rk->strong)
+    ac_print_maxima (file, nsteps);
   fclose (file);
-  snprintf (filename, 64, "sed -i 's/e+/b+/g' rk-%u-%u-%u-%u-%u.mc", 
+  snprintf (filename, 64, "sed -i 's/e+/b+/g' rk-%u-%u-%u-%u-%u.mc",
             nsteps, order, rk->time_accuracy, rk->pair, rk->strong);
-  system (filename);
-  snprintf (filename, 64, "sed -i 's/e-/b-/g' rk-%u-%u-%u-%u-%u.mc", 
+  code = system (filename);
+  snprintf (filename, 64, "sed -i 's/e-/b-/g' rk-%u-%u-%u-%u-%u.mc",
             nsteps, order, rk->time_accuracy, rk->pair, rk->strong);
-  system (filename);
+  code = system (filename);
 
   // Free memory
   if (rk->strong)

@@ -45,33 +45,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "rk_6_2.h"
 #include "rk_6_3.h"
 
-/**
- * Function to print a maxima format file to check the accuracy order of a 5
- * steps 3rd order Runge-Kutta simple stable method.
- */
-void
-tb_print_maxima_6_3 (FILE * file,       ///< file.
-                     unsigned int nsteps,       ///< steps number.
-                     unsigned int order)        ///< accuracy order.
-{
-  tb_print_maxima_6_2 (file, nsteps, order);
-  fprintf (file, "b62*b21*t1+b63*(b31*t1+b32*t2)+b64*(b41*t1+b42*t2+b43*t3)"
-           "+b65*(b51*t1+b52*t2+b53*t3+b54*t4)-1/6;\n");
-  fprintf (file, "b61*t1^3+b62*t2^3+b63*t3^3+b64*t4^3+b65*t5^3-1/4;\n");
-}
-
-/**
- * Function to print a maxima format file to check the accuracy order of a 6
- * steps 3rd order Runge-Kutta method.
- */
-void
-rk_print_maxima_6_3 (FILE * file,       ///< file.
-                     unsigned int nsteps,       ///< steps number.
-                     unsigned int order)        ///< accuracy order.
-{
-  tb_print_maxima_6_3 (file, nsteps, order);
-  rk_print_maxima_6 (file);
-}
+#define DEBUG_RK_6_3 0          ///< macro to debug.
 
 /**
  * Function to obtain the coefficients of a 6 steps 3rd order Runge-Kutta 

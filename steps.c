@@ -4475,6 +4475,24 @@ steps_13_8 (Optimize * optimize)        ///< Optimize struct.
 }
 
 /**
+ * Function to print on a file the coefficients of the multi-steps methods.
+ */
+static void
+steps_print (Optimize * optimize,       ///< Optimize struct.
+             FILE * file)       ///< file.
+{
+  long double *x;
+  unsigned int i;
+  x = optimize->coefficient;
+  for (i = 0; i < optimize->nsteps; ++i)
+    {
+      fprintf (file, "a%u:%.19Le;\n", i, x[2 * i]);
+      fprintf (file, "b%u:%.19Le;\n", i, x[2 * i + 1]);
+      fprintf (file, "c%u:%.19Le;\n", i, c (x[2 * i], x[2 * i + 1]));
+    }
+}
+
+/**
  * Function to print a maxima format file to check the accuracy order of a
  * multi-steps method.
  */
@@ -4516,24 +4534,6 @@ steps_print_maxima (FILE * file,        ///< file.
           fprintf (file, "+%ub0*b%u", l, i);
         }
       fprintf (file, "+%db0;\n", m);
-    }
-}
-
-/**
- * Function to print on a file the coefficients of the multi-steps methods.
- */
-static void
-steps_print (Optimize * optimize,       ///< Optimize struct.
-             FILE * file)       ///< file.
-{
-  long double *x;
-  unsigned int i;
-  x = optimize->coefficient;
-  for (i = 0; i < optimize->nsteps; ++i)
-    {
-      fprintf (file, "a%u:%.19Le;\n", i, x[2 * i]);
-      fprintf (file, "b%u:%.19Le;\n", i, x[2 * i + 1]);
-      fprintf (file, "c%u:%.19Le;\n", i, c (x[2 * i], x[2 * i + 1]));
     }
 }
 
@@ -5662,8 +5662,6 @@ steps_select (Optimize * optimize,      ///< Optimize struct.
   optimize->random_type
     = (unsigned int *) g_slice_alloc (optimize->nfree * sizeof (unsigned int));
   optimize->data = NULL;
-  optimize->print = steps_print;
-  optimize->print_maxima = steps_print_maxima;
   optimize->objective = objective[nsteps];
   optimize->method = method[nsteps][order];
   if (!optimize->method)
@@ -5743,13 +5741,13 @@ steps_run (xmlNode * node,      ///< XML node.
   snprintf (filename, 64, "steps-%u-%u.mc", nsteps, order);
   file = fopen (filename, "w");
   print_maxima_precision (file);
-  s->print (s, file);
-  s->print_maxima (file, nsteps, order);
+  steps_print (s, file);
+  steps_print_maxima (file, nsteps, order);
   fclose (file);
   snprintf (filename, 64, "sed -i 's/e+/b+/g' steps-%u-%u.mc", nsteps, order);
-  system (filename);
+  code = system (filename);
   snprintf (filename, 64, "sed -i 's/e-/b-/g' steps-%u-%u.mc", nsteps, order);
-  system (filename);
+  code = system (filename);
 
   // Free memory
   g_slice_free1 (nfree * sizeof (unsigned int), s->random_type);

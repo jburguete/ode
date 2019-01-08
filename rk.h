@@ -136,11 +136,7 @@ typedef struct
 #define c64(x) x[38]            ///< c64 Runge-Kutta coefficient.
 #define c65(x) x[39]            ///< c65 Runge-Kutta coefficient.
 
-void rk_print_tb_2 (long double *tb, char *label, FILE * file);
-void rk_print_tb_3 (long double *tb, char *label, FILE * file);
-void rk_print_tb_4 (long double *tb, char *label, FILE * file);
-void rk_print_tb_5 (long double *tb, char *label, FILE * file);
-void rk_print_tb_6 (long double *tb, char *label, FILE * file);
+void rk_print_tb (Optimize * tb, char *label, FILE * file);
 void rk_print_maxima_2 (FILE * file);
 void rk_print_maxima_3 (FILE * file);
 void rk_print_maxima_4 (FILE * file);

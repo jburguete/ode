@@ -103,10 +103,10 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
   fprintf (stderr, "optimize_step: nsimulations=%Lu\n", optimize->nsimulations);
 #endif
   random = optimize->random_data;
-  ii = optimize->nsimulations * (rank * nthreads + optimize->thread) 
-	  / (nnodes * nthreads);
-  nrandom = optimize->nsimulations * (rank * nthreads + optimize->thread + 1) 
-	  / (nnodes * nthreads);
+  ii = optimize->nsimulations * (rank * nthreads + optimize->thread)
+    / (nnodes * nthreads);
+  nrandom = optimize->nsimulations * (rank * nthreads + optimize->thread + 1)
+    / (nnodes * nthreads);
   for (; ii < nrandom; ++ii)
     {
 
@@ -208,7 +208,7 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
         {
           f = 1.2L;
           memcpy (vo, vo2, nfree * sizeof (long double));
-	}
+        }
       for (j = 0; j < nfree; ++j)
         is[j] *= f;
     }
@@ -236,7 +236,7 @@ optimize_step (Optimize * optimize)     ///< Optimize struct.
 void
 optimize_init (Optimize * optimize,     ///< Optimize struct.
                gsl_rng * rng,   ///< GSL pseudo-random number generator struct.
-	       unsigned int thread) ///< thread number.
+               unsigned int thread)     ///< thread number.
 {
 #if DEBUG_OPTIMIZE
   fprintf (stderr, "optimize_init: start\n");

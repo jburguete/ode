@@ -34,8 +34,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef RK_5_4__H
 #define RK_5_4__H 1
 
-void tb_print_maxima_5_4 (FILE * file, unsigned int nsteps, unsigned int order);
-void rk_print_maxima_5_4 (FILE * file, unsigned int nsteps, unsigned int order);
 int rk_tb_5_4 (Optimize * optimize);
 int rk_tb_5_4t (Optimize * optimize);
 int rk_tb_5_4tp (Optimize * optimize);

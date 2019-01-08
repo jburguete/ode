@@ -47,35 +47,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DEBUG_RK_3_2 0          ///< macro to debug.
 
 /**
- * Function to print a maxima format file to check the accuracy order of a 3
- * steps 2nd order Runge-Kutta simple stable method.
- */
-void
-tb_print_maxima_3_2 (FILE * file,       ///< file.
-                     unsigned int nsteps __attribute__ ((unused)),
-                     ///< steps number.
-                     unsigned int order __attribute__ ((unused)))
-  ///< accuracy order.
-{
-  fprintf (file, "b30+b31+b32-1;\n");
-  fprintf (file, "b31*t1+b32*t2-1/2;\n");
-  fprintf (file, "b31*t1^2+b32*t2^2-1/3;\n");
-}
-
-/**
- * Function to print a maxima format file to check the accuracy order of a 3
- * steps 2nd order Runge-Kutta method.
- */
-void
-rk_print_maxima_3_2 (FILE * file,       ///< file.
-                     unsigned int nsteps,       ///< steps number.
-                     unsigned int order)        ///< accuracy order.
-{
-  tb_print_maxima_3_2 (file, nsteps, order);
-  rk_print_maxima_3 (file);
-}
-
-/**
  * Function to obtain the coefficients of a 3 steps 2nd order Runge-Kutta 
  * method.
  */
@@ -96,7 +67,7 @@ rk_tb_3_2 (Optimize * optimize) ///< Optimize struct.
   b31 (tb) = (0.5L - b32 (tb) * t2 (tb)) / t1 (tb);
   rk_b_3 (tb);
 #if DEBUG_RK_3_2
-  rk_print_tb_3 (tb, "rk_tb_3_2", stderr);
+  rk_print_tb (optimize, "rk_tb_3_2", stderr);
   fprintf (stderr, "rk_tb_3_2: end\n");
 #endif
   if (isnan (b31 (tb)))
@@ -125,7 +96,7 @@ rk_tb_3_2t (Optimize * optimize)        ///< Optimize struct.
   b31 (tb) = (0.5L - b32 (tb) * t2 (tb)) / t1 (tb);
   rk_b_3 (tb);
 #if DEBUG_RK_3_2
-  rk_print_tb_3 (tb, "rk_tb_3_2t", stderr);
+  rk_print_tb (optimize, "rk_tb_3_2t", stderr);
   fprintf (stderr, "rk_tb_3_2t: end\n");
 #endif
   if (isnan (b31 (tb)) || isnan (b32 (tb)))

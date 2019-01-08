@@ -48,38 +48,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DEBUG_RK_5_4 0          ///< macro to debug.
 
 /**
- * Function to print a maxima format file to check the accuracy order of a 5
- * steps 4th order Runge-Kutta method.
- */
-void
-tb_print_maxima_5_4 (FILE * file,       ///< file.
-                     unsigned int nsteps,       ///< steps number.
-                     unsigned int order)        ///< accuracy order.
-{
-  tb_print_maxima_5_3 (file, nsteps, order);
-  fprintf (file, "b53*b32*b21*t1+b54*(b42*b21*t1+b43*(b31*t1+b32*t2))-1/24;\n");
-  fprintf (file, "b52*b21*t1^2+b53*(b31*t1^2+b32*t2^2)"
-           "+b54*(b41*t1^2+b42*t2^2+b43*t3^2)-1/12;\n");
-  fprintf (file, "b52*t2*b21*t1+b53*t3*(b31*t1+b32*t2)"
-           "+b54*t4*(b41*t1+b42*t2+b43*t3)-1/8;\n");
-  fprintf (file, "b51*t1^3+b52*t2^3+b53*t3^3+b54*t4^3-1/4;\n");
-  fprintf (file, "b51*t1^4+b52*t2^4+b53*t3^4+b54*t4^4-1/5;\n");
-}
-
-/**
- * Function to print a maxima format file to check the accuracy order of a 5
- * steps 4th order Runge-Kutta method.
- */
-void
-rk_print_maxima_5_4 (FILE * file,       ///< file.
-                     unsigned int nsteps,       ///< steps number.
-                     unsigned int order)        ///< accuracy order.
-{
-  tb_print_maxima_5_4 (file, nsteps, order);
-  rk_print_maxima_5 (file);
-}
-
-/**
  * Function to obtain the coefficients of a 5 steps 4th order Runge-Kutta 
  * method.
  */
@@ -224,7 +192,7 @@ rk_tb_5_4t (Optimize * optimize)        ///< Optimize struct.
   b41 (tb) = D[0] / b54 (tb);
   rk_b_5 (tb);
 #if DEBUG_RK_5_4
-  rk_print_tb_5 (tb, "rk_tb_5_4t", stderr);
+  rk_print_tb (optimize, "rk_tb_5_4t", stderr);
   fprintf (stderr, "rk_tb_5_4t: end\n");
 #endif
   if (isnan (b41 (tb)) || isnan (b42 (tb)) || isnan (b43 (tb))
@@ -315,7 +283,7 @@ rk_tb_5_4tp (Optimize * optimize)       ///< Optimize struct.
   rk_b_5 (tb);
   rk_e_5 (tb);
 #if DEBUG_RK_5_4
-  rk_print_tb_5 (tb, "rk_tb_5_4t", stderr);
+  rk_print_tb (optimize, "rk_tb_5_4t", stderr);
   fprintf (stderr, "rk_tb_5_4t: end\n");
 #endif
   if (isnan (b41 (tb)) || isnan (b42 (tb)) || isnan (b43 (tb))
@@ -398,7 +366,7 @@ rk_objective_tb_5_4t (RK * rk)  ///< RK struct.
 #endif
   tb = rk->tb->coefficient;
 #if DEBUG_RK_5_4
-  rk_print_tb_5 (tb, "rk_objective_tb_5_4t", stderr);
+  rk_print_tb (optimize, "rk_objective_tb_5_4t", stderr);
 #endif
   o = fminl (0.L, b20 (tb));
   if (b21 (tb) < 0.L)
@@ -461,7 +429,7 @@ rk_objective_tb_5_4tp (RK * rk) ///< RK struct.
 #endif
   tb = rk->tb->coefficient;
 #if DEBUG_RK_5_4
-  rk_print_tb_5 (tb, "rk_objective_tb_5_4tp", stderr);
+  rk_print_tb (optimize, "rk_objective_tb_5_4tp", stderr);
 #endif
   o = fminl (0.L, b20 (tb));
   if (b21 (tb) < 0.L)

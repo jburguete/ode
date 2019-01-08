@@ -41,10 +41,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 typedef struct _Optimize Optimize;
 struct _Optimize
 {
-  void (*print) (Optimize * optimize, FILE * file);
-  ///< pointer to the function to print the results data.
-  void (*print_maxima) (FILE * file, unsigned int nsteps, unsigned int order);
-  ///< pointer to the function to print the maxima format data.
   int (*method) (Optimize * optimize);
   ///< pointer to the function to calculate the method variables.
   long double (*objective) (Optimize * optimize);

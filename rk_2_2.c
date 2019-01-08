@@ -63,19 +63,6 @@ tb_print_maxima_2_2 (FILE * file,       ///< file.
 }
 
 /**
- * Function to print a maxima format file to check the accuracy order of a 2
- * steps 2nd order Runge-Kutta method.
- */
-void
-rk_print_maxima_2_2 (FILE * file,       ///< file.
-                     unsigned int nsteps,       ///< steps number.
-                     unsigned int order)        ///< accuracy order.
-{
-  tb_print_maxima_2_2 (file, nsteps, order);
-  rk_print_maxima_2 (file);
-}
-
-/**
  * Function to obtain the coefficients of a 2 steps 2nd order Runge-Kutta 
  * method.
  */
@@ -93,7 +80,7 @@ rk_tb_2_2 (Optimize * optimize) ///< Optimize struct.
   b21 (tb) = 0.5L / t1 (tb);
   rk_b_2 (tb);
 #if DEBUG_RK_2_2
-  rk_print_tb_2 (tb, "rk_tb_2_2", stderr);
+  rk_print_tb (optimize, "rk_tb_2_2", stderr);
   fprintf (stderr, "rk_tb_2_2: end\n");
 #endif
   return 1;
@@ -116,7 +103,7 @@ rk_tb_2_2t (Optimize * optimize)        ///< Optimize struct.
   b21 (tb) = 0.5L / t1 (tb);
   rk_b_2 (tb);
 #if DEBUG_RK_2_2
-  rk_print_tb_2 (tb, "rk_tb_2_2t", stderr);
+  rk_print_tb (optimize, "rk_tb_2_2t", stderr);
   fprintf (stderr, "rk_tb_2_2t: end\n");
 #endif
   return 1;

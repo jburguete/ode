@@ -48,41 +48,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DEBUG_RK_6_4 0          ///< macro to debug.
 
 /**
- * Function to print a maxima format file to check the accuracy order of a 6
- * steps 4th order Runge-Kutta method.
- */
-void
-tb_print_maxima_6_4 (FILE * file,       ///< file.
-                     unsigned int nsteps,       ///< steps number.
-                     unsigned int order)        ///< accuracy order.
-{
-  tb_print_maxima_6_3 (file, nsteps, order);
-  fprintf (file, "b63*b32*b21*t1+b64*(b42*b21*t1+b43*(b31*t1+b32*t2))"
-           "+b65*(b52*b21*t1+b53*(b31*t1+b32*t2)+b54*(b41*t1+b42*t2+b43*t3))"
-           "-1/24;\n");
-  fprintf (file, "b62*b21*t1^2+b63*(b31*t1^2+b32*t2^2)"
-           "+b64*(b41*t1^2+b42*t2^2+b43*t3^2)"
-           "+b65*(b51*t1^2+b52*t2^2+b53*t3^2+b54*t4^2)-1/12;\n");
-  fprintf (file, "b62*t2*b21*t1+b63*t3*(b31*t1+b32*t2)"
-           "+b64*t4*(b41*t1+b42*t2+b43*t3)"
-           "+b65*t5*(b51*t1+b52*t2+b53*t3+b54*t4)-1/8;\n");
-  fprintf (file, "b61*t1^4+b62*t2^4+b63*t3^4+b64*t4^4+b65*t5^4-1/5;\n");
-}
-
-/**
- * Function to print a maxima format file to check the accuracy order of a 6
- * steps 4th order Runge-Kutta method.
- */
-void
-rk_print_maxima_6_4 (FILE * file,       ///< file.
-                     unsigned int nsteps,       ///< steps number.
-                     unsigned int order)        ///< accuracy order.
-{
-  tb_print_maxima_6_4 (file, nsteps, order);
-  rk_print_maxima_6 (file);
-}
-
-/**
  * Function to obtain the coefficients of a 6 steps 4th order Runge-Kutta 
  * method.
  */
@@ -260,7 +225,7 @@ rk_tb_6_4t (Optimize * optimize)        ///< Optimize struct.
   b41 (tb) = D[0] / b54 (tb);
   rk_b_5 (tb);
 #if DEBUG_RK_6_4
-  rk_print_tb_6 (tb, "rk_tb_6_4t", stderr);
+  rk_print_tb (optimize, "rk_tb_6_4t", stderr);
   fprintf (stderr, "rk_tb_6_4t: end\n");
 #endif
 #if RK_PAIR
@@ -354,7 +319,7 @@ rk_objective_tb_6_4t (RK * rk)  ///< RK struct.
 #endif
   tb = rk->tb->coefficient;
 #if DEBUG_RK_5_4
-  rk_print_tb_5 (tb, "rk_objective_tb_5_4t", stderr);
+  rk_print_tb (optimize, "rk_objective_tb_5_4t", stderr);
 #endif
   o = fminl (0.L, b20 (tb));
   if (b21 (tb) < 0.L)
