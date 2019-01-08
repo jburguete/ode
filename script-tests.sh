@@ -6,6 +6,10 @@
 ./ode-pgo tests/test-rk-3-2-0-0-1.xml
 ./ode-pgo tests/test-rk-3-2-1-0-0.xml
 ./ode-pgo tests/test-rk-3-2-1-0-1.xml
+./ode-pgo tests/test-rk-3-3-0-0-0.xml
+./ode-pgo tests/test-rk-3-3-0-0-1.xml
+./ode-pgo tests/test-rk-3-3-1-0-0.xml
+./ode-pgo tests/test-rk-3-3-1-0-1.xml
 for i in `seq 3 8`;
 do
 	k=`echo "$i-1" | bc`;

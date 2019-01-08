@@ -91,7 +91,7 @@ rk_tb_3_3t (Optimize * optimize)        ///< Optimize struct.
   r = optimize->random_data;
   t3 (tb) = 1.L;
   t1 (tb) = r[0];
-  t2 (tb) = r[1];
+  t2 (tb) = (4.L * t1 (tb) - 3.L) / (6.L * t1 (tb) - 4.L);
   b32 (tb) = (1.L / 3.L - 0.5L * t1 (tb)) / (t2 (tb) * (t2 (tb) - t1 (tb)));
   b31 (tb) = (1.L / 3.L - 0.5L * t2 (tb)) / (t1 (tb) * (t1 (tb) - t2 (tb)));
   b21 (tb) = 1 / 6.L / (b32 (tb) * t1 (tb));
