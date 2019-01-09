@@ -109,16 +109,16 @@ rk_tb_3_2t (Optimize * optimize)        ///< Optimize struct.
  * pair.
  */
 int
-rk_tb_3_2p (Optimize * optimize) ///< Optimize struct.
+rk_tb_3_2p (Optimize * optimize)        ///< Optimize struct.
 {
   long double *tb;
 #if DEBUG_RK_3_2
   fprintf (stderr, "rk_tb_3_2p: start\n");
 #endif
-	if (!rk_tb_3_2 (optimize))
-		return 0;
+  if (!rk_tb_3_2 (optimize))
+    return 0;
   tb = optimize->coefficient;
-	e31 (tb) = 0.L;
+  e31 (tb) = 0.L;
   rk_e_3 (tb);
 #if DEBUG_RK_3_2
   rk_print_e (optimize, "rk_tb_3_2p", stderr);
@@ -132,16 +132,16 @@ rk_tb_3_2p (Optimize * optimize) ///< Optimize struct.
  * in equations depending only in time, Runge-Kutta method.
  */
 int
-rk_tb_3_2tp (Optimize * optimize)        ///< Optimize struct.
+rk_tb_3_2tp (Optimize * optimize)       ///< Optimize struct.
 {
   long double *tb;
 #if DEBUG_RK_3_2
   fprintf (stderr, "rk_tb_3_2tp: start\n");
 #endif
-	if (!rk_tb_3_2t (optimize))
-		return 0;
+  if (!rk_tb_3_2t (optimize))
+    return 0;
   tb = optimize->coefficient;
-	e31 (tb) = 0.L;
+  e31 (tb) = 0.L;
   rk_e_3 (tb);
 #if DEBUG_RK_3_2
   rk_print_tb (optimize, "rk_tb_3_2tp", stderr);

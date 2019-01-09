@@ -88,15 +88,15 @@ rk_print_tb (Optimize * tb,     ///< Optimize struct.
  * Function to print the e Runge-Kutta coefficients.
  */
 void
-rk_print_e (Optimize * tb,     ///< Optimize struct.
-            char *label,       ///< label.
-            FILE * file)       ///< file.
+rk_print_e (Optimize * tb,      ///< Optimize struct.
+            char *label,        ///< label.
+            FILE * file)        ///< file.
 {
   long double *x;
   unsigned int i, k, nsteps;
   x = tb->coefficient;
-	nsteps = tb->nsteps;
-	k = (nsteps + 2) * (nsteps + 1) / 2 - 2;
+  nsteps = tb->nsteps;
+  k = (nsteps + 2) * (nsteps + 1) / 2 - 2;
   for (i = 0; i < nsteps - 1; ++i)
     fprintf (file, "%s: e%u%u=%.19Le\n", label, nsteps, i, x[k++]);
 }
@@ -116,7 +116,7 @@ rk_print (RK * rk,              ///< RK struct.
   x = tb->coefficient;
   y = ac->coefficient;
   fprintf (file, "t1:%.19Le;\n", x[0]);
-	nsteps = tb->nsteps;
+  nsteps = tb->nsteps;
   for (i = 2, k = l = 0; i <= nsteps; ++i)
     {
       fprintf (file, "t%u:%.19Le;\n", i, x[++k]);
@@ -129,7 +129,7 @@ rk_print (RK * rk,              ///< RK struct.
       for (j = 0; j < i; ++j)
         fprintf (file, "c%u%u:%.19Le;\n", i, j, y[l++]);
     }
-	if (rk->pair)
+  if (rk->pair)
     for (i = 0; i < nsteps - 1; ++i)
       fprintf (file, "e%u%u:%.19Le;\n", nsteps, i, x[++k]);
 }
@@ -1486,17 +1486,17 @@ rk_select (RK * rk,             ///< RK struct.
           tb->nfree = 4;
           if (rk->time_accuracy)
             {
-							if (rk->pair)
+              if (rk->pair)
                 tb->method = rk_tb_3_2tp;
-							else
+              else
                 tb->method = rk_tb_3_2t;
               tb->objective = (OptimizeObjective) rk_objective_tb_3_2t;
             }
           else
             {
-							if (rk->pair)
+              if (rk->pair)
                 tb->method = rk_tb_3_2p;
-							else
+              else
                 tb->method = rk_tb_3_2;
               tb->objective = (OptimizeObjective) rk_objective_tb_3_2;
             }
@@ -1505,12 +1505,18 @@ rk_select (RK * rk,             ///< RK struct.
           tb->nfree = 2;
           if (rk->time_accuracy)
             {
-              tb->method = rk_tb_3_3t;
+              if (rk->pair)
+                tb->method = rk_tb_3_3tp;
+              else
+                tb->method = rk_tb_3_3t;
               tb->objective = (OptimizeObjective) rk_objective_tb_3_3t;
             }
           else
             {
-              tb->method = rk_tb_3_3;
+              if (rk->pair)
+                tb->method = rk_tb_3_3p;
+              else
+                tb->method = rk_tb_3_3;
               tb->objective = (OptimizeObjective) rk_objective_tb_3_3;
             }
           break;
@@ -1526,12 +1532,18 @@ rk_select (RK * rk,             ///< RK struct.
           tb->nfree = 8;
           if (rk->time_accuracy)
             {
-              tb->method = rk_tb_4_2t;
+              if (rk->pair)
+                tb->method = rk_tb_4_2tp;
+              else
+                tb->method = rk_tb_4_2t;
               tb->objective = (OptimizeObjective) rk_objective_tb_4_2t;
             }
           else
             {
-              tb->method = rk_tb_4_2;
+              if (rk->pair)
+                tb->method = rk_tb_4_2p;
+              else
+                tb->method = rk_tb_4_2;
               tb->objective = (OptimizeObjective) rk_objective_tb_4_2;
             }
           break;
@@ -1539,12 +1551,23 @@ rk_select (RK * rk,             ///< RK struct.
           tb->nfree = 6;
           if (rk->time_accuracy)
             {
-              tb->method = rk_tb_4_3t;
-              tb->objective = (OptimizeObjective) rk_objective_tb_4_3t;
+              if (rk->pair)
+                {
+                  tb->method = rk_tb_4_3tp;
+                  tb->objective = (OptimizeObjective) rk_objective_tb_4_3tp;
+                }
+              else
+                {
+                  tb->method = rk_tb_4_3t;
+                  tb->objective = (OptimizeObjective) rk_objective_tb_4_3t;
+                }
             }
           else
             {
-              tb->method = rk_tb_4_3;
+              if (rk->pair)
+                tb->method = rk_tb_4_3p;
+              else
+                tb->method = rk_tb_4_3;
               tb->objective = (OptimizeObjective) rk_objective_tb_4_3;
             }
           break;

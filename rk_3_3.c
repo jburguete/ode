@@ -107,6 +107,52 @@ rk_tb_3_3t (Optimize * optimize)        ///< Optimize struct.
 }
 
 /**
+ * Function to obtain the coefficients of a 3 steps 2nd-3rd order Runge-Kutta 
+ * pair.
+ */
+int
+rk_tb_3_3p (Optimize * optimize)        ///< Optimize struct.
+{
+  long double *tb;
+#if DEBUG_RK_3_3
+  fprintf (stderr, "rk_tb_3_3p: start\n");
+#endif
+  if (!rk_tb_3_3 (optimize))
+    return 0;
+  tb = optimize->coefficient;
+  e31 (tb) = 0.5L / t1 (tb);
+  rk_e_3 (tb);
+#if DEBUG_RK_3_3
+  rk_print_e (optimize, "rk_tb_3_3p", stderr);
+  fprintf (stderr, "rk_tb_3_3p: end\n");
+#endif
+  return 1;
+}
+
+/**
+ * Function to obtain the coefficients of a 3 steps 2nd-3rd order, 2nd-4th order
+ * in equations depending only in time, Runge-Kutta pair.
+ */
+int
+rk_tb_3_3tp (Optimize * optimize)       ///< Optimize struct.
+{
+  long double *tb;
+#if DEBUG_RK_3_3
+  fprintf (stderr, "rk_tb_3_3tp: start\n");
+#endif
+  if (!rk_tb_3_3t (optimize))
+    return 0;
+  tb = optimize->coefficient;
+  e31 (tb) = 0.5L / t1 (tb);
+  rk_e_3 (tb);
+#if DEBUG_RK_3_3
+  rk_print_e (optimize, "rk_tb_3_3tp", stderr);
+  fprintf (stderr, "rk_tb_3_3tp: end\n");
+#endif
+  return 1;
+}
+
+/**
  * Function to calculate the objective function of a 3 steps 3rd order 
  * Runge-Kutta method.
  *

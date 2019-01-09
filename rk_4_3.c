@@ -121,6 +121,54 @@ rk_tb_4_3t (Optimize * optimize)        ///< Optimize struct.
 }
 
 /**
+ * Function to obtain the coefficients of a 4 steps 2nd-3rd order Runge-Kutta 
+ * pair.
+ */
+int
+rk_tb_4_3p (Optimize * optimize)        ///< Optimize struct.
+{
+  long double *tb;
+#if DEBUG_RK_4_3
+  fprintf (stderr, "rk_tb_4_3p: start\n");
+#endif
+  if (!rk_tb_4_3 (optimize))
+    return 0;
+  tb = optimize->coefficient;
+  e41 (tb) = 0.5L / t1 (tb);
+  e42 (tb) = 0.L;
+  rk_e_4 (tb);
+#if DEBUG_RK_4_3
+  rk_print_e (optimize, "rk_tb_4_3p", stderr);
+  fprintf (stderr, "rk_tb_4_3p: end\n");
+#endif
+  return 1;
+}
+
+/**
+ * Function to obtain the coefficients of a 4 steps 2nd-3rd order, 3rd-4th order
+ * in equations depending only in time, Runge-Kutta pair.
+ */
+int
+rk_tb_4_3tp (Optimize * optimize)       ///< Optimize struct.
+{
+  long double *tb;
+#if DEBUG_RK_4_3
+  fprintf (stderr, "rk_tb_4_3tp: start\n");
+#endif
+  if (!rk_tb_4_3t (optimize))
+    return 0;
+  tb = optimize->coefficient;
+  e42 (tb) = (1.L / 3.L - 0.5L * t1 (tb)) / (t2 (tb) * (t2 (tb) - t1 (tb)));
+  e41 (tb) = (0.5L - e42 (tb) * t2 (tb)) / t1 (tb);
+  rk_e_4 (tb);
+#if DEBUG_RK_4_3
+  rk_print_e (optimize, "rk_tb_4_3tp", stderr);
+  fprintf (stderr, "rk_tb_4_3tp: end\n");
+#endif
+  return 1;
+}
+
+/**
  * Function to calculate the objective function of a 4 steps 3rd order 
  * Runge-Kutta method.
  *
@@ -208,6 +256,59 @@ end:
 #if DEBUG_RK_4_3
   fprintf (stderr, "rk_objective_tb_4_3t: optimal=%Lg\n", o);
   fprintf (stderr, "rk_objective_tb_4_3t: end\n");
+#endif
+  return o;
+}
+
+/**
+ * Function to calculate the objective function of a 4 steps 2nd-3rd order, 
+ * 3rd-4th oder in equations depending only in time, Runge-Kutta pair.
+ *
+ * \return objective function value.
+ */
+long double
+rk_objective_tb_4_3tp (RK * rk) ///< RK struct.
+{
+  long double *tb;
+  long double o;
+#if DEBUG_RK_4_3
+  fprintf (stderr, "rk_objective_tb_4_3tp: start\n");
+#endif
+  tb = rk->tb->coefficient;
+  o = fminl (0.L, b20 (tb));
+  if (b30 (tb) < 0.L)
+    o += b30 (tb);
+  if (b31 (tb) < 0.L)
+    o += b31 (tb);
+  if (b40 (tb) < 0.L)
+    o += b40 (tb);
+  if (b41 (tb) < 0.L)
+    o += b41 (tb);
+  if (b42 (tb) < 0.L)
+    o += b42 (tb);
+  if (b43 (tb) < 0.L)
+    o += b43 (tb);
+  if (e40 (tb) < 0.L)
+    o += e40 (tb);
+  if (e41 (tb) < 0.L)
+    o += e41 (tb);
+  if (e42 (tb) < 0.L)
+    o += e42 (tb);
+  if (o < 0.L)
+    {
+      o = 40.L - o;
+      goto end;
+    }
+  o = 30.L + fmaxl (1.L, fmaxl (t1 (tb), fmaxl (t2 (tb), t3 (tb))));
+  if (rk->strong)
+    {
+      rk_bucle_ac (rk);
+      o = fminl (o, *rk->ac0->optimal);
+    }
+end:
+#if DEBUG_RK_4_3
+  fprintf (stderr, "rk_objective_tb_4_3tp: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_4_3tp: end\n");
 #endif
   return o;
 }

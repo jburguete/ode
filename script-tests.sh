@@ -1,19 +1,36 @@
-./ode-pgo tests/test-rk-2-2-0-0-0.xml
-./ode-pgo tests/test-rk-2-2-0-0-1.xml
-./ode-pgo tests/test-rk-2-2-1-0-0.xml
-./ode-pgo tests/test-rk-2-2-1-0-1.xml
-./ode-pgo tests/test-rk-3-2-0-0-0.xml
-./ode-pgo tests/test-rk-3-2-0-0-1.xml
-./ode-pgo tests/test-rk-3-2-0-1-0.xml
-./ode-pgo tests/test-rk-3-2-0-1-1.xml
-./ode-pgo tests/test-rk-3-2-1-0-0.xml
-./ode-pgo tests/test-rk-3-2-1-0-1.xml
-./ode-pgo tests/test-rk-3-2-1-1-0.xml
-./ode-pgo tests/test-rk-3-2-1-1-1.xml
-./ode-pgo tests/test-rk-3-3-0-0-0.xml
-./ode-pgo tests/test-rk-3-3-0-0-1.xml
-./ode-pgo tests/test-rk-3-3-1-0-0.xml
-./ode-pgo tests/test-rk-3-3-1-0-1.xml
+for k in `seq 0 1`;
+do
+	for m in `seq 0 1`;
+	do
+		./ode-pgo tests/test-rk-2-2-$k-0-$m.xml
+	done
+done
+for j in `seq 2 3`;
+do
+	for k in `seq 0 1`;
+	do
+		for l in `seq 0 1`;
+		do
+			for m in `seq 0 1`;
+			do
+				./ode-pgo tests/test-rk-3-$j-$k-$l-$m.xml
+			done
+		done
+	done
+done
+for j in `seq 2 3`;
+do
+	for k in `seq 0 1`;
+	do
+		for l in `seq 0 1`;
+		do
+			for m in `seq 0 1`;
+			do
+				./ode-pgo tests/test-rk-4-$j-$k-$l-$m.xml
+			done
+		done
+	done
+done
 for i in `seq 3 8`;
 do
 	k=`echo "$i-1" | bc`;
