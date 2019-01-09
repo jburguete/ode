@@ -1,7 +1,7 @@
 /*
 ODE: a program to get optime Runge-Kutta and multi-steps methods.
 
-Copyright 2011-2018, Javier Burguete Tolosa.
+Copyright 2011-2019, Javier Burguete Tolosa.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \file rk_3_3.h
  * \brief Header file to optimize Runge-Kutta 3 steps 3rd order methods.
  * \author Javier Burguete Tolosa.
- * \copyright Copyright 2011-2018.
+ * \copyright Copyright 2011-2019.
  */
 #ifndef RK_3_3__H
 #define RK_3_3__H 1

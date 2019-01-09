@@ -1,7 +1,7 @@
 /*
 ODE: a program to get optime Runge-Kutta and multi-steps methods.
 
-Copyright 2011-2018, Javier Burguete Tolosa.
+Copyright 2011-2019, Javier Burguete Tolosa.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \brief Header file with common variables and functions to optimize
  *   Runge-Kutta methods.
  * \author Javier Burguete Tolosa.
- * \copyright Copyright 2011-2018.
+ * \copyright Copyright 2011-2019.
  */
 #ifndef RK__H
 #define RK__H 1
@@ -137,11 +137,6 @@ typedef struct
 #define c65(x) x[39]            ///< c65 Runge-Kutta coefficient.
 
 void rk_print_tb (Optimize * tb, char *label, FILE * file);
-void rk_print_maxima_2 (FILE * file);
-void rk_print_maxima_3 (FILE * file);
-void rk_print_maxima_4 (FILE * file);
-void rk_print_maxima_5 (FILE * file);
-void rk_print_maxima_6 (FILE * file);
 void rk_bucle_ac (RK * rk);
 int rk_run (xmlNode * node, gsl_rng ** rng);
 

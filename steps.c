@@ -1,7 +1,7 @@
 /*
 ODE: a program to get optime Runge-Kutta and multi-steps methods.
 
-Copyright 2011-2018, Javier Burguete Tolosa.
+Copyright 2011-2019, Javier Burguete Tolosa.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \brief Source file with common variables and functions to optimize
  *   multi-steps methods.
  * \author Javier Burguete Tolosa.
- * \copyright Copyright 2011-2018.
+ * \copyright Copyright 2011-2019.
  */
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -99,6 +99,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define b12(x) x[25]
 ///< b12 multi-steps coefficient.
 #define c(a, b) (b / a)
+///< macro to calculate the c multi-steps coefficients.
 #define c0(x) (c(a0(x), b0(x)))
 ///< c0 multi-steps coefficient.
 #define c1(x) (c(a1(x), b1(x)))

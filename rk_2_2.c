@@ -1,7 +1,7 @@
 /*
 ODE: a program to get optime Runge-Kutta and multi-steps methods.
 
-Copyright 2011-2018, Javier Burguete Tolosa.
+Copyright 2011-2019, Javier Burguete Tolosa.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \file rk_2_2.c
  * \brief Source file to optimize Runge-Kutta 3 steps 2nd order methods.
  * \author Javier Burguete Tolosa.
- * \copyright Copyright 2011-2018.
+ * \copyright Copyright 2011-2019.
  */
 #define _GNU_SOURCE
 #include <string.h>
@@ -45,22 +45,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "rk_2_2.h"
 
 #define DEBUG_RK_2_2 0          ///< macro to debug.
-
-/**
- * Function to print a maxima format file to check the accuracy order of a 2
- * steps 2nd order Runge-Kutta simple stable method.
- */
-void
-tb_print_maxima_2_2 (FILE * file,       ///< file.
-                     unsigned int nsteps __attribute__ ((unused)),
-                     ///< steps number.
-                     unsigned int order __attribute__ ((unused)))
-  ///< accuracy order.
-{
-  fprintf (file, "b20+b21-1;\n");
-  fprintf (file, "b21*t1-1/2;\n");
-  fprintf (file, "b21*t1^2-1/3;\n");
-}
 
 /**
  * Function to obtain the coefficients of a 2 steps 2nd order Runge-Kutta 

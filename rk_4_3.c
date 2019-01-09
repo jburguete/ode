@@ -1,7 +1,7 @@
 /*
 ODE: a program to get optime Runge-Kutta and multi-steps methods.
 
-Copyright 2011-2018, Javier Burguete Tolosa.
+Copyright 2011-2019, Javier Burguete Tolosa.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \file rk_4_3.c
  * \brief Source file to optimize Runge-Kutta 4 steps 3rd order methods.
  * \author Javier Burguete Tolosa.
- * \copyright Copyright 2011-2018.
+ * \copyright Copyright 2011-2019.
  */
 #define _GNU_SOURCE
 #include <string.h>

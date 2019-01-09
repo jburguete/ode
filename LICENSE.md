@@ -1,6 +1,6 @@
 BSD 2-Clause License
 
-Copyright (c) 2011-2018, Javier Burguete
+Copyright (c) 2011-2019, Javier Burguete
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
