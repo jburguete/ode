@@ -80,12 +80,12 @@ tests = \
 	tests/test-steps-8-7.xml \
 	tests/test-steps-8-8.xml \
 
-cc = gcc -flto -g -std=gnu11
+cc = @CC@ -flto -g
 ccgen = $(cc) -fprofile-generate
 ccuse = $(cc) -fprofile-use -fprofile-correction
-cflags = `pkg-config --cflags libxml-2.0 glib-2.0 gthread-2.0 gsl` -c -O3 \
-	-march=native -Wall -Wextra -D_FORTIFY_SOURCE=2
-libs = -lm `pkg-config --libs libxml-2.0 glib-2.0 gthread-2.0 gsl`
+cflags = @CFLAGS@ @GSL_CFLAGS@ @XML_CFLAGS@ @GLIB_CFLAGS@ @GTHREAD_CFLAGS@ \
+	-c -O3 -march=native -Wall -Wextra -D_FORTIFY_SOURCE=2
+libs = @LDFLAGS@ @LIBS@ @GSL_LIBS@ @XML_LIBS@ @GLIB_LIBS@ @GTHREAD_LIBS@ 
 
 all: ode ode.pdf
 
