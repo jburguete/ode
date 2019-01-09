@@ -85,6 +85,23 @@ rk_print_tb (Optimize * tb,     ///< Optimize struct.
 }
 
 /**
+ * Function to print the e Runge-Kutta coefficients.
+ */
+void
+rk_print_e (Optimize * tb,     ///< Optimize struct.
+            char *label,       ///< label.
+            FILE * file)       ///< file.
+{
+  long double *x;
+  unsigned int i, k, nsteps;
+  x = tb->coefficient;
+	nsteps = tb->nsteps;
+	k = (nsteps + 2) * (nsteps + 1) / 2 - 2;
+  for (i = 0; i < nsteps - 1; ++i)
+    fprintf (file, "%s: e%u%u=%.19Le\n", label, nsteps, i, x[k++]);
+}
+
+/**
  * Function to print in a maxima file the Runge-Kutta coefficients.
  */
 static void
@@ -93,13 +110,14 @@ rk_print (RK * rk,              ///< RK struct.
 {
   Optimize *tb, *ac;
   long double *x, *y;
-  unsigned int i, j, k, l;
+  unsigned int i, j, k, l, nsteps;
   tb = rk->tb;
   ac = rk->ac;
   x = tb->coefficient;
   y = ac->coefficient;
   fprintf (file, "t1:%.19Le;\n", x[0]);
-  for (i = 2, k = l = 0; i <= tb->nsteps; ++i)
+	nsteps = tb->nsteps;
+  for (i = 2, k = l = 0; i <= nsteps; ++i)
     {
       fprintf (file, "t%u:%.19Le;\n", i, x[++k]);
       for (j = 0; j < i; ++j)
@@ -111,6 +129,9 @@ rk_print (RK * rk,              ///< RK struct.
       for (j = 0; j < i; ++j)
         fprintf (file, "c%u%u:%.19Le;\n", i, j, y[l++]);
     }
+	if (rk->pair)
+    for (i = 0; i < nsteps - 1; ++i)
+      fprintf (file, "e%u%u:%.19Le;\n", nsteps, i, x[++k]);
 }
 
 /**
@@ -1465,12 +1486,18 @@ rk_select (RK * rk,             ///< RK struct.
           tb->nfree = 4;
           if (rk->time_accuracy)
             {
-              tb->method = rk_tb_3_2t;
+							if (rk->pair)
+                tb->method = rk_tb_3_2tp;
+							else
+                tb->method = rk_tb_3_2t;
               tb->objective = (OptimizeObjective) rk_objective_tb_3_2t;
             }
           else
             {
-              tb->method = rk_tb_3_2;
+							if (rk->pair)
+                tb->method = rk_tb_3_2p;
+							else
+                tb->method = rk_tb_3_2;
               tb->objective = (OptimizeObjective) rk_objective_tb_3_2;
             }
           break;

@@ -4,8 +4,12 @@
 ./ode-pgo tests/test-rk-2-2-1-0-1.xml
 ./ode-pgo tests/test-rk-3-2-0-0-0.xml
 ./ode-pgo tests/test-rk-3-2-0-0-1.xml
+./ode-pgo tests/test-rk-3-2-0-1-0.xml
+./ode-pgo tests/test-rk-3-2-0-1-1.xml
 ./ode-pgo tests/test-rk-3-2-1-0-0.xml
 ./ode-pgo tests/test-rk-3-2-1-0-1.xml
+./ode-pgo tests/test-rk-3-2-1-1-0.xml
+./ode-pgo tests/test-rk-3-2-1-1-1.xml
 ./ode-pgo tests/test-rk-3-3-0-0-0.xml
 ./ode-pgo tests/test-rk-3-3-0-0-1.xml
 ./ode-pgo tests/test-rk-3-3-1-0-0.xml

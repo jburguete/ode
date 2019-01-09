@@ -137,6 +137,7 @@ typedef struct
 #define c65(x) x[39]            ///< c65 Runge-Kutta coefficient.
 
 void rk_print_tb (Optimize * tb, char *label, FILE * file);
+void rk_print_e (Optimize * tb, char *label, FILE * file);
 void rk_bucle_ac (RK * rk);
 int rk_run (xmlNode * node, gsl_rng ** rng);
 
@@ -187,6 +188,16 @@ rk_b_6 (long double *tb)        ///< array of Runge-Kutta coefficients.
 {
   rk_b_5 (tb);
   b60 (tb) = t6 (tb) - b61 (tb) - b62 (tb) - b63 (tb) - b64 (tb) - b65 (tb);
+}
+
+/**
+ * Function to get \f$\hat{b}_{30}\f$ coefficient of the 3 steps Runge-Kutta
+ * pairs.
+ */
+static inline void
+rk_e_3 (long double *tb)        ///< array of Runge-Kutta coefficients.
+{
+  e30 (tb) = 1.L - e31 (tb);
 }
 
 /**
