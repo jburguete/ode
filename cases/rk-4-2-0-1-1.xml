@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<Runge-Kutta steps="4" order="2" pair="yes" nsimulations="4" nclimbings="64" niterations="64" convergence-factor="0.5" climbing-factor="0.1" strong="yes">
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<ac pair="yes" nsimulations="4" nclimbings="64" niterations="64" convergence-factor="0.5" climbing-factor="0.1"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+</Runge-Kutta>

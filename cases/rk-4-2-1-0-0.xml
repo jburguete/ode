@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<Runge-Kutta steps="4" order="2" nsimulations="10" nclimbings="64" niterations="64" convergence-factor="1" climbing-factor="1" time-accuracy="yes">
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+	<variable minimum="0" interval="1" type="random"/>
+</Runge-Kutta>
