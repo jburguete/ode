@@ -31,6 +31,13 @@ do
 		done
 	done
 done
+for k in `seq 0 1`;
+do
+	for m in `seq 0 1`;
+	do
+		./ode-pgo tests/test-rk-4-4-$k-0-$m.xml
+	done
+done
 for i in `seq 3 8`;
 do
 	k=`echo "$i-1" | bc`;

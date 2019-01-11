@@ -40,6 +40,7 @@ int rk_tb_4_3p (Optimize * optimize);
 int rk_tb_4_3tp (Optimize * optimize);
 long double rk_objective_tb_4_3 (RK * rk);
 long double rk_objective_tb_4_3t (RK * rk);
+long double rk_objective_tb_4_3p (RK * rk);
 long double rk_objective_tb_4_3tp (RK * rk);
 
 #endif

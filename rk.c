@@ -1436,6 +1436,154 @@ rk_select (RK * rk,             ///< RK struct.
            unsigned int nsteps, ///< steps number.
            unsigned int order)  ///< accuracy order.
 {
+  static int (*tb_method[7][6]) (Optimize *) =
+  {
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, &rk_tb_2_2, NULL, NULL, NULL},
+    {
+    NULL, NULL, &rk_tb_3_2, &rk_tb_3_3, NULL, NULL},
+    {
+    NULL, NULL, &rk_tb_4_2, &rk_tb_4_3, &rk_tb_4_4, NULL},
+    {
+    NULL, NULL, &rk_tb_5_2, &rk_tb_5_3, &rk_tb_5_4, NULL},
+    {
+    NULL, NULL, &rk_tb_6_2, &rk_tb_6_3, &rk_tb_6_4, NULL}
+  };
+  static int (*tb_method_t[7][6]) (Optimize *) =
+  {
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, &rk_tb_2_2t, NULL, NULL, NULL},
+    {
+    NULL, NULL, &rk_tb_3_2t, &rk_tb_3_3t, NULL, NULL},
+    {
+    NULL, NULL, &rk_tb_4_2t, &rk_tb_4_3t, &rk_tb_4_4t, NULL},
+    {
+    NULL, NULL, &rk_tb_5_2t, &rk_tb_5_3t, &rk_tb_5_4t, NULL},
+    {
+    NULL, NULL, &rk_tb_6_2t, &rk_tb_6_3t, &rk_tb_6_4t, NULL}
+  };
+  static int (*tb_method_p[7][6]) (Optimize *) =
+  {
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, &rk_tb_3_2p, &rk_tb_3_3p, NULL, NULL},
+    {
+    NULL, NULL, &rk_tb_4_2p, &rk_tb_4_3p, NULL, NULL},
+    {
+    NULL, NULL, &rk_tb_5_2, &rk_tb_5_3, &rk_tb_5_4, NULL},
+    {
+    NULL, NULL, &rk_tb_6_2, &rk_tb_6_3, &rk_tb_6_4, NULL}
+  };
+  static int (*tb_method_tp[7][6]) (Optimize *) =
+  {
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, &rk_tb_3_2tp, &rk_tb_3_3tp, NULL, NULL},
+    {
+    NULL, NULL, &rk_tb_4_2tp, &rk_tb_4_3tp, NULL, NULL},
+    {
+    NULL, NULL, &rk_tb_5_2t, &rk_tb_5_3t, &rk_tb_5_4t, NULL},
+    {
+    NULL, NULL, &rk_tb_6_2t, &rk_tb_6_3t, &rk_tb_6_4t, NULL}
+  };
+  static long double (*tb_objective[7][6]) (RK *) =
+  {
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_2_2, NULL, NULL, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_3_2, &rk_objective_tb_3_3, NULL, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_4_2, &rk_objective_tb_4_3,
+        &rk_objective_tb_4_4, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_5_2, &rk_objective_tb_5_3,
+        &rk_objective_tb_5_4, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_6_2, &rk_objective_tb_6_3,
+        &rk_objective_tb_6_4, NULL}
+  };
+  static long double (*tb_objective_t[7][6]) (RK *) =
+  {
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_2_2t, NULL, NULL, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_3_2t, &rk_objective_tb_3_3t, NULL, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_4_2t, &rk_objective_tb_4_3t,
+        &rk_objective_tb_4_4t, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_5_2t, &rk_objective_tb_5_3t,
+        &rk_objective_tb_5_4t, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_6_2t, &rk_objective_tb_6_3t,
+        &rk_objective_tb_6_4t, NULL}
+  };
+  static long double (*tb_objective_p[7][6]) (RK *) =
+  {
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_2_2, NULL, NULL, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_3_2, &rk_objective_tb_3_3p, NULL, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_4_2, &rk_objective_tb_4_3p,
+        &rk_objective_tb_4_4, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_5_2, &rk_objective_tb_5_3,
+        &rk_objective_tb_5_4, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_6_2, &rk_objective_tb_6_3,
+        &rk_objective_tb_6_4, NULL}
+  };
+  static long double (*tb_objective_tp[7][6]) (RK *) =
+  {
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, NULL, NULL, NULL, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_2_2t, NULL, NULL, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_3_2t, &rk_objective_tb_3_3tp, NULL, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_4_2t, &rk_objective_tb_4_3tp,
+        &rk_objective_tb_4_4t, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_5_2t, &rk_objective_tb_5_3t,
+        &rk_objective_tb_5_4t, NULL},
+    {
+    NULL, NULL, &rk_objective_tb_6_2t, &rk_objective_tb_6_3t,
+        &rk_objective_tb_6_4t, NULL}
+  };
   static int (*ac_method[7]) (RK *) =
   {
   NULL, NULL, &rk_ac_2, &rk_ac_3, &rk_ac_4, &rk_ac_5, &rk_ac_6};
@@ -1443,6 +1591,7 @@ rk_select (RK * rk,             ///< RK struct.
   {
   NULL, NULL, &rk_objective_ac_2, &rk_objective_ac_3, &rk_objective_ac_4,
       &rk_objective_ac_5, &rk_objective_ac_6};
+  const unsigned int nequations[6] = { 0, 1, 2, 4, 8, 16 };
   const char *message[] = { _("Bad order"), _("Bad steps number") };
   Optimize *tb, *ac;
   unsigned int code;
@@ -1454,240 +1603,49 @@ rk_select (RK * rk,             ///< RK struct.
   tb->nsteps = nsteps;
   tb->order = order;
   tb->size = nsteps * (nsteps + 3) / 2 - 1;
+  tb->nfree = tb->size - nsteps + 1 - nequations[order];
   if (rk->pair)
-    tb->size += nsteps - 1;
+    {
+      tb->size += nsteps - 1;
+      if (rk->time_accuracy)
+        {
+          tb->method = tb_method_tp[nsteps][order];
+          tb->objective = (OptimizeObjective) tb_objective_tp[nsteps][order];
+        }
+      else
+        {
+          tb->method = tb_method_p[nsteps][order];
+          tb->objective = (OptimizeObjective) tb_objective_p[nsteps][order];
+        }
+    }
+  else
+    {
+      if (rk->time_accuracy)
+        {
+          tb->method = tb_method_t[nsteps][order];
+          tb->objective = (OptimizeObjective) tb_objective_t[nsteps][order];
+        }
+      else
+        {
+          tb->method = tb_method[nsteps][order];
+          tb->objective = (OptimizeObjective) tb_objective[nsteps][order];
+        }
+    }
+  if (!tb->method)
+    {
+      code = 0;
+      goto exit_on_error;
+    }
   switch (nsteps)
     {
-    case 2:
-      switch (order)
-        {
-        case 2:
-          tb->nfree = 1;
-          if (rk->time_accuracy)
-            {
-              tb->method = rk_tb_2_2t;
-              tb->objective = (OptimizeObjective) rk_objective_tb_2_2t;
-            }
-          else
-            {
-              tb->method = rk_tb_2_2;
-              tb->objective = (OptimizeObjective) rk_objective_tb_2_2;
-            }
-          break;
-        default:
-          code = 0;
-          goto exit_on_error;
-        }
-      break;
-    case 3:
-      switch (order)
-        {
-        case 2:
-          tb->nfree = 4;
-          if (rk->time_accuracy)
-            {
-              if (rk->pair)
-                tb->method = rk_tb_3_2tp;
-              else
-                tb->method = rk_tb_3_2t;
-              tb->objective = (OptimizeObjective) rk_objective_tb_3_2t;
-            }
-          else
-            {
-              if (rk->pair)
-                tb->method = rk_tb_3_2p;
-              else
-                tb->method = rk_tb_3_2;
-              tb->objective = (OptimizeObjective) rk_objective_tb_3_2;
-            }
-          break;
-        case 3:
-          tb->nfree = 2;
-          if (rk->time_accuracy)
-            {
-              if (rk->pair)
-                tb->method = rk_tb_3_3tp;
-              else
-                tb->method = rk_tb_3_3t;
-              tb->objective = (OptimizeObjective) rk_objective_tb_3_3t;
-            }
-          else
-            {
-              if (rk->pair)
-                tb->method = rk_tb_3_3p;
-              else
-                tb->method = rk_tb_3_3;
-              tb->objective = (OptimizeObjective) rk_objective_tb_3_3;
-            }
-          break;
-        default:
-          code = 0;
-          goto exit_on_error;
-        }
-      break;
-    case 4:
-      switch (order)
-        {
-        case 2:
-          tb->nfree = 8;
-          if (rk->time_accuracy)
-            {
-              if (rk->pair)
-                tb->method = rk_tb_4_2tp;
-              else
-                tb->method = rk_tb_4_2t;
-              tb->objective = (OptimizeObjective) rk_objective_tb_4_2t;
-            }
-          else
-            {
-              if (rk->pair)
-                tb->method = rk_tb_4_2p;
-              else
-                tb->method = rk_tb_4_2;
-              tb->objective = (OptimizeObjective) rk_objective_tb_4_2;
-            }
-          break;
-        case 3:
-          tb->nfree = 6;
-          if (rk->time_accuracy)
-            {
-              if (rk->pair)
-                {
-                  tb->method = rk_tb_4_3tp;
-                  tb->objective = (OptimizeObjective) rk_objective_tb_4_3tp;
-                }
-              else
-                {
-                  tb->method = rk_tb_4_3t;
-                  tb->objective = (OptimizeObjective) rk_objective_tb_4_3t;
-                }
-            }
-          else
-            {
-              if (rk->pair)
-                tb->method = rk_tb_4_3p;
-              else
-                tb->method = rk_tb_4_3;
-              tb->objective = (OptimizeObjective) rk_objective_tb_4_3;
-            }
-          break;
-        case 4:
-          tb->nfree = 2;
-          if (rk->time_accuracy)
-            {
-              tb->method = rk_tb_4_4t;
-              tb->objective = (OptimizeObjective) rk_objective_tb_4_4t;
-            }
-          else
-            {
-              tb->method = rk_tb_4_4;
-              tb->objective = (OptimizeObjective) rk_objective_tb_4_4;
-            }
-          break;
-        default:
-          code = 0;
-          goto exit_on_error;
-        }
-      break;
     case 5:
       switch (order)
         {
-        case 2:
-          tb->nfree = 13;
-          if (rk->time_accuracy)
-            {
-              tb->method = rk_tb_5_2t;
-              tb->objective = (OptimizeObjective) rk_objective_tb_5_2t;
-            }
-          else
-            {
-              tb->method = rk_tb_5_2;
-              tb->objective = (OptimizeObjective) rk_objective_tb_5_2;
-            }
-          break;
-        case 3:
-          tb->nfree = 11;
-          if (rk->time_accuracy)
-            {
-              tb->method = rk_tb_5_3t;
-              tb->objective = (OptimizeObjective) rk_objective_tb_5_3t;
-            }
-          else
-            {
-              tb->method = rk_tb_5_3;
-              tb->objective = (OptimizeObjective) rk_objective_tb_5_3;
-            }
-          break;
         case 4:
-          tb->nfree = 7;
-          if (rk->time_accuracy)
-            {
-              if (rk->pair)
-                --tb->nfree;
-              tb->method = rk_tb_5_4t;
-              tb->objective = (OptimizeObjective) rk_objective_tb_5_4t;
-            }
-          else
-            {
-              tb->method = rk_tb_5_4;
-              tb->objective = (OptimizeObjective) rk_objective_tb_5_4;
-            }
-          break;
-        default:
-          code = 0;
-          goto exit_on_error;
+          if (rk->time_accuracy && rk->pair)
+            --tb->nfree;
         }
       break;
-    case 6:
-      switch (order)
-        {
-        case 2:
-          tb->nfree = 19;
-          if (rk->time_accuracy)
-            {
-              tb->method = rk_tb_6_2t;
-              tb->objective = (OptimizeObjective) rk_objective_tb_6_2t;
-            }
-          else
-            {
-              tb->method = rk_tb_6_2;
-              tb->objective = (OptimizeObjective) rk_objective_tb_6_2;
-            }
-          break;
-        case 3:
-          tb->nfree = 17;
-          if (rk->time_accuracy)
-            {
-              tb->method = rk_tb_6_3t;
-              tb->objective = (OptimizeObjective) rk_objective_tb_6_3t;
-            }
-          else
-            {
-              tb->method = rk_tb_6_3;
-              tb->objective = (OptimizeObjective) rk_objective_tb_6_3;
-            }
-          break;
-        case 4:
-          tb->nfree = 13;
-          if (rk->time_accuracy)
-            {
-              tb->method = rk_tb_6_4t;
-              tb->objective = (OptimizeObjective) rk_objective_tb_6_4t;
-            }
-          else
-            {
-              tb->method = rk_tb_6_4;
-              tb->objective = (OptimizeObjective) rk_objective_tb_6_4;
-            }
-          break;
-        default:
-          code = 0;
-          goto exit_on_error;
-        }
-      break;
-    default:
-      code = 1;
-      goto exit_on_error;
     }
   if (rk->time_accuracy)
     --tb->nfree;

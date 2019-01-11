@@ -63,18 +63,18 @@ rk_tb_4_4 (Optimize * optimize) ///< Optimize struct.
   t4 (tb) = 1.L;
   t1 (tb) = r[0];
   t2 (tb) = r[1];
-  t3 (tb) = (0.2L - 0.25L * t1 (tb) - (0.25L - 1.L / 3.L * t1 (tb)) * t2 (tb))
-    / (0.25L - 1.L / 3.L * t1 (tb) - (1.L / 3.L - 0.5L * t1 (tb)) * t2 (tb));
-  b42 (tb) = (1.L / 12.L - 1.L / 6.L * t1 (tb))
-    / (t2 (tb) * (t2 (tb) - t1 (tb)) * (1.L - t2 (tb)));
-  b43 (tb) = (1.L / 3.L - 0.5L * t1 (tb)
-              - b42 (tb) * t2 (tb) * (t2 (tb) - t1 (tb))) / (1.L - t1 (tb));
+  t3 (tb) = 1.L;
+  b43 (tb) = (0.25L - 1.L / 3.L * t1 (tb)
+              - (1.L / 3.L - 0.5L * t1 (tb)) * t2 (tb))
+    / (t3 (tb) * (t3 (tb) - t2 (tb)) * (t3 (tb) - t1 (tb)));
+  b42 (tb) = (1.L / 3.L - 0.5L * t1 (tb)
+              - b43 (tb) * t3 (tb) * (t3 (tb) - t1 (tb)))
+    / (t2 (tb) * (t2 (tb) - t1 (tb)));
   b41 (tb) = (0.5L - b42 (tb) * t2 (tb) - b43 (tb) * t3 (tb)) / t1 (tb);
-  b31 (tb) = ((0.125L - 1.L / 6.L * t2 (tb)) / (1.L - t2 (tb))
-              - (1.L / 12.L - 1.L / 6.L * t1 (tb)) / (t2 (tb) - t1 (tb)))
-    / (b43 (tb) * t1 (tb));
   b32 (tb) = (1.L / 12.L - 1.L / 6.L * t1 (tb))
     / (b43 (tb) * t2 (tb) * (t2 (tb) - t1 (tb)));
+  b31 (tb) = ((0.125L - 1.L / 6.L * t2 (tb)) / (b43 (tb) * (t3 (tb) - t2 (tb)))
+              - b32 (tb) * t2 (tb)) / t1 (tb);
   b21 (tb) = 1.L / 24.L / (t1 (tb) * b43 (tb) * b32 (tb));
   rk_b_4 (tb);
 #if DEBUG_RK_4_4
@@ -103,18 +103,18 @@ rk_tb_4_4t (Optimize * optimize)        ///< Optimize struct.
   t4 (tb) = 1.L;
   t1 (tb) = r[0];
   t2 (tb) = 0.5L * (t1 (tb) - 0.6L) / (t1 (tb) - 0.5L);
-  t3 (tb) = (0.2L - 0.25L * t1 (tb) - (0.25L - 1.L / 3.L * t1 (tb)) * t2 (tb))
-    / (0.25L - 1.L / 3.L * t1 (tb) - (1.L / 3.L - 0.5L * t1 (tb)) * t2 (tb));
-  b42 (tb) = (1.L / 12.L - 1.L / 6.L * t1 (tb))
-    / (t2 (tb) * (t2 (tb) - t1 (tb)) * (1.L - t2 (tb)));
-  b43 (tb) = (1.L / 3.L - 0.5L * t1 (tb)
-              - b42 (tb) * t2 (tb) * (t2 (tb) - t1 (tb))) / (1.L - t1 (tb));
+  t3 (tb) = 1.L;
+  b43 (tb) = (0.25L - 1.L / 3.L * t1 (tb)
+              - (1.L / 3.L - 0.5L * t1 (tb)) * t2 (tb))
+    / (t3 (tb) * (t3 (tb) - t2 (tb)) * (t3 (tb) - t1 (tb)));
+  b42 (tb) = (1.L / 3.L - 0.5L * t1 (tb)
+              - b43 (tb) * t3 (tb) * (t3 (tb) - t1 (tb)))
+    / (t2 (tb) * (t2 (tb) - t1 (tb)));
   b41 (tb) = (0.5L - b42 (tb) * t2 (tb) - b43 (tb) * t3 (tb)) / t1 (tb);
-  b31 (tb) = ((0.125L - 1.L / 6.L * t2 (tb)) / (1.L - t2 (tb))
-              - (1.L / 12.L - 1.L / 6.L * t1 (tb)) / (t2 (tb) - t1 (tb)))
-    / (b43 (tb) * t1 (tb));
   b32 (tb) = (1.L / 12.L - 1.L / 6.L * t1 (tb))
     / (b43 (tb) * t2 (tb) * (t2 (tb) - t1 (tb)));
+  b31 (tb) = ((0.125L - 1.L / 6.L * t2 (tb)) / (b43 (tb) * (t3 (tb) - t2 (tb)))
+              - b32 (tb) * t2 (tb)) / t1 (tb);
   b21 (tb) = 1.L / 24.L / (t1 (tb) * b43 (tb) * b32 (tb));
   rk_b_4 (tb);
 #if DEBUG_RK_4_4
