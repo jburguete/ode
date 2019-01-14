@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<steps steps="3" order="2" nsimulations="250" nclimbings="64" niterations="10" convergence-factor="0.008" climbing-factor="0.1">
+<steps steps="3" order="2" nsimulations="216" nclimbings="64" niterations="64" convergence-factor="0.5" climbing-factor="0.1">
 	<variable minimum="0" interval="1" type="bottom"/>
-	<variable minimum="0" interval="1" type="bottom"/>
+	<variable minimum="0" interval="1" type="random"/>
 	<variable minimum="0" interval="3" type="bottom"/>
 </steps>

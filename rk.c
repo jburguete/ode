@@ -1587,7 +1587,7 @@ rk_select (RK * rk,             ///< RK struct.
     {
     NULL, NULL, &rk_tb_5_2tp, &rk_tb_5_3tp, &rk_tb_5_4tp, NULL},
     {
-    NULL, NULL, &rk_tb_6_2tp, &rk_tb_6_3tp, &rk_tb_6_4t, NULL}
+    NULL, NULL, &rk_tb_6_2tp, &rk_tb_6_3tp, &rk_tb_6_4tp, NULL}
   };
   static long double (*tb_objective[7][6]) (RK *) =
   {
@@ -1642,11 +1642,11 @@ rk_select (RK * rk,             ///< RK struct.
     {
     NULL, NULL, &rk_objective_tb_4_2, &rk_objective_tb_4_3p, NULL, NULL},
     {
-    NULL, NULL, &rk_objective_tb_5_2, &rk_objective_tb_5_3,
-        &rk_objective_tb_5_4, NULL},
+    NULL, NULL, &rk_objective_tb_5_2, &rk_objective_tb_5_3p,
+        &rk_objective_tb_5_4p, NULL},
     {
-    NULL, NULL, &rk_objective_tb_6_2, &rk_objective_tb_6_3,
-        &rk_objective_tb_6_4, NULL}
+    NULL, NULL, &rk_objective_tb_6_2, &rk_objective_tb_6_3p,
+        &rk_objective_tb_6_4p, NULL}
   };
   static long double (*tb_objective_tp[7][6]) (RK *) =
   {
@@ -1661,11 +1661,11 @@ rk_select (RK * rk,             ///< RK struct.
     {
     NULL, NULL, &rk_objective_tb_4_2t, &rk_objective_tb_4_3tp, NULL, NULL},
     {
-    NULL, NULL, &rk_objective_tb_5_2t, &rk_objective_tb_5_3t,
-        &rk_objective_tb_5_4t, NULL},
+    NULL, NULL, &rk_objective_tb_5_2t, &rk_objective_tb_5_3tp,
+        &rk_objective_tb_5_4tp, NULL},
     {
-    NULL, NULL, &rk_objective_tb_6_2t, &rk_objective_tb_6_3t,
-        &rk_objective_tb_6_4t, NULL}
+    NULL, NULL, &rk_objective_tb_6_2t, &rk_objective_tb_6_3tp,
+        &rk_objective_tb_6_4tp, NULL}
   };
   static int (*ac_method[7]) (RK *) =
   {
