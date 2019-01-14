@@ -1714,19 +1714,28 @@ rk_select (RK * rk,             ///< RK struct.
     }
   if (!tb->method)
     goto exit_on_error;
-  switch (nsteps)
-    {
-    case 5:
-      switch (order)
-        {
-        case 4:
-          if (rk->time_accuracy && rk->pair)
-            --tb->nfree;
-        }
-      break;
-    }
   if (rk->time_accuracy)
-    --tb->nfree;
+	  {
+      --tb->nfree;
+      if (rk->pair)
+        switch (nsteps)
+    	    {
+    	    case 5:
+      	    switch (order)
+        	    {
+        	    case 4:
+                --tb->nfree;
+              }
+      	    break;
+    	    case 6:
+      	    switch (order)
+        	    {
+        	    case 4:
+                --tb->nfree;
+        	    }
+      	    break;
+    	    }
+		}
   tb->minimum0
     = (long double *) g_slice_alloc (tb->nfree * sizeof (long double));
   tb->interval0

@@ -424,7 +424,7 @@ rk_tb_6_4tp (Optimize * optimize)        ///< Optimize struct.
 	b21 (tb) = (1.L / 6.L - e63 (tb) * (b31 (tb) * t1 (tb) + b32 (tb) * t2 (tb))
 			        - e64 (tb) * (b41 (tb) * t1 (tb) + b42 (tb) * t2 (tb)
 								            + b43 (tb) * t3 (tb))) / (e62 (tb) * t1 (tb));
-	if (isnan (b21 (tb))
+	if (isnan (b21 (tb)))
 		return 0;
   A[0] = t1 (tb);
   B[0] = t2 (tb);
