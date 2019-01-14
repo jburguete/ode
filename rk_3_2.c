@@ -65,13 +65,13 @@ rk_tb_3_2 (Optimize * optimize) ///< Optimize struct.
   b21 (tb) = r[2];
   b32 (tb) = r[3];
   b31 (tb) = (0.5L - b32 (tb) * t2 (tb)) / t1 (tb);
+  if (isnan (b31 (tb)))
+    return 0;
   rk_b_3 (tb);
 #if DEBUG_RK_3_2
   rk_print_tb (optimize, "rk_tb_3_2", stderr);
   fprintf (stderr, "rk_tb_3_2: end\n");
 #endif
-  if (isnan (b31 (tb)))
-    return 0;
   return 1;
 }
 
@@ -93,14 +93,16 @@ rk_tb_3_2t (Optimize * optimize)        ///< Optimize struct.
   t2 (tb) = r[1];
   b21 (tb) = r[2];
   b32 (tb) = (1.L / 3.L - 0.5L * t1 (tb)) / (t2 (tb) * (t2 (tb) - t1 (tb)));
+  if (isnan (b32 (tb)))
+    return 0;
   b31 (tb) = (0.5L - b32 (tb) * t2 (tb)) / t1 (tb);
+  if (isnan (b31 (tb)))
+    return 0;
   rk_b_3 (tb);
 #if DEBUG_RK_3_2
   rk_print_tb (optimize, "rk_tb_3_2t", stderr);
   fprintf (stderr, "rk_tb_3_2t: end\n");
 #endif
-  if (isnan (b31 (tb)) || isnan (b32 (tb)))
-    return 0;
   return 1;
 }
 

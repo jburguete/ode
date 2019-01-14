@@ -139,46 +139,48 @@ rk_print (RK * rk,              ///< RK struct.
  * Runge-Kutta simple stable methods.
  */
 static void
-tb_print_maxima (FILE * file,   ///< file.
+rk_print_maxima (FILE * file,   ///< file.
                  unsigned int nsteps,   ///< steps number.
-                 unsigned int order)    ///< accuracy order.
+                 unsigned int ncoefficients,    ///< coefficients number.
+                 unsigned int order,    ///< accuracy order.
+                 char label)    ///< coefficient label.
 {
-  unsigned int i, j, k;
+  unsigned int i, j, k, l;
   // b_{ij}=1 (1st order)
-  for (i = 0; i < nsteps; ++i)
-    fprintf (file, "b%u%u+", nsteps, i);
+  for (i = 0; i < ncoefficients; ++i)
+    fprintf (file, "%c%u%u+", label, nsteps, i);
   fprintf (file, "-1;\n");
   // b_{ij}t_j=1/2 (2nd order)
-  for (i = 1; i < nsteps; ++i)
-    fprintf (file, "b%u%u*t%u+", nsteps, i, i);
+  for (i = 1; i < ncoefficients; ++i)
+    fprintf (file, "%c%u%u*t%u+", label, nsteps, i, i);
   fprintf (file, "-1/2;\n");
   if (order < 2)
     return;
   // b_{ij}t_j^2=1/3 (3rd order)
-  for (i = 1; i < nsteps; ++i)
-    fprintf (file, "b%u%u*t%u^2+", nsteps, i, i);
+  for (i = 1; i < ncoefficients; ++i)
+    fprintf (file, "%c%u%u*t%u^2+", label, nsteps, i, i);
   fprintf (file, "-1/3;\n");
   if (order < 3)
     return;
   // b_{ij}b_{jk}t_k=1/6 (3rd order)
-  for (i = 2; i < nsteps; ++i)
+  for (i = 2; i < ncoefficients; ++i)
     {
-      fprintf (file, "b%u%u*(", nsteps, i);
+      fprintf (file, "%c%u%u*(", label, nsteps, i);
       for (j = 1; j < i; ++j)
         fprintf (file, "b%u%u*t%u+", i, j, j);
       fprintf (file, "0)+");
     }
   fprintf (file, "-1/6;\n");
   // b_{ij}t_j^3=1/4 (4th order)
-  for (i = 1; i < nsteps; ++i)
-    fprintf (file, "b%u%u*t%u^3+", nsteps, i, i);
+  for (i = 1; i < ncoefficients; ++i)
+    fprintf (file, "%c%u%u*t%u^3+", label, nsteps, i, i);
   fprintf (file, "-1/4;\n");
   if (order < 4)
     return;
   // b_{ij}b_{jk}b_{kl}t_l=1/24 (4th order)
-  for (i = 3; i < nsteps; ++i)
+  for (i = 3; i < ncoefficients; ++i)
     {
-      fprintf (file, "b%u%u*(", nsteps, i);
+      fprintf (file, "%c%u%u*(", label, nsteps, i);
       for (j = 2; j < i; ++j)
         {
           fprintf (file, "b%u%u*(", i, j);
@@ -190,32 +192,115 @@ tb_print_maxima (FILE * file,   ///< file.
     }
   fprintf (file, "-1/24;\n");
   // b_{ij}b_{jk}t_k^2=1/12 (4th order)
-  for (i = 2; i < nsteps; ++i)
+  for (i = 2; i < ncoefficients; ++i)
     {
-      fprintf (file, "b%u%u*(", nsteps, i);
+      fprintf (file, "%c%u%u*(", label, nsteps, i);
       for (j = 1; j < i; ++j)
         fprintf (file, "b%u%u*t%u^2+", i, j, j);
       fprintf (file, "0)+");
     }
   fprintf (file, "-1/12;\n");
-  // b_{ij}t_jb_{jk}t_k^2=1/8 (4th order)
-  for (i = 2; i < nsteps; ++i)
+  // b_{ij}t_jb_{jk}t_k=1/8 (4th order)
+  for (i = 2; i < ncoefficients; ++i)
     {
-      fprintf (file, "b%u%u*t%u*(", nsteps, i, i);
+      fprintf (file, "%c%u%u*t%u*(", label, nsteps, i, i);
       for (j = 1; j < i; ++j)
         fprintf (file, "b%u%u*t%u+", i, j, j);
       fprintf (file, "0)+");
     }
   fprintf (file, "-1/8;\n");
   // b_{ij}t_j^4=1/5 (5th order)
-  for (i = 1; i < nsteps; ++i)
-    fprintf (file, "b%u%u*t%u^4+", nsteps, i, i);
+  for (i = 1; i < ncoefficients; ++i)
+    fprintf (file, "%c%u%u*t%u^4+", label, nsteps, i, i);
   fprintf (file, "-1/5;\n");
   if (order < 5)
     return;
+  // b_{ij}t_j^2b_{jk}t_k^2=1/10 (5th order)
+  for (i = 2; i < ncoefficients; ++i)
+    {
+      fprintf (file, "%c%u%u*t%u^2*(", label, nsteps, i, i);
+      for (j = 1; j < i; ++j)
+        fprintf (file, "b%u%u*t%u+", i, j, j);
+      fprintf (file, "0)+");
+    }
+  fprintf (file, "-1/10;\n");
+  // b_{ij}b_{jk}t_k^3=1/20 (5th order)
+  for (i = 2; i < ncoefficients; ++i)
+    {
+      fprintf (file, "%c%u%u*(", label, nsteps, i);
+      for (j = 1; j < i; ++j)
+        fprintf (file, "b%u%u*t%u^3+", i, j, j);
+      fprintf (file, "0)+");
+    }
+  fprintf (file, "-1/20;\n");
+  // b_{ij}(b_{jk}t_k)^2=1/20 (5th order)
+  for (i = 2; i < ncoefficients; ++i)
+    {
+      fprintf (file, "%c%u%u*(", label, nsteps, i);
+      for (j = 1; j < i; ++j)
+        fprintf (file, "b%u%u*t%u+", i, j, j);
+      fprintf (file, "0)^2+");
+    }
+  fprintf (file, "-1/20;\n");
+  // b_{ij}t_jb_{jk}t_k^2=1/15 (5th order)
+  for (i = 2; i < ncoefficients; ++i)
+    {
+      fprintf (file, "%c%u%u*t%u*(", label, nsteps, i, i);
+      for (j = 1; j < i; ++j)
+        fprintf (file, "b%u%u*t%u^2+", i, j, j);
+      fprintf (file, "0)+");
+    }
+  fprintf (file, "-1/8;\n");
+  // b_{ij}t_jb_{jk}b_{kl}t_l=1/24 (5th order)
+  for (i = 3; i < ncoefficients; ++i)
+    {
+      fprintf (file, "%c%u%u*t%u*(", label, nsteps, i, i);
+      for (j = 2; j < i; ++j)
+        {
+          fprintf (file, "b%u%u*(", i, j);
+          for (k = 1; k < j; ++k)
+            fprintf (file, "b%u%u*t%u+", j, k, k);
+          fprintf (file, "0)+");
+        }
+      fprintf (file, "0)+");
+    }
+  fprintf (file, "-7/120;\n");
+  // b_{ij}b_{jk}b_{kl}t_l^2=1/60 (5th order)
+  for (i = 3; i < ncoefficients; ++i)
+    {
+      fprintf (file, "%c%u%u*(", label, nsteps, i);
+      for (j = 2; j < i; ++j)
+        {
+          fprintf (file, "b%u%u*(", i, j);
+          for (k = 1; k < j; ++k)
+            fprintf (file, "b%u%u*t%u^2+", j, k, k);
+          fprintf (file, "0)+");
+        }
+      fprintf (file, "0)+");
+    }
+  fprintf (file, "-1/60;\n");
+  // b_{ij}b_{jk}b_{kl}b_{lm}t_m=1/120 (5th order)
+  for (i = 4; i < ncoefficients; ++i)
+    {
+      fprintf (file, "%c%u%u*(", label, nsteps, i);
+      for (j = 3; j < i; ++j)
+        {
+          fprintf (file, "b%u%u*(", i, j);
+          for (k = 2; k < j; ++k)
+            {
+              fprintf (file, "b%u%u*(", j, k);
+              for (l = 1; l < k; ++l)
+                fprintf (file, "b%u%u*t%u+", k, l, l);
+              fprintf (file, "0)+");
+            }
+          fprintf (file, "0)+");
+        }
+      fprintf (file, "0)+");
+    }
+  fprintf (file, "-1/120;\n");
   // b_{ij}t_j^5=1/6 (6th order)
-  for (i = 1; i < nsteps; ++i)
-    fprintf (file, "b%u%u*t%u^5+", nsteps, i, i);
+  for (i = 1; i < ncoefficients; ++i)
+    fprintf (file, "%c%u%u*t%u^5+", label, nsteps, i, i);
   fprintf (file, "-1/6;\n");
 }
 
@@ -1477,15 +1562,15 @@ rk_select (RK * rk,             ///< RK struct.
     {
     NULL, NULL, NULL, NULL, NULL, NULL},
     {
-    NULL, NULL, NULL, NULL, NULL, NULL},
+    NULL, NULL, &rk_tb_2_2p, NULL, NULL, NULL},
     {
     NULL, NULL, &rk_tb_3_2p, &rk_tb_3_3p, NULL, NULL},
     {
     NULL, NULL, &rk_tb_4_2p, &rk_tb_4_3p, NULL, NULL},
     {
-    NULL, NULL, &rk_tb_5_2, &rk_tb_5_3, &rk_tb_5_4, NULL},
+    NULL, NULL, &rk_tb_5_2p, &rk_tb_5_3p, &rk_tb_5_4p, NULL},
     {
-    NULL, NULL, &rk_tb_6_2, &rk_tb_6_3, &rk_tb_6_4, NULL}
+    NULL, NULL, &rk_tb_6_2p, &rk_tb_6_3p, &rk_tb_6_4p, NULL}
   };
   static int (*tb_method_tp[7][6]) (Optimize *) =
   {
@@ -1494,22 +1579,22 @@ rk_select (RK * rk,             ///< RK struct.
     {
     NULL, NULL, NULL, NULL, NULL, NULL},
     {
-    NULL, NULL, NULL, NULL, NULL, NULL},
+    NULL, NULL, &rk_tb_2_2tp, NULL, NULL, NULL},
     {
     NULL, NULL, &rk_tb_3_2tp, &rk_tb_3_3tp, NULL, NULL},
     {
     NULL, NULL, &rk_tb_4_2tp, &rk_tb_4_3tp, NULL, NULL},
     {
-    NULL, NULL, &rk_tb_5_2t, &rk_tb_5_3t, &rk_tb_5_4t, NULL},
+    NULL, NULL, &rk_tb_5_2tp, &rk_tb_5_3tp, &rk_tb_5_4tp, NULL},
     {
-    NULL, NULL, &rk_tb_6_2t, &rk_tb_6_3t, &rk_tb_6_4t, NULL}
+    NULL, NULL, &rk_tb_6_2tp, &rk_tb_6_3tp, &rk_tb_6_4t, NULL}
   };
   static long double (*tb_objective[7][6]) (RK *) =
   {
     {
     NULL, NULL, NULL, NULL, NULL, NULL},
     {
-    NULL, NULL, NULL, NULL, NULL, NULL},
+    NULL, NULL, &rk_objective_tb_2_2, NULL, NULL, NULL},
     {
     NULL, NULL, &rk_objective_tb_2_2, NULL, NULL, NULL},
     {
@@ -1529,7 +1614,7 @@ rk_select (RK * rk,             ///< RK struct.
     {
     NULL, NULL, NULL, NULL, NULL, NULL},
     {
-    NULL, NULL, NULL, NULL, NULL, NULL},
+    NULL, NULL, &rk_objective_tb_2_2t, NULL, NULL, NULL},
     {
     NULL, NULL, &rk_objective_tb_2_2t, NULL, NULL, NULL},
     {
@@ -1555,8 +1640,7 @@ rk_select (RK * rk,             ///< RK struct.
     {
     NULL, NULL, &rk_objective_tb_3_2, &rk_objective_tb_3_3p, NULL, NULL},
     {
-    NULL, NULL, &rk_objective_tb_4_2, &rk_objective_tb_4_3p,
-        &rk_objective_tb_4_4, NULL},
+    NULL, NULL, &rk_objective_tb_4_2, &rk_objective_tb_4_3p, NULL, NULL},
     {
     NULL, NULL, &rk_objective_tb_5_2, &rk_objective_tb_5_3,
         &rk_objective_tb_5_4, NULL},
@@ -1575,8 +1659,7 @@ rk_select (RK * rk,             ///< RK struct.
     {
     NULL, NULL, &rk_objective_tb_3_2t, &rk_objective_tb_3_3tp, NULL, NULL},
     {
-    NULL, NULL, &rk_objective_tb_4_2t, &rk_objective_tb_4_3tp,
-        &rk_objective_tb_4_4t, NULL},
+    NULL, NULL, &rk_objective_tb_4_2t, &rk_objective_tb_4_3tp, NULL, NULL},
     {
     NULL, NULL, &rk_objective_tb_5_2t, &rk_objective_tb_5_3t,
         &rk_objective_tb_5_4t, NULL},
@@ -1592,9 +1675,7 @@ rk_select (RK * rk,             ///< RK struct.
   NULL, NULL, &rk_objective_ac_2, &rk_objective_ac_3, &rk_objective_ac_4,
       &rk_objective_ac_5, &rk_objective_ac_6};
   const unsigned int nequations[6] = { 0, 1, 2, 4, 8, 16 };
-  const char *message[] = { _("Bad order"), _("Bad steps number") };
   Optimize *tb, *ac;
-  unsigned int code;
 #if DEBUG_RK
   fprintf (stderr, "rk_select: start\n");
 #endif
@@ -1632,10 +1713,7 @@ rk_select (RK * rk,             ///< RK struct.
         }
     }
   if (!tb->method)
-    {
-      code = 0;
-      goto exit_on_error;
-    }
+    goto exit_on_error;
   switch (nsteps)
     {
     case 5:
@@ -1668,10 +1746,7 @@ rk_select (RK * rk,             ///< RK struct.
         = (unsigned int *) g_slice_alloc (ac->nfree * sizeof (unsigned int));
       ac->method = (OptimizeMethod) ac_method[nsteps];
       if (!ac->method)
-        {
-          code = 1;
-          goto exit_on_error;
-        }
+        goto exit_on_error;
       ac->objective = (OptimizeObjective) ac_objective[nsteps];
     }
 
@@ -1681,7 +1756,7 @@ rk_select (RK * rk,             ///< RK struct.
   return 1;
 
 exit_on_error:
-  error_message = g_strdup (message[code]);
+  error_message = g_strdup (_("Unknown method"));
 #if DEBUG_RK
   fprintf (stderr, "rk_select: end\n");
 #endif
@@ -1828,7 +1903,9 @@ rk_run (xmlNode * node,         ///< XML node.
   file = fopen (filename, "w");
   print_maxima_precision (file);
   rk_print (rk, file);
-  tb_print_maxima (file, nsteps, order);
+  rk_print_maxima (file, nsteps, nsteps, order, 'b');
+  if (rk->pair)
+    rk_print_maxima (file, nsteps, nsteps - 1, order - 1, 'e');
   if (rk->strong)
     ac_print_maxima (file, nsteps);
   fclose (file);

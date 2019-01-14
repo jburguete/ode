@@ -42,7 +42,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "utils.h"
 #include "optimize.h"
 #include "rk.h"
-#include "rk_6_2.h"
 #include "rk_6_3.h"
 
 #define DEBUG_RK_6_3 0          ///< macro to debug.
@@ -95,6 +94,8 @@ rk_tb_6_3 (Optimize * optimize) ///< Optimize struct.
     - b65 (tb) * (b51 (tb) * t1 (tb) + b52 (tb) * t2 (tb)
                   + b53 (tb) * t3 (tb) + b54 (tb) * t4 (tb));
   solve_3 (A, B, C, D);
+  if (isnan (D[0]) || isnan (D[1]) || isnan (D[2]))
+    return 0;
   b63 (tb) = D[2];
   b62 (tb) = D[1];
   b61 (tb) = D[0];
@@ -102,8 +103,6 @@ rk_tb_6_3 (Optimize * optimize) ///< Optimize struct.
 #if DEBUG_RK_6_3
   fprintf (stderr, "rk_tb_6_3: end\n");
 #endif
-  if (isnan (b61 (tb)) || isnan (b62 (tb)) || isnan (b63 (tb)))
-    return 0;
   return 1;
 }
 
@@ -160,6 +159,8 @@ rk_tb_6_3t (Optimize * optimize)        ///< Optimize struct.
   E[3] = 1.L / 6.L - b65 (tb) * (b51 (tb) * t1 (tb) + b52 (tb) * t2 (tb)
                                  + b53 (tb) * t3 (tb) + b54 (tb) * t4 (tb));
   solve_4 (A, B, C, D, E);
+  if (isnan (E[0]) || isnan (E[1]) || isnan (E[2]) || isnan (E[3]))
+    return 0;
   b64 (tb) = E[3];
   b63 (tb) = E[2];
   b62 (tb) = E[1];
@@ -168,9 +169,57 @@ rk_tb_6_3t (Optimize * optimize)        ///< Optimize struct.
 #if DEBUG_RK_6_3
   fprintf (stderr, "rk_tb_6_3t: end\n");
 #endif
-  if (isnan (b61 (tb)) || isnan (b62 (tb)) || isnan (b63 (tb))
-      || isnan (b64 (tb)))
+  return 1;
+}
+
+/**
+ * Function to obtain the coefficients of a 6 steps 2nd-3rd order Runge-Kutta 
+ * pair.
+ */
+int
+rk_tb_6_3p (Optimize * optimize)        ///< Optimize struct.
+{
+  long double *tb;
+#if DEBUG_RK_6_3
+  fprintf (stderr, "rk_tb_6_3p: start\n");
+#endif
+  if (!rk_tb_6_3 (optimize))
     return 0;
+  tb = optimize->coefficient;
+  e51 (tb) = 0.5L / t1 (tb);
+  e52 (tb) = e53 (tb) = 0.L;
+  rk_e_6 (tb);
+#if DEBUG_RK_6_3
+  fprintf (stderr, "rk_tb_6_3p: end\n");
+#endif
+  return 1;
+}
+
+/**
+ * Function to obtain the coefficients of a 6 steps 2nd-3rd order, 3rd-4th order
+ * in equations depending only in time, Runge-Kutta pair.
+ */
+int
+rk_tb_6_3tp (Optimize * optimize)       ///< Optimize struct.
+{
+  long double *tb;
+#if DEBUG_RK_6_3
+  fprintf (stderr, "rk_tb_6_3tp: start\n");
+#endif
+  if (!rk_tb_6_3t (optimize))
+    return 0;
+  tb = optimize->coefficient;
+  e63 (tb) = e64 (tb) = 0.L;
+  e62 (tb) = (1.L / 3.L - 0.5L * t1 (tb)) / (t2 (tb) * (t2 (tb) - t1 (tb)));
+  if (isnan (e62 (tb)))
+    return 0;
+  e61 (tb) = (0.5L - e52 (tb) * t2 (tb)) / t1 (tb);
+  if (isnan (e61 (tb)))
+    return 0;
+  rk_e_6 (tb);
+#if DEBUG_RK_6_3
+  fprintf (stderr, "rk_tb_6_3tp: end\n");
+#endif
   return 1;
 }
 
@@ -204,6 +253,8 @@ rk_objective_tb_6_3 (RK * rk)   ///< RK struct.
     o += b62 (tb);
   if (b63 (tb) < 0.L)
     o += b63 (tb);
+  if (b64 (tb) < 0.L)
+    o += b64 (tb);
   if (o < 0.L)
     {
       o = 40.L - o;
@@ -278,6 +329,126 @@ end:
 #if DEBUG_RK_6_3
   fprintf (stderr, "rk_objective_tb_6_3t: optimal=%Lg\n", o);
   fprintf (stderr, "rk_objective_tb_6_3t: end\n");
+#endif
+  return o;
+}
+
+/**
+ * Function to calculate the objective function of a 6 steps 2nd-3rd order 
+ * Runge-Kutta pair.
+ *
+ * \return objective function value.
+ */
+long double
+rk_objective_tb_6_3p (RK * rk)  ///< RK struct.
+{
+  long double *tb;
+  long double o;
+#if DEBUG_RK_6_3
+  fprintf (stderr, "rk_objective_tb_6_3p: start\n");
+#endif
+  tb = rk->tb->coefficient;
+  o = fminl (0.L, b20 (tb));
+  if (b30 (tb) < 0.L)
+    o += b30 (tb);
+  if (b40 (tb) < 0.L)
+    o += b40 (tb);
+  if (b50 (tb) < 0.L)
+    o += b50 (tb);
+  if (b60 (tb) < 0.L)
+    o += b60 (tb);
+  if (b61 (tb) < 0.L)
+    o += b61 (tb);
+  if (b62 (tb) < 0.L)
+    o += b62 (tb);
+  if (b63 (tb) < 0.L)
+    o += b63 (tb);
+  if (b64 (tb) < 0.L)
+    o += b64 (tb);
+  if (e60 (tb) < 0.L)
+    o += e60 (tb);
+  if (e61 (tb) < 0.L)
+    o += e61 (tb);
+  if (o < 0.L)
+    {
+      o = 40.L - o;
+      goto end;
+    }
+  o = 30.L
+    + fmaxl (1.L,
+             fmaxl (t1 (tb),
+                    fmaxl (t2 (tb),
+                           fmaxl (t3 (tb), fmaxl (t4 (tb), t5 (tb))))));
+  if (rk->strong)
+    {
+      rk_bucle_ac (rk);
+      o = fminl (o, *rk->ac0->optimal);
+    }
+end:
+#if DEBUG_RK_6_3
+  fprintf (stderr, "rk_objective_tb_6_3p: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_6_3p: end\n");
+#endif
+  return o;
+}
+
+/**
+ * Function to calculate the objective function of a 6 steps 2nd-3rd order, 
+ * 3rd-4th order in equations depending only in time, Runge-Kutta pair.
+ *
+ * \return objective function value.
+ */
+long double
+rk_objective_tb_6_3tp (RK * rk) ///< RK struct.
+{
+  long double *tb;
+  long double o;
+#if DEBUG_RK_6_3
+  fprintf (stderr, "rk_objective_tb_6_3tp: start\n");
+#endif
+  tb = rk->tb->coefficient;
+  o = fminl (0.L, b20 (tb));
+  if (b30 (tb) < 0.L)
+    o += b30 (tb);
+  if (b40 (tb) < 0.L)
+    o += b40 (tb);
+  if (b50 (tb) < 0.L)
+    o += b50 (tb);
+  if (b60 (tb) < 0.L)
+    o += b60 (tb);
+  if (b61 (tb) < 0.L)
+    o += b61 (tb);
+  if (b62 (tb) < 0.L)
+    o += b62 (tb);
+  if (b63 (tb) < 0.L)
+    o += b63 (tb);
+  if (b64 (tb) < 0.L)
+    o += b64 (tb);
+  if (e60 (tb) < 0.L)
+    o += e60 (tb);
+  if (e61 (tb) < 0.L)
+    o += e61 (tb);
+  if (e62 (tb) < 0.L)
+    o += e62 (tb);
+  if (o < 0.L)
+    {
+      o = 40.L - o;
+      goto end;
+    }
+  o = 30.L
+    + fmaxl (1.L,
+             fmaxl (t1 (tb),
+                    fmaxl (t2 (tb),
+                           fmaxl (t3 (tb), fmaxl (t4 (tb), t5 (tb))))));
+  if (rk->strong)
+    {
+      rk_bucle_ac (rk);
+      o = fminl (o, *rk->ac0->optimal);
+    }
+end:
+#if DEBUG_RK_6_3
+  fprintf (stderr, "rk_objective_tb_6_3tp: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_6_3tp: end\n");
 #endif
   return o;
 }

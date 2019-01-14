@@ -229,7 +229,7 @@ exit_on_error:
  * Function to set the precision in a maxima program file.
  */
 void
-print_maxima_precision (FILE *file) ///< maxima program file.
+print_maxima_precision (FILE * file)    ///< maxima program file.
 {
-	fprintf (file, "fpprec:%u;\nfpprintprec:fpprec;\n", MAXIMA_PRECISION);
+  fprintf (file, "fpprec:%u;\nfpprintprec:fpprec;\n", MAXIMA_PRECISION);
 }

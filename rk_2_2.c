@@ -94,6 +94,50 @@ rk_tb_2_2t (Optimize * optimize)        ///< Optimize struct.
 }
 
 /**
+ * Function to obtain the coefficients of a 2 steps 1st-2nd order Runge-Kutta 
+ * pair.
+ */
+int
+rk_tb_2_2p (Optimize * optimize)        ///< Optimize struct.
+{
+  long double *tb;
+#if DEBUG_RK_2_2
+  fprintf (stderr, "rk_tb_2_2p: start\n");
+#endif
+  if (!rk_tb_2_2 (optimize))
+    return 0;
+  tb = optimize->coefficient;
+  e20 (tb) = 1.L;
+#if DEBUG_RK_2_2
+  rk_print_tb (optimize, "rk_tb_2_2p", stderr);
+  fprintf (stderr, "rk_tb_2_2p: end\n");
+#endif
+  return 1;
+}
+
+/**
+ * Function to obtain the coefficients of a 2 steps 1st-2nd order, 1st-3rd order
+ * in equations depending only on time, Runge-Kutta pair.
+ */
+int
+rk_tb_2_2tp (Optimize * optimize)       ///< Optimize struct.
+{
+  long double *tb;
+#if DEBUG_RK_2_2
+  fprintf (stderr, "rk_tb_2_2tp: start\n");
+#endif
+  if (!rk_tb_2_2t (optimize))
+    return 0;
+  tb = optimize->coefficient;
+  e20 (tb) = 1.L;
+#if DEBUG_RK_2_2
+  rk_print_tb (optimize, "rk_tb_2_2tp", stderr);
+  fprintf (stderr, "rk_tb_2_2tp: end\n");
+#endif
+  return 1;
+}
+
+/**
  * Function to calculate the objective function of a 2 steps 2nd order 
  * Runge-Kutta method.
  *

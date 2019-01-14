@@ -42,7 +42,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "utils.h"
 #include "optimize.h"
 #include "rk.h"
-#include "rk_5_2.h"
 #include "rk_5_3.h"
 
 #define DEBUG_RK_5_3 0          ///< macro to debug.
@@ -87,6 +86,8 @@ rk_tb_5_3 (Optimize * optimize) ///< Optimize struct.
   D[2] = 1.L / 6.L - b54 (tb) * (b41 (tb) * t1 (tb) + b42 (tb) * t2 (tb)
                                  + b43 (tb) * t3 (tb));
   solve_3 (A, B, C, D);
+  if (isnan (D[0]) || isnan (D[1]) || isnan (D[2]))
+    return 0;
   b53 (tb) = D[2];
   b52 (tb) = D[1];
   b51 (tb) = D[0];
@@ -94,8 +95,6 @@ rk_tb_5_3 (Optimize * optimize) ///< Optimize struct.
 #if DEBUG_RK_5_3
   fprintf (stderr, "rk_tb_5_3: end\n");
 #endif
-  if (isnan (b51 (tb)) || isnan (b52 (tb)) || isnan (b53 (tb)))
-    return 0;
   return 1;
 }
 
@@ -145,6 +144,8 @@ rk_tb_5_3t (Optimize * optimize)        ///< Optimize struct.
   D[3] = b41 (tb) * t1 (tb) + b42 (tb) * t2 (tb) + b43 (tb) * t3 (tb);
   E[3] = 1.L / 6.L;
   solve_4 (A, B, C, D, E);
+  if (isnan (E[0]) || isnan (E[1]) || isnan (E[2]) || isnan (E[3]))
+    return 0;
   b54 (tb) = E[3];
   b53 (tb) = E[2];
   b52 (tb) = E[1];
@@ -153,9 +154,57 @@ rk_tb_5_3t (Optimize * optimize)        ///< Optimize struct.
 #if DEBUG_RK_5_3
   fprintf (stderr, "rk_tb_5_3t: end\n");
 #endif
-  if (isnan (b51 (tb)) || isnan (b52 (tb)) || isnan (b53 (tb))
-      || isnan (b54 (tb)))
+  return 1;
+}
+
+/**
+ * Function to obtain the coefficients of a 5 steps 2nd-3rd order Runge-Kutta 
+ * pair.
+ */
+int
+rk_tb_5_3p (Optimize * optimize)        ///< Optimize struct.
+{
+  long double *tb;
+#if DEBUG_RK_5_3
+  fprintf (stderr, "rk_tb_5_3p: start\n");
+#endif
+  if (!rk_tb_5_3 (optimize))
     return 0;
+  tb = optimize->coefficient;
+  e51 (tb) = 0.5L / t1 (tb);
+  e52 (tb) = e53 (tb) = 0.L;
+  rk_e_5 (tb);
+#if DEBUG_RK_5_3
+  fprintf (stderr, "rk_tb_5_3p: end\n");
+#endif
+  return 1;
+}
+
+/**
+ * Function to obtain the coefficients of a 5 steps 2nd-3rd order, 3rd-4th order
+ * in equations depending only in time, Runge-Kutta pair.
+ */
+int
+rk_tb_5_3tp (Optimize * optimize)       ///< Optimize struct.
+{
+  long double *tb;
+#if DEBUG_RK_5_3
+  fprintf (stderr, "rk_tb_5_3tp: start\n");
+#endif
+  if (!rk_tb_5_3t (optimize))
+    return 0;
+  tb = optimize->coefficient;
+  e53 (tb) = 0.L;
+  e52 (tb) = (1.L / 3.L - 0.5L * t1 (tb)) / (t2 (tb) * (t2 (tb) - t1 (tb)));
+  if (isnan (e52 (tb)))
+    return 0;
+  e51 (tb) = (0.5L - e52 (tb) * t2 (tb)) / t1 (tb);
+  if (isnan (e51 (tb)))
+    return 0;
+  rk_e_5 (tb);
+#if DEBUG_RK_5_3
+  fprintf (stderr, "rk_tb_5_3tp: end\n");
+#endif
   return 1;
 }
 
@@ -253,6 +302,114 @@ end:
 #if DEBUG_RK_5_3
   fprintf (stderr, "rk_objective_tb_5_3t: optimal=%Lg\n", o);
   fprintf (stderr, "rk_objective_tb_5_3t: end\n");
+#endif
+  return o;
+}
+
+/**
+ * Function to calculate the objective function of a 5 steps 2nd-3rd order 
+ * Runge-Kutta pair.
+ *
+ * \return objective function value.
+ */
+long double
+rk_objective_tb_5_3p (RK * rk)  ///< RK struct.
+{
+  long double *tb;
+  long double o;
+#if DEBUG_RK_5_3
+  fprintf (stderr, "rk_objective_tb_5_3p: start\n");
+#endif
+  tb = rk->tb->coefficient;
+  o = fminl (0.L, b20 (tb));
+  if (b30 (tb) < 0.L)
+    o += b30 (tb);
+  if (b40 (tb) < 0.L)
+    o += b40 (tb);
+  if (b50 (tb) < 0.L)
+    o += b50 (tb);
+  if (b51 (tb) < 0.L)
+    o += b51 (tb);
+  if (b52 (tb) < 0.L)
+    o += b52 (tb);
+  if (b53 (tb) < 0.L)
+    o += b53 (tb);
+  if (e50 (tb) < 0.L)
+    o += e50 (tb);
+  if (e51 (tb) < 0.L)
+    o += e51 (tb);
+  if (o < 0.L)
+    {
+      o = 40.L - o;
+      goto end;
+    }
+  o = 30.L
+    + fmaxl (1.L, fmaxl (t1 (tb), fmaxl (t2 (tb), fmaxl (t3 (tb), t4 (tb)))));
+  if (rk->strong)
+    {
+      rk_bucle_ac (rk);
+      o = fminl (o, *rk->ac0->optimal);
+    }
+end:
+#if DEBUG_RK_5_3
+  fprintf (stderr, "rk_objective_tb_5_3p: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_5_3p: end\n");
+#endif
+  return o;
+}
+
+/**
+ * Function to calculate the objective function of a 5 steps 2nd-3rd order, 
+ * 3rd-4th order in equations depending only in time, Runge-Kutta pair.
+ *
+ * \return objective function value.
+ */
+long double
+rk_objective_tb_5_3tp (RK * rk) ///< RK struct.
+{
+  long double *tb;
+  long double o;
+#if DEBUG_RK_5_3
+  fprintf (stderr, "rk_objective_tb_5_3tp: start\n");
+#endif
+  tb = rk->tb->coefficient;
+  o = fminl (0.L, b20 (tb));
+  if (b30 (tb) < 0.L)
+    o += b30 (tb);
+  if (b40 (tb) < 0.L)
+    o += b40 (tb);
+  if (b50 (tb) < 0.L)
+    o += b50 (tb);
+  if (b51 (tb) < 0.L)
+    o += b51 (tb);
+  if (b52 (tb) < 0.L)
+    o += b52 (tb);
+  if (b53 (tb) < 0.L)
+    o += b53 (tb);
+  if (b54 (tb) < 0.L)
+    o += b54 (tb);
+  if (e50 (tb) < 0.L)
+    o += e50 (tb);
+  if (e51 (tb) < 0.L)
+    o += e51 (tb);
+  if (e52 (tb) < 0.L)
+    o += e52 (tb);
+  if (o < 0.L)
+    {
+      o = 40.L - o;
+      goto end;
+    }
+  o = 30.L
+    + fmaxl (1.L, fmaxl (t1 (tb), fmaxl (t2 (tb), fmaxl (t3 (tb), t4 (tb)))));
+  if (rk->strong)
+    {
+      rk_bucle_ac (rk);
+      o = fminl (o, *rk->ac0->optimal);
+    }
+end:
+#if DEBUG_RK_5_3
+  fprintf (stderr, "rk_objective_tb_5_3tp: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_5_3tp: end\n");
 #endif
   return o;
 }

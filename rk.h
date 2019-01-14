@@ -59,6 +59,7 @@ typedef struct
 #define t2(x) x[1]              ///< t2 Runge-Kutta coefficient.
 #define b20(x) x[2]             ///< b20 Runge-Kutta coefficient.
 #define b21(x) x[3]             ///< b21 Runge-Kutta coefficient.
+#define e20(x) x[4]             ///< e20 Runge-Kutta coefficient.
 #define t3(x) x[4]              ///< t3 Runge-Kutta coefficient.
 #define b30(x) x[5]             ///< b30 Runge-Kutta coefficient.
 #define b31(x) x[6]             ///< b31 Runge-Kutta coefficient.

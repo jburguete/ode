@@ -42,7 +42,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "utils.h"
 #include "optimize.h"
 #include "rk.h"
-#include "rk_4_2.h"
 #include "rk_4_3.h"
 
 #define DEBUG_RK_4_3 0          ///< macro to debug.
@@ -70,15 +69,19 @@ rk_tb_4_3 (Optimize * optimize) ///< Optimize struct.
   b42 (tb) = ((1.L / 3.L - b43 (tb) * sqr (t3 (tb)))
               - t1 (tb) * (0.5L - b43 (tb) * t3 (tb)))
     / (t2 (tb) * (t2 (tb) - t1 (tb)));
+  if (isnan (b42 (tb)))
+    return 0;
   b41 (tb) = (0.5L - b42 (tb) * t2 (tb) - b43 (tb) * t3 (tb)) / t1 (tb);
+  if (isnan (b41 (tb)))
+    return 0;
   b31 (tb) = ((1.L / 6.L - b42 (tb) * b21 (tb) * t1 (tb)) / b43 (tb)
               - b32 (tb) * t2 (tb)) / t1 (tb);
+  if (isnan (b31 (tb)))
+    return 0;
   rk_b_4 (tb);
 #if DEBUG_RK_4_3
   fprintf (stderr, "rk_tb_4_3: end\n");
 #endif
-  if (isnan (b31 (tb)) || isnan (b41 (tb)) || isnan (b42 (tb)))
-    return 0;
   return 1;
 }
 
@@ -165,6 +168,8 @@ rk_tb_4_3tp (Optimize * optimize)       ///< Optimize struct.
   rk_print_e (optimize, "rk_tb_4_3tp", stderr);
   fprintf (stderr, "rk_tb_4_3tp: end\n");
 #endif
+  if (isnan (e42 (tb)) || isnan (e41 (tb)))
+    return 0;
   return 1;
 }
 

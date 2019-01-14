@@ -42,7 +42,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "utils.h"
 #include "optimize.h"
 #include "rk.h"
-#include "rk_4_3.h"
 #include "rk_4_4.h"
 
 #define DEBUG_RK_4_4 0          ///< macro to debug.
@@ -67,23 +66,31 @@ rk_tb_4_4 (Optimize * optimize) ///< Optimize struct.
   b43 (tb) = (0.25L - 1.L / 3.L * t1 (tb)
               - (1.L / 3.L - 0.5L * t1 (tb)) * t2 (tb))
     / (t3 (tb) * (t3 (tb) - t2 (tb)) * (t3 (tb) - t1 (tb)));
+  if (isnan (b43 (tb)))
+    return 0;
   b42 (tb) = (1.L / 3.L - 0.5L * t1 (tb)
               - b43 (tb) * t3 (tb) * (t3 (tb) - t1 (tb)))
     / (t2 (tb) * (t2 (tb) - t1 (tb)));
+  if (isnan (b42 (tb)))
+    return 0;
   b41 (tb) = (0.5L - b42 (tb) * t2 (tb) - b43 (tb) * t3 (tb)) / t1 (tb);
+  if (isnan (b41 (tb)))
+    return 0;
   b32 (tb) = (1.L / 12.L - 1.L / 6.L * t1 (tb))
     / (b43 (tb) * t2 (tb) * (t2 (tb) - t1 (tb)));
+  if (isnan (b32 (tb)))
+    return 0;
   b31 (tb) = ((0.125L - 1.L / 6.L * t2 (tb)) / (b43 (tb) * (t3 (tb) - t2 (tb)))
               - b32 (tb) * t2 (tb)) / t1 (tb);
+  if (isnan (b31 (tb)))
+    return 0;
   b21 (tb) = 1.L / 24.L / (t1 (tb) * b43 (tb) * b32 (tb));
+  if (isnan (b21 (tb)))
+    return 0;
   rk_b_4 (tb);
 #if DEBUG_RK_4_4
   fprintf (stderr, "rk_tb_4_4: end\n");
 #endif
-  if (isnan (b21 (tb)) || isnan (b32 (tb)) || isnan (b31 (tb))
-      || isnan (b41 (tb)) || isnan (b43 (tb)) || isnan (b42 (tb))
-      || isnan (t3 (tb)))
-    return 0;
   return 1;
 }
 
@@ -107,23 +114,31 @@ rk_tb_4_4t (Optimize * optimize)        ///< Optimize struct.
   b43 (tb) = (0.25L - 1.L / 3.L * t1 (tb)
               - (1.L / 3.L - 0.5L * t1 (tb)) * t2 (tb))
     / (t3 (tb) * (t3 (tb) - t2 (tb)) * (t3 (tb) - t1 (tb)));
+  if (isnan (b43 (tb)))
+    return 0;
   b42 (tb) = (1.L / 3.L - 0.5L * t1 (tb)
               - b43 (tb) * t3 (tb) * (t3 (tb) - t1 (tb)))
     / (t2 (tb) * (t2 (tb) - t1 (tb)));
+  if (isnan (b42 (tb)))
+    return 0;
   b41 (tb) = (0.5L - b42 (tb) * t2 (tb) - b43 (tb) * t3 (tb)) / t1 (tb);
+  if (isnan (b41 (tb)))
+    return 0;
   b32 (tb) = (1.L / 12.L - 1.L / 6.L * t1 (tb))
     / (b43 (tb) * t2 (tb) * (t2 (tb) - t1 (tb)));
+  if (isnan (b32 (tb)))
+    return 0;
   b31 (tb) = ((0.125L - 1.L / 6.L * t2 (tb)) / (b43 (tb) * (t3 (tb) - t2 (tb)))
               - b32 (tb) * t2 (tb)) / t1 (tb);
+  if (isnan (b31 (tb)))
+    return 0;
   b21 (tb) = 1.L / 24.L / (t1 (tb) * b43 (tb) * b32 (tb));
+  if (isnan (b21 (tb)))
+    return 0;
   rk_b_4 (tb);
 #if DEBUG_RK_4_4
   fprintf (stderr, "rk_tb_4_4t: end\n");
 #endif
-  if (isnan (b21 (tb)) || isnan (b32 (tb)) || isnan (b31 (tb))
-      || isnan (b41 (tb)) || isnan (b43 (tb)) || isnan (b42 (tb))
-      || isnan (t2 (tb)) || isnan (t3 (tb)))
-    return 0;
   return 1;
 }
 

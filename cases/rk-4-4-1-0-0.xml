@@ -1,4 +1,4 @@
 <?xml version="1.0"?>
-<Runge-Kutta steps="4" order="4" nsimulations="1000000" nclimbings="64" niterations="64" convergence-factor="0.5" climbing-factor="0.1" time-accuracy="yes">
+<Runge-Kutta steps="4" order="4" nsimulations="10000000" nclimbings="64" niterations="64" convergence-factor="0.5" climbing-factor="0.1" time-accuracy="yes">
 	<variable minimum="0" interval="1" type="top"/>
 </Runge-Kutta>

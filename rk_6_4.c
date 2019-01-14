@@ -42,7 +42,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "utils.h"
 #include "optimize.h"
 #include "rk.h"
-#include "rk_6_3.h"
 #include "rk_6_4.h"
 
 #define DEBUG_RK_6_4 0          ///< macro to debug.
@@ -97,6 +96,8 @@ rk_tb_6_4 (Optimize * optimize) ///< Optimize struct.
     * (t4 (tb) - t5 (tb));
   E[3] = 0.125L - 1.L / 6.L * t5 (tb);
   solve_4 (A, B, C, D, E);
+  if (isnan (E[0]) || isnan (E[1]) || isnan (E[2]) || isnan (E[3]))
+    return 0;
   b64 (tb) = E[3];
   b63 (tb) = E[2];
   b62 (tb) = E[1];
@@ -125,6 +126,8 @@ rk_tb_6_4 (Optimize * optimize) ///< Optimize struct.
     / b65 (tb) - b54 (tb) * (b41 (tb) * t1 (tb) + b42 (tb) * t2 (tb)
                              + b43 (tb) * t3 (tb));
   solve_3 (A, B, C, D);
+  if (isnan (D[0]) || isnan (D[1]) || isnan (D[2]))
+    return 0;
   b53 (tb) = D[2];
   b52 (tb) = D[1];
   b51 (tb) = D[0];
@@ -132,10 +135,6 @@ rk_tb_6_4 (Optimize * optimize) ///< Optimize struct.
 #if DEBUG_RK_6_4
   fprintf (stderr, "rk_tb_6_4: end\n");
 #endif
-  if (isnan (b51 (tb)) || isnan (b52 (tb)) || isnan (b53 (tb))
-      || isnan (b61 (tb)) || isnan (b62 (tb)) || isnan (b63 (tb))
-      || isnan (b64 (tb)))
-    return 0;
   return 1;
 }
 
@@ -146,7 +145,7 @@ rk_tb_6_4 (Optimize * optimize) ///< Optimize struct.
 int
 rk_tb_6_4t (Optimize * optimize)        ///< Optimize struct.
 {
-  long double A[4], B[4], C[4], D[4], E[4];
+  long double A[5], B[5], C[5], D[5], E[5], F[5];
   long double *tb, *r;
 #if RK_PAIR
   long double e52, e53;
@@ -159,83 +158,195 @@ rk_tb_6_4t (Optimize * optimize)        ///< Optimize struct.
   t6 (tb) = 1.L;
   t1 (tb) = r[0];
   t2 (tb) = r[1];
-  t3 (tb) = r[2];
-  t4 (tb) = r[3];
-  t5 (tb) = r[4];
+  b21 (tb) = r[2];
+  t3 (tb) = r[3];
   b31 (tb) = r[4];
-#if !RK_PAIR
-  b21 (tb) = r[5];
-#endif
+  b32 (tb) = r[5];
+  t4 (tb) = r[6];
+  b41 (tb) = r[7];
+  b42 (tb) = r[8];
+  b43 (tb) = r[9];
+  t5 (tb) = r[10];
+  b54 (tb) = r[11];
   A[0] = t1 (tb);
   B[0] = t2 (tb);
   C[0] = t3 (tb);
   D[0] = t4 (tb);
-  E[0] = 0.5L;
+  E[0] = t5 (tb);
+  F[0] = 0.5L;
   A[1] = A[0] * t1 (tb);
   B[1] = B[0] * t2 (tb);
   C[1] = C[0] * t3 (tb);
   D[1] = D[0] * t4 (tb);
-  E[1] = 1.L / 3.L;
+  E[1] = E[0] * t5 (tb);
+  F[1] = 1.L / 3.L;
   A[2] = A[1] * t1 (tb);
   B[2] = B[1] * t2 (tb);
   C[2] = C[1] * t3 (tb);
   D[2] = D[1] * t4 (tb);
-  E[2] = 0.25L;
+  E[2] = E[1] * t5 (tb);
+  F[2] = 0.25L;
   A[3] = A[2] * t1 (tb);
   B[3] = B[2] * t2 (tb);
   C[3] = C[2] * t3 (tb);
   D[3] = D[2] * t4 (tb);
-  E[3] = 0.2L;
-  solve_4 (A, B, C, D, E);
-  b54 (tb) = E[3];
-  b53 (tb) = E[2];
-  b52 (tb) = E[1];
-  b51 (tb) = E[0];
-#if RK_PAIR
-  e53 = (0.25L - 1.L / 3.L * t1 (tb) - (1.L / 3.L - 0.5L * t1 (tb)) * t2 (tb))
-    / (t3 (tb) * (t3 (tb) - t2 (tb)) * (t3 (tb) - t1 (tb)));
-  e52 = (1.L / 3.L - 0.5L * t1 (tb) - t3 (tb) * (t3 (tb) - t1 (tb)) * e53)
-    / (t2 (tb) * (t2 (tb) - t1 (tb)));
-  b21 (tb) = (1.L / 6.L * b53 (tb) * (t4 (tb) - t3 (tb))
-              + e53 * (0.125L - 1.L / 6.L * t4 (tb)))
-    / (t1 (tb) * (e52 * b53 (tb) * (t4 (tb) - t3 (tb))
-                  - e53 * b52 (tb) * (t4 (tb) - t2 (tb))));
-#endif
-  b32 (tb) = (1.L / 6.L * t4 (tb) - 0.125L
-              - t1 (tb) * (b52 (tb) * b21 (tb) * (t4 (tb) - t2 (tb))
-                           + b53 (tb) * b31 (tb) * (t4 (tb) - t3 (tb))))
-    / (b53 (tb) * t2 (tb) * (t4 (tb) - t3 (tb)));
+  E[3] = E[2] * t5 (tb);
+  F[3] = 0.2L;
+  A[4] = A[3] * t1 (tb);
+  B[4] = B[3] * t2 (tb);
+  C[4] = C[3] * t3 (tb);
+  D[4] = D[3] * t4 (tb);
+  E[4] = E[3] * t5 (tb);
+  F[4] = 1.L / 6.L;
+  solve_5 (A, B, C, D, E, F);
+  if (isnan (F[0]) || isnan (F[1]) || isnan (F[2]) || isnan (F[3])
+      || isnan (F[4]))
+    return 0;
+  b65 (tb) = F[3];
+  b64 (tb) = F[3];
+  b63 (tb) = F[2];
+  b62 (tb) = F[1];
+  b61 (tb) = F[0];
   A[0] = t1 (tb);
   B[0] = t2 (tb);
   C[0] = t3 (tb);
-  D[0] = 1.L / 6.L - b52 (tb) * b21 (tb) * t1 (tb)
-    - b53 (tb) * (b31 (tb) * t1 (tb) + b32 (tb) * t2 (tb));
+  D[0] = (1.L / 6.L - b62 (tb) * b21 (tb) * t1 (tb)
+          - b63 (tb) * (b31 (tb) * t1 (tb) + b32 (tb) * t2 (tb))
+          - b64 (tb) * (b41 (tb) * t1 (tb) + b42 (tb) * t2 (tb)
+                        + b43 (tb) * t3 (tb))) / b65 (tb) - b54 (tb) * t4 (tb);
   A[1] = A[0] * t1 (tb);
   B[1] = B[0] * t2 (tb);
   C[1] = C[0] * t3 (tb);
-  D[1] = 1.L / 12.L - b52 (tb) * b21 (tb) * sqr (t1 (tb))
-    - b53 (tb) * (b31 (tb) * sqr (t1 (tb)) + b32 (tb) * sqr (t2 (tb)));
+  D[1] = (1.L / 12.L - b62 (tb) * b21 (tb) * sqr (t1 (tb))
+          - b63 (tb) * (b31 (tb) * sqr (t1 (tb)) + b32 (tb) * sqr (t2 (tb)))
+          - b64 (tb) * (b41 (tb) * sqr (t1 (tb)) + b42 (tb) * sqr (t2 (tb))
+                        + b43 (tb) * sqr (t3 (tb)))) / b65 (tb)
+    - b54 (tb) * sqr (t4 (tb));
   A[2] = 0.L;
   B[2] = b21 (tb) * t1 (tb);
   C[2] = b31 (tb) * t1 (tb) + b32 (tb) * t2 (tb);
-  D[2] = 1.L / 24.L - b53 (tb) * b32 (tb) * b21 (tb) * t1 (tb);
+  D[2] = (1.L / 24.L - b63 (tb) * b32 (tb) * b21 (tb) * t1 (tb)
+          - b64 (tb) * (b42 (tb) * b21 (tb) * t1 (tb)
+                        + b43 (tb) * (b31 (tb) * t1 (tb) + b32 (tb) * t2 (tb))))
+    / b65 (tb) - b54 (tb) * (b41 (tb) * t1 (tb) + b42 (tb) * t2 (tb)
+                             + b43 (tb) * t3 (tb));
   solve_3 (A, B, C, D);
-  b43 (tb) = D[2] / b54 (tb);
-  b42 (tb) = D[1] / b54 (tb);
-  b41 (tb) = D[0] / b54 (tb);
-  rk_b_5 (tb);
+  if (isnan (D[0]) || isnan (D[1]) || isnan (D[2]))
+    return 0;
+  b53 (tb) = D[2];
+  b52 (tb) = D[1];
+  b51 (tb) = D[0];
+  rk_b_6 (tb);
 #if DEBUG_RK_6_4
   rk_print_tb (optimize, "rk_tb_6_4t", stderr);
   fprintf (stderr, "rk_tb_6_4t: end\n");
 #endif
-#if RK_PAIR
-  if (isnan (e51) || isnan (e52) || isnan (e53))
-    return 0;
+  return 1;
+}
+
+/**
+ * Function to obtain the coefficients of a 6 steps 3th-4th order Runge-Kutta 
+ * pair.
+ */
+int
+rk_tb_6_4p (Optimize * optimize)        ///< Optimize struct.
+{
+  long double A[4], B[4], C[4], D[4], E[4], AA[4], BB[4], CC[4], DD[4], EE[4];
+  long double *tb, *r;
+#if DEBUG_RK_6_4
+  fprintf (stderr, "rk_tb_6_4p: start\n");
 #endif
-  if (isnan (b41 (tb)) || isnan (b42 (tb)) || isnan (b43 (tb)) ||
-      isnan (b32 (tb)) || isnan (b21 (tb)) || isnan (b51 (tb)) ||
-      isnan (b52 (tb)) || isnan (b53 (tb)) || isnan (b54 (tb)))
+  tb = optimize->coefficient;
+  r = optimize->random_data;
+  t6 (tb) = 1.L;
+  t1 (tb) = r[0];
+  t2 (tb) = r[1];
+  b21 (tb) = r[2];
+  t3 (tb) = r[3];
+  b31 (tb) = r[4];
+  b32 (tb) = r[5];
+  t4 (tb) = r[6];
+  b41 (tb) = r[7];
+  b42 (tb) = r[8];
+  b43 (tb) = r[9];
+  t5 (tb) = r[10];
+  b54 (tb) = r[11];
+  b65 (tb) = r[12];
+  A[0] = AA[0] = t1 (tb);
+  B[0] = BB[0] = t2 (tb);
+  C[0] = CC[0] = t3 (tb);
+  D[0] = DD[0] = t4 (tb);
+  EE[0] = 0.5L;
+  E[0] = 0.5L - b65 (tb) * t5 (tb);
+  A[1] = AA[1] = A[0] * t1 (tb);
+  B[1] = BB[1] = B[0] * t2 (tb);
+  C[1] = CC[1] = C[0] * t3 (tb);
+  D[1] = DD[1] = D[0] * t4 (tb);
+  EE[1] = 1.L / 3.L;
+  E[1] = 1.L / 3.L - b65 (tb) * sqr (t5 (tb));
+  A[2] = AA[2] = A[1] * t1 (tb);
+  B[2] = BB[2] = B[1] * t2 (tb);
+  C[2] = CC[2] = C[1] * t3 (tb);
+  D[2] = DD[2] = D[1] * t4 (tb);
+  EE[2] = 0.25L;
+  E[2] = 0.25L - b65 (tb) * sqr (t5 (tb)) * t5 (tb);
+  A[3] = AA[3] = 0.L;
+  BB[3] = b21 (tb) * t1 (tb);
+  B[3] = BB[3] * (t2 (tb) - t5 (tb));
+  CC[3] = (b31 (tb) * t1 (tb) + b32 (tb) * t2 (tb));
+  C[3] = CC[3] * (t3 (tb) - t5 (tb));
+  DD[3] = (b41 (tb) * t1 (tb) + b42 (tb) * t2 (tb) + b43 (tb) * t3 (tb));
+  D[3] = DD[3] * (t4 (tb) - t5 (tb));
+  EE[3] = 1.L / 6.L;
+  E[3] = 0.125L - 1.L / 6.L * t5 (tb);
+  solve_4 (A, B, C, D, E);
+  if (isnan (E[0]) || isnan (E[1]) || isnan (E[2]) || isnan (E[3]))
     return 0;
+  b64 (tb) = E[3];
+  b63 (tb) = E[2];
+  b62 (tb) = E[1];
+  b61 (tb) = E[0];
+  solve_4 (AA, BB, CC, DD, EE);
+  if (isnan (EE[0]) || isnan (EE[1]) || isnan (EE[2]) || isnan (EE[3]))
+    return 0;
+  e64 (tb) = EE[3];
+  e63 (tb) = EE[2];
+  e62 (tb) = EE[1];
+  e61 (tb) = EE[0];
+  A[0] = t1 (tb);
+  B[0] = t2 (tb);
+  C[0] = t3 (tb);
+  D[0] = (1.L / 6.L - b62 (tb) * b21 (tb) * t1 (tb)
+          - b63 (tb) * (b31 (tb) * t1 (tb) + b32 (tb) * t2 (tb))
+          - b64 (tb) * (b41 (tb) * t1 (tb) + b42 (tb) * t2 (tb)
+                        + b43 (tb) * t3 (tb))) / b65 (tb) - b54 (tb) * t4 (tb);
+  A[1] = A[0] * t1 (tb);
+  B[1] = B[0] * t2 (tb);
+  C[1] = C[0] * t3 (tb);
+  D[1] = (1.L / 12.L - b62 (tb) * b21 (tb) * sqr (t1 (tb))
+          - b63 (tb) * (b31 (tb) * sqr (t1 (tb)) + b32 (tb) * sqr (t2 (tb)))
+          - b64 (tb) * (b41 (tb) * sqr (t1 (tb)) + b42 (tb) * sqr (t2 (tb))
+                        + b43 (tb) * sqr (t3 (tb)))) / b65 (tb)
+    - b54 (tb) * sqr (t4 (tb));
+  A[2] = 0.L;
+  B[2] = b21 (tb) * t1 (tb);
+  C[2] = b31 (tb) * t1 (tb) + b32 (tb) * t2 (tb);
+  D[2] = (1.L / 24.L - b63 (tb) * b32 (tb) * b21 (tb) * t1 (tb)
+          - b64 (tb) * (b42 (tb) * b21 (tb) * t1 (tb)
+                        + b43 (tb) * (b31 (tb) * t1 (tb) + b32 (tb) * t2 (tb))))
+    / b65 (tb) - b54 (tb) * (b41 (tb) * t1 (tb) + b42 (tb) * t2 (tb)
+                             + b43 (tb) * t3 (tb));
+  solve_3 (A, B, C, D);
+  if (isnan (D[0]) || isnan (D[1]) || isnan (D[2]))
+    return 0;
+  b53 (tb) = D[2];
+  b52 (tb) = D[1];
+  b51 (tb) = D[0];
+  rk_b_6 (tb);
+  rk_e_6 (tb);
+#if DEBUG_RK_6_4
+  fprintf (stderr, "rk_tb_6_4p: end\n");
+#endif
   return 1;
 }
 
@@ -250,8 +361,8 @@ rk_objective_tb_6_4 (RK * rk)   ///< RK struct.
 {
   long double *tb;
   long double o;
-#if DEBUG_RK_5_4
-  fprintf (stderr, "rk_objective_tb_5_4: start\n");
+#if DEBUG_RK_6_4
+  fprintf (stderr, "rk_objective_tb_6_4: start\n");
 #endif
   tb = rk->tb->coefficient;
   o = fminl (0.L, b20 (tb));
@@ -311,15 +422,12 @@ rk_objective_tb_6_4t (RK * rk)  ///< RK struct.
 {
   long double *tb;
   long double o;
-#if RK_PAIR
-  long double e50, e51, e52, e53, e54;
-#endif
-#if DEBUG_RK_5_4
-  fprintf (stderr, "rk_objective_tb_5_4t: start\n");
+#if DEBUG_RK_6_4
+  fprintf (stderr, "rk_objective_tb_6_4t: start\n");
 #endif
   tb = rk->tb->coefficient;
-#if DEBUG_RK_5_4
-  rk_print_tb (optimize, "rk_objective_tb_5_4t", stderr);
+#if DEBUG_RK_6_4
+  rk_print_tb (optimize, "rk_objective_tb_6_4t", stderr);
 #endif
   o = fminl (0.L, b20 (tb));
   if (b21 (tb) < 0.L)
@@ -346,40 +454,108 @@ rk_objective_tb_6_4t (RK * rk)  ///< RK struct.
     o += b53 (tb);
   if (b54 (tb) < 0.L)
     o += b54 (tb);
-#if RK_PAIR
-  e53 = (0.25L - 1.L / 3.L * t1 (tb) - (1.L / 3.L - 0.5L * t1 (tb)) * t2 (tb))
-    / (t3 (tb) * (t3 (tb) - t2 (tb)) * (t3 (tb) - t1 (tb)));
-  e52 = (1.L / 3.L - 0.5L * t1 (tb) - t3 (tb) * (t3 (tb) - t1 (tb)) * e53)
-    / (t2 (tb) * (t2 (tb) - t1 (tb)));
-  e51 = (0.5L - t2 (tb) * e52 - t3 (tb) * e53) / t1 (tb);
-  e50 = 1.L - e51 - e52 - e53;
-  if (e50 < 0.L)
-    o += e50;
-  if (e51 < 0.L)
-    o += e51;
-  if (e52 < 0.L)
-    o += e52;
-  if (e53 < 0.L)
-    o += e53;
-  if (e54 < 0.L)
-    o += e54;
-#endif
+  if (b60 (tb) < 0.L)
+    o += b60 (tb);
+  if (b61 (tb) < 0.L)
+    o += b61 (tb);
+  if (b62 (tb) < 0.L)
+    o += b62 (tb);
+  if (b63 (tb) < 0.L)
+    o += b63 (tb);
+  if (b64 (tb) < 0.L)
+    o += b64 (tb);
+  if (b65 (tb) < 0.L)
+    o += b65 (tb);
   if (o < 0.L)
     {
       o = 40.L - o;
       goto end;
     }
   o = 30.L
-    + fmaxl (1.L, fmaxl (t1 (tb), fmaxl (t2 (tb), fmaxl (t3 (tb), t4 (tb)))));
+    + fmaxl (1.L,
+             fmaxl (t1 (tb),
+                    fmaxl (t2 (tb),
+                           fmaxl (t3 (tb), fmaxl (t4 (tb), t5 (tb))))));
   if (rk->strong)
     {
       rk_bucle_ac (rk);
       o = fminl (o, *rk->ac0->optimal);
     }
 end:
-#if DEBUG_RK_5_4
-  fprintf (stderr, "rk_objective_tb_5_4t: optimal=%Lg\n", o);
-  fprintf (stderr, "rk_objective_tb_5_4t: end\n");
+#if DEBUG_RK_6_4
+  fprintf (stderr, "rk_objective_tb_6_4t: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_6_4t: end\n");
+#endif
+  return o;
+}
+
+/**
+ * Function to calculate the objective function of a 6 steps 3rd-4th order 
+ * Runge-Kutta pair.
+ *
+ * \return objective function value.
+ */
+long double
+rk_objective_tb_6_4p (RK * rk)  ///< RK struct.
+{
+  long double *tb;
+  long double o;
+#if DEBUG_RK_6_4
+  fprintf (stderr, "rk_objective_tb_6_4p: start\n");
+#endif
+  tb = rk->tb->coefficient;
+  o = fminl (0.L, b20 (tb));
+  if (b30 (tb) < 0.L)
+    o += b30 (tb);
+  if (b40 (tb) < 0.L)
+    o += b40 (tb);
+  if (b50 (tb) < 0.L)
+    o += b50 (tb);
+  if (b51 (tb) < 0.L)
+    o += b51 (tb);
+  if (b52 (tb) < 0.L)
+    o += b52 (tb);
+  if (b53 (tb) < 0.L)
+    o += b53 (tb);
+  if (b60 (tb) < 0.L)
+    o += b60 (tb);
+  if (b61 (tb) < 0.L)
+    o += b61 (tb);
+  if (b62 (tb) < 0.L)
+    o += b62 (tb);
+  if (b63 (tb) < 0.L)
+    o += b63 (tb);
+  if (b64 (tb) < 0.L)
+    o += b64 (tb);
+  if (e60 (tb) < 0.L)
+    o += e60 (tb);
+  if (e61 (tb) < 0.L)
+    o += e61 (tb);
+  if (e62 (tb) < 0.L)
+    o += e62 (tb);
+  if (e63 (tb) < 0.L)
+    o += e63 (tb);
+  if (e64 (tb) < 0.L)
+    o += e64 (tb);
+  if (o < 0.L)
+    {
+      o = 40.L - o;
+      goto end;
+    }
+  o = 30.L
+    + fmaxl (1.L,
+             fmaxl (t1 (tb),
+                    fmaxl (t2 (tb),
+                           fmaxl (t3 (tb), fmaxl (t4 (tb), t5 (tb))))));
+  if (rk->strong)
+    {
+      rk_bucle_ac (rk);
+      o = fminl (o, *rk->ac0->optimal);
+    }
+end:
+#if DEBUG_RK_6_4
+  fprintf (stderr, "rk_objective_tb_6_4p: optimal=%Lg\n", o);
+  fprintf (stderr, "rk_objective_tb_6_4p: end\n");
 #endif
   return o;
 }

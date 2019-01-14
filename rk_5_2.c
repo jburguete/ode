@@ -75,12 +75,12 @@ rk_tb_5_2 (Optimize * optimize) ///< Optimize struct.
   b53 (tb) = r[12];
   b54 (tb) = (0.5L - b51 (tb) * t1 (tb) - b52 (tb) * t2 (tb)
               - b53 (tb) * t3 (tb)) / t4 (tb);
+  if (isnan (b54 (tb)))
+    return 0;
   rk_b_5 (tb);
 #if DEBUG_RK_5_2
   fprintf (stderr, "rk_tb_5_2: end\n");
 #endif
-  if (isnan (b54 (tb)))
-    return 0;
   return 1;
 }
 
@@ -114,14 +114,60 @@ rk_tb_5_2t (Optimize * optimize)        ///< Optimize struct.
               - b51 (tb) * t1 (tb) * (t1 (tb) - t4 (tb))
               - b52 (tb) * t2 (tb) * (t2 (tb) - t4 (tb)))
     / (t3 (tb) * (t3 (tb) - t4 (tb)));
+  if (isnan (b53 (tb)))
+    return 0;
   b54 (tb) = (0.5L - b51 (tb) * t1 (tb) - b52 (tb) * t2 (tb)
               - b53 (tb) * t3 (tb)) / t4 (tb);
+  if (isnan (b54 (tb)))
+    return 0;
   rk_b_5 (tb);
 #if DEBUG_RK_5_2
   fprintf (stderr, "rk_tb_5_2t: end\n");
 #endif
-  if (isnan (b54 (tb)) || isnan (b53 (tb)))
+  return 1;
+}
+
+/**
+ * Function to obtain the coefficients of a 5 steps 1st-2nd order Runge-Kutta 
+ * pair.
+ */
+int
+rk_tb_5_2p (Optimize * optimize)        ///< Optimize struct.
+{
+  long double *tb;
+#if DEBUG_RK_5_2
+  fprintf (stderr, "rk_tb_5_2p: start\n");
+#endif
+  if (!rk_tb_5_2 (optimize))
     return 0;
+  tb = optimize->coefficient;
+  e51 (tb) = e52 (tb) = e53 (tb) = 0.L;
+  rk_e_5 (tb);
+#if DEBUG_RK_5_2
+  fprintf (stderr, "rk_tb_5_2p: end\n");
+#endif
+  return 1;
+}
+
+/**
+ * Function to obtain the coefficients of a 5 steps 1st-2nd order, 1st-3rd order
+ * in equations depending only in time, Runge-Kutta pair.
+ */
+int
+rk_tb_5_2tp (Optimize * optimize)       ///< Optimize struct.
+{
+  long double *tb;
+#if DEBUG_RK_5_2
+  fprintf (stderr, "rk_tb_5_2tp: start\n");
+#endif
+  if (!rk_tb_5_2t (optimize))
+    return 0;
+  tb = optimize->coefficient;
+  e51 (tb) = e52 (tb) = e53 (tb) = 0.L;
+  rk_e_5 (tb);
+#if DEBUG_RK_5_2
+  fprintf (stderr, "rk_tb_5_2tp: end\n");
+#endif
   return 1;
 }
 

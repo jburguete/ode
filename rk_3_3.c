@@ -42,7 +42,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "utils.h"
 #include "optimize.h"
 #include "rk.h"
-#include "rk_3_2.h"
 #include "rk_3_3.h"
 
 #define DEBUG_RK_3_3 0          ///< macro to debug.
@@ -64,15 +63,19 @@ rk_tb_3_3 (Optimize * optimize) ///< Optimize struct.
   t1 (tb) = r[0];
   t2 (tb) = r[1];
   b32 (tb) = (1.L / 3.L - 0.5L * t1 (tb)) / (t2 (tb) * (t2 (tb) - t1 (tb)));
+  if (isnan (b32 (tb)))
+    return 0;
   b31 (tb) = (1.L / 3.L - 0.5L * t2 (tb)) / (t1 (tb) * (t1 (tb) - t2 (tb)));
+  if (isnan (b31 (tb)))
+    return 0;
   b21 (tb) = 1 / 6.L / (b32 (tb) * t1 (tb));
+  if (isnan (b21 (tb)))
+    return 0;
   rk_b_3 (tb);
 #if DEBUG_RK_3_3
   rk_print_tb (optimize, "rk_tb_3_3", stderr);
   fprintf (stderr, "rk_tb_3_3: end\n");
 #endif
-  if (isnan (b21 (tb)) || isnan (b31 (tb)) || isnan (b32 (tb)))
-    return 0;
   return 1;
 }
 
@@ -92,17 +95,22 @@ rk_tb_3_3t (Optimize * optimize)        ///< Optimize struct.
   t3 (tb) = 1.L;
   t1 (tb) = r[0];
   t2 (tb) = (4.L * t1 (tb) - 3.L) / (6.L * t1 (tb) - 4.L);
+  if (isnan (t2 (tb)))
+    return 0;
   b32 (tb) = (1.L / 3.L - 0.5L * t1 (tb)) / (t2 (tb) * (t2 (tb) - t1 (tb)));
+  if ((b32 (tb)))
+    return 0;
   b31 (tb) = (1.L / 3.L - 0.5L * t2 (tb)) / (t1 (tb) * (t1 (tb) - t2 (tb)));
+  if (isnan (b31 (tb)))
+    return 0;
   b21 (tb) = 1 / 6.L / (b32 (tb) * t1 (tb));
+  if (isnan (b21 (tb)))
+    return 0;
   rk_b_3 (tb);
 #if DEBUG_RK_3_3
   rk_print_tb (optimize, "rk_tb_3_3t", stderr);
   fprintf (stderr, "rk_tb_3_3t: end\n");
 #endif
-  if (isnan (b21 (tb)) || isnan (b31 (tb)) || isnan (b32 (tb))
-      || isnan (t2 (tb)))
-    return 0;
   return 1;
 }
 

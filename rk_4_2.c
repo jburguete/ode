@@ -69,12 +69,12 @@ rk_tb_4_2 (Optimize * optimize) ///< Optimize struct.
   b41 (tb) = r[6];
   b42 (tb) = r[7];
   b43 (tb) = (0.5L - b41 (tb) * t1 (tb) - b42 (tb) * t2 (tb)) / t3 (tb);
+  if (isnan (b43 (tb)))
+    return 0;
   rk_b_4 (tb);
 #if DEBUG_RK_4_2
   fprintf (stderr, "rk_tb_4_2: end\n");
 #endif
-  if (isnan (b43 (tb)))
-    return 0;
   return 1;
 }
 
@@ -102,13 +102,15 @@ rk_tb_4_2t (Optimize * optimize)        ///< Optimize struct.
   b42 (tb) = (1.L / 3.L - 0.5L * t3 (tb)
               - b41 (tb) * t1 (tb) * (t1 (tb) - t3 (tb)))
     / (t2 (tb) * (t2 (tb) - t3 (tb)));
+  if (isnan (b42 (tb)))
+    return 0;
   b43 (tb) = (0.5L - b41 (tb) * t1 (tb) - b42 (tb) * t2 (tb)) / t3 (tb);
+  if (isnan (b43 (tb)))
+    return 0;
   rk_b_4 (tb);
 #if DEBUG_RK_4_2
   fprintf (stderr, "rk_tb_4_2t: end\n");
 #endif
-  if (isnan (b42 (tb)) || isnan (b43 (tb)))
-    return 0;
   return 1;
 }
 

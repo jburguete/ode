@@ -36,8 +36,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define EPSILON 1
 ///< using epsilon to avoid small numbers solving linear equations systems.
-#define MAXIMA_PRECISION 20 ///< precision digits on maxima files.
-#define OPTIMIZE_STEPS_11_6 0 
+#define MAXIMA_PRECISION 20     ///< precision digits on maxima files.
+#define OPTIMIZE_STEPS_11_6 0
 ///< special optimization for 11 steps 6th order multi-steps method.
 
 #define XML_AC                 (const xmlChar *) "ac"

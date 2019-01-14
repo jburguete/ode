@@ -81,13 +81,13 @@ rk_tb_6_2 (Optimize * optimize) ///< Optimize struct.
   b65 (tb) = r[18];
   b61 (tb) = (0.5L - b62 (tb) * t2 (tb) - b63 (tb) * t3 (tb)
               - b64 (tb) * t4 (tb) - b65 (tb) * t5 (tb)) / t1 (tb);
+  if (isnan (b61 (tb)))
+    return 0;
   rk_b_6 (tb);
 #if DEBUG_RK_6_2
   rk_print_tb (optimize, "rk_tb_6_2", stderr);
   fprintf (stderr, "rk_tb_6_2: end\n");
 #endif
-  if (isnan (b61 (tb)))
-    return 0;
   return 1;
 }
 
@@ -128,15 +128,61 @@ rk_tb_6_2t (Optimize * optimize)        ///< Optimize struct.
               - b62 (tb) * t2 (tb) * (t2 (tb) - t5 (tb))
               - b63 (tb) * t3 (tb) * (t3 (tb) - t5 (tb)))
     / (t4 (tb) * (t4 (tb) - t5 (tb)));
+  if (isnan (b64 (tb)))
+    return 0;
   b65 (tb) = (0.5L - b61 (tb) * t1 (tb) - b62 (tb) * t2 (tb)
               - b63 (tb) * t3 (tb) - b64 (tb) * t4 (tb)) / t5 (tb);
+  if (isnan (b65 (tb)))
+    return 0;
   rk_b_6 (tb);
 #if DEBUG_RK_6_2
   rk_print_tb (optimize, "rk_tb_6_2t", stderr);
   fprintf (stderr, "rk_tb_6_2t: end\n");
 #endif
-  if (isnan (b65 (tb)) || isnan (b64 (tb)))
+  return 1;
+}
+
+/**
+ * Function to obtain the coefficients of a 6 steps 1st-2nd order Runge-Kutta 
+ * pair.
+ */
+int
+rk_tb_6_2p (Optimize * optimize)        ///< Optimize struct.
+{
+  long double *tb;
+#if DEBUG_RK_6_2
+  fprintf (stderr, "rk_tb_6_2p: start\n");
+#endif
+  if (!rk_tb_6_2 (optimize))
     return 0;
+  tb = optimize->coefficient;
+  e61 (tb) = e62 (tb) = e63 (tb) = e64 (tb) = 0.L;
+  rk_e_6 (tb);
+#if DEBUG_RK_6_2
+  fprintf (stderr, "rk_tb_6_2p: end\n");
+#endif
+  return 1;
+}
+
+/**
+ * Function to obtain the coefficients of a 6 steps 1st-2nd order, 1st-3rd order
+ * in equations depending only in time, Runge-Kutta pair.
+ */
+int
+rk_tb_6_2tp (Optimize * optimize)       ///< Optimize struct.
+{
+  long double *tb;
+#if DEBUG_RK_6_2
+  fprintf (stderr, "rk_tb_6_2tp: start\n");
+#endif
+  if (!rk_tb_6_2t (optimize))
+    return 0;
+  tb = optimize->coefficient;
+  e61 (tb) = e62 (tb) = e63 (tb) = e64 (tb) = 0.L;
+  rk_e_6 (tb);
+#if DEBUG_RK_6_2
+  fprintf (stderr, "rk_tb_6_2tp: end\n");
+#endif
   return 1;
 }
 

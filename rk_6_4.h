@@ -36,7 +36,11 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int rk_tb_6_4 (Optimize * optimize);
 int rk_tb_6_4t (Optimize * optimize);
+int rk_tb_6_4p (Optimize * optimize);
+int rk_tb_6_4tp (Optimize * optimize);
 long double rk_objective_tb_6_4 (RK * rk);
 long double rk_objective_tb_6_4t (RK * rk);
+long double rk_objective_tb_6_4p (RK * rk);
+long double rk_objective_tb_6_4tp (RK * rk);
 
 #endif
