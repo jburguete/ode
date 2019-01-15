@@ -87,7 +87,10 @@ cflags = @CFLAGS@ @GSL_CFLAGS@ @XML_CFLAGS@ @GLIB_CFLAGS@ @GTHREAD_CFLAGS@ \
 	-c -O3 -march=native -Wall -Wextra -D_FORTIFY_SOURCE=2
 libs = @LDFLAGS@ @LIBS@ @GSL_LIBS@ @XML_LIBS@ @GLIB_LIBS@ @GTHREAD_LIBS@ 
 
-all: ode ode.pdf
+all: ode write ode.pdf
+
+write: write.c Makefile
+	$(cc) -Os -march=native -Wall -Wextra -D_FORTIFY_SOURCE=2 write.c -o write
 
 ode: $(ofiles)
 	$(ccuse) $(ofiles) $(libs) -o ode
@@ -256,5 +259,5 @@ ode.pdf: ode.tex Makefile
 clean:
 	rm -rf ode *.{o,aux,toc,log} html latex
 
-strip: ode
-	strip ode
+strip: ode write
+	strip ode write

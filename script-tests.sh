@@ -31,7 +31,7 @@ for k in `seq 0 1`; do
 		./ode-pgo tests/test-rk-4-4-$k-0-$m.xml
 	done
 done
-for i in `seq 5 5`; do
+for i in `seq 5 6`; do
 	for j in `seq 2 4`; do
 		for k in `seq 0 1`; do
 			for l in `seq 0 1`; do

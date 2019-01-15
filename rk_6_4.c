@@ -199,7 +199,7 @@ rk_tb_6_4t (Optimize * optimize)        ///< Optimize struct.
   if (isnan (F[0]) || isnan (F[1]) || isnan (F[2]) || isnan (F[3])
       || isnan (F[4]))
     return 0;
-  b65 (tb) = F[3];
+  b65 (tb) = F[4];
   b64 (tb) = F[3];
   b63 (tb) = F[2];
   b62 (tb) = F[1];
@@ -352,10 +352,10 @@ rk_tb_6_4p (Optimize * optimize)        ///< Optimize struct.
  * in equations depending only on time, Runge-Kutta method.
  */
 int
-rk_tb_6_4tp (Optimize * optimize)        ///< Optimize struct.
+rk_tb_6_4tp (Optimize * optimize)       ///< Optimize struct.
 {
   long double A[5], B[5], C[5], D[5], E[5], F[5], AA[4], BB[4], CC[4], DD[4],
-	  EE[4];
+    EE[4];
   long double *tb, *r;
 #if DEBUG_RK_6_4
   fprintf (stderr, "rk_tb_6_4tp: start\n");
@@ -405,7 +405,7 @@ rk_tb_6_4tp (Optimize * optimize)        ///< Optimize struct.
   D[4] = D[3] * t4 (tb);
   E[4] = E[3] * t5 (tb);
   F[4] = 1.L / 6.L;
-	solve_4 (AA, BB, CC, DD, EE);
+  solve_4 (AA, BB, CC, DD, EE);
   if (isnan (EE[0]) || isnan (EE[1]) || isnan (EE[2]) || isnan (EE[3]))
     return 0;
   e64 (tb) = EE[3];
@@ -416,16 +416,16 @@ rk_tb_6_4tp (Optimize * optimize)        ///< Optimize struct.
   if (isnan (F[0]) || isnan (F[1]) || isnan (F[2]) || isnan (F[3])
       || isnan (F[4]))
     return 0;
-  b65 (tb) = F[3];
+  b65 (tb) = F[4];
   b64 (tb) = F[3];
   b63 (tb) = F[2];
   b62 (tb) = F[1];
   b61 (tb) = F[0];
-	b21 (tb) = (1.L / 6.L - e63 (tb) * (b31 (tb) * t1 (tb) + b32 (tb) * t2 (tb))
-			        - e64 (tb) * (b41 (tb) * t1 (tb) + b42 (tb) * t2 (tb)
-								            + b43 (tb) * t3 (tb))) / (e62 (tb) * t1 (tb));
-	if (isnan (b21 (tb)))
-		return 0;
+  b21 (tb) = (1.L / 6.L - e63 (tb) * (b31 (tb) * t1 (tb) + b32 (tb) * t2 (tb))
+              - e64 (tb) * (b41 (tb) * t1 (tb) + b42 (tb) * t2 (tb)
+                            + b43 (tb) * t3 (tb))) / (e62 (tb) * t1 (tb));
+  if (isnan (b21 (tb)))
+    return 0;
   A[0] = t1 (tb);
   B[0] = t2 (tb);
   C[0] = t3 (tb);
@@ -668,7 +668,7 @@ end:
  * \return objective function value.
  */
 long double
-rk_objective_tb_6_4tp (RK * rk)  ///< RK struct.
+rk_objective_tb_6_4tp (RK * rk) ///< RK struct.
 {
   long double *tb;
   long double o;
